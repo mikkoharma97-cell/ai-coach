@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Coach (Next.js)
 
-## Getting Started
+Päivittäinen ohjaus — ei geneerinen dashboard. Tämä repo on **Vercel-valmis** Next.js 16 -sovellus.
 
-First, run the development server:
+## Paikallinen kehitys
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Avaa [http://localhost:3000](http://localhost:3000). Juuripolku (`/`) ohjaa profiilin mukaan (`EntryGate`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Demo-video / Adobe:** `?demo=muscle` (oletus), `?demo=fat_loss`, `?demo=busy` — seedaa profiilin ja lokit (ks. `src/lib/demoSeed.ts`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tuotantobuild (paikallinen)
 
-## Learn More
+```bash
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+Oletusportti: **3000**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Vercel — pysyvä julkinen testilinkki (~5 min)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Tarkempi checklist (klikkaukset, smoke-testit, mobiili): [docs/vercel.md](./docs/vercel.md).
 
-## Deploy on Vercel
+1. **Push GitHubiin**  
+   - Luo repo GitHubissa (tai käytä olemassa olevaa).  
+   - `git remote add origin …` jos puuttuu, sitten `git push -u origin main` (tai `master`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Import Verceliin**  
+   - [vercel.com/new](https://vercel.com/new) → Import Project → valitse repo.  
+   - **Framework Preset:** Next.js (automaattinen).  
+   - **Build Command:** `npm run build` (oletus).  
+   - **Output Directory:** ei erillistä — Next hoitaa (`.next`).  
+   - **Install Command:** `npm install` (oletus).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Ympäristömuuttujat**  
+   - Kopioi `.env.example` → Vercel Project → Settings → Environment Variables.  
+   - **Pakollisia ei ole** peruskäyttöön: `metadataBase` käyttää `VERCEL_URL`-osoitetta automaattisesti.  
+   - Aseta `NEXT_PUBLIC_SITE_URL` vain jos haluat kiinteän kanonisen URLin (custom domain).
+
+4. **Deploy**  
+   - Deploy → saat URLin muotoa `https://<projekti>.vercel.app`.
+
+5. **Testaa reitit** (kirjautumaton / paikallinen profiili voi ohjata `/start` tai `/home`):  
+   `/home`, `/start`, `/app`, `/food`, `/workout`, `/progress`, `/review`, `/adjustments`, `/paywall`
+
+### Vercel vs. cloudflared
+
+| | Vercel | cloudflared (trycloudflare) |
+|--|--------|------------------------------|
+| Linkki | Pysyvä, HTTPS | Vaihtuu joka ajolla |
+| Kone | Ei tarvitse olla päällä | Tarvitsee `next start` + tunnelin |
+| Sopii | Jakolinkkiin, QA:han | Nopeaan paikalliseen mobiilitestiin |
+
+Väliaikainen jakolinkki ilman Verceliä: [docs/dev-preview.md](./docs/dev-preview.md).
+
+## Ympäristömuuttujat (tiivis lista)
+
+| Muuttuja | Pakollinen | Kuvaus |
+|----------|------------|--------|
+| `NEXT_PUBLIC_SITE_URL` | Ei | Kanoninen URL (metadata). Vercel: käytä custom domainia tai jätä tyhjäksi → `VERCEL_URL`. |
+| `CRON_SECRET` | Ei | Vain jos kutsut `POST /api/training-intelligence/refresh` ulkoisesta cronista. |
+| `NEXT_PUBLIC_DEMO_MODE` | Ei | `1` = demo-seed (katso `demoSeed.ts`). |
+| `NEXT_PUBLIC_PREVIEW_BUILD` | Ei | `1` = build-info strip näkyviin. |
+| `NEXT_PUBLIC_COACH_MOCK_TRIAL_DAYS` | Ei | Kokeilupäivien mock (dev/preview). |
+
+Täydellinen lista kommenteilla: [`.env.example`](./.env.example).
+
+## Repo valmius GitHubiin
+
+- `.env.example` on commitissa (`.env*` on ignorattu, `!.env.example` sallittu).  
+- Älä commitoi `.env` tiedostoja.  
+- Varmista että `npm run build` menee läpi ennen pushia.
+
+## Lisää
+
+- Tuotekonteksti: `PROJECT_BRIEF.md`  
+- Paikallinen preview + tunnel: `docs/dev-preview.md`  
+- Next.js: [Deployment](https://nextjs.org/docs/app/building-your-application/deploying)

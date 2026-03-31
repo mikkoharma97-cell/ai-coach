@@ -4,9 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "dev:webpack": "next dev --webpack",
+    "build": "node scripts/write-build-info.mjs && next build",
     "start": "next start",
-    "lint": "eslint"
+    "preview:clean": "node scripts/preview-clean.mjs",
+    "preview:start": "NEXT_PUBLIC_PREVIEW_BUILD=1 npm run build && npm run start",
+    "preview:full": "npm run preview:clean && npm run preview:start",
+    "lint": "eslint",
+    "verify:engine": "npx tsx scripts/verify-engine.ts",
+    "screenshots": "node scripts/capture-screenshots.mjs"
   },
   "dependencies": {
     "next": "16.2.1",
@@ -20,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "playwright": "^1.50.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
