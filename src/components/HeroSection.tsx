@@ -4,6 +4,7 @@ import { CTAButton } from "@/components/CTAButton";
 import { HeroTodayLiving } from "@/components/landing/HeroTodayLiving";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
+import { appendBuildQuery } from "@/lib/buildInfo";
 
 const ctaRingOffset =
   "focus-visible:ring-offset-2 focus-visible:ring-offset-[#05060a]";
@@ -33,13 +34,13 @@ export function HeroSection() {
             </p>
             <div className="relative z-[2] mt-10 flex flex-col items-center gap-4 pointer-events-auto sm:mt-11 sm:flex-row sm:items-center sm:gap-5 lg:justify-start">
               <CTAButton
-                href="/start"
+                href={appendBuildQuery("/start")}
                 className={`!min-h-[54px] !min-w-[200px] !rounded-[15px] !px-10 !py-4 !text-[16px] !font-semibold !shadow-[var(--shadow-primary-cta)] hover:!brightness-110 ${ctaRingOffset}`}
               >
                 {t("landing.heroCta")}
               </CTAButton>
               <CTAButton
-                href="/app"
+                href={appendBuildQuery("/app")}
                 variant="link"
                 className={`!min-h-0 !py-2 !text-[14px] !font-medium !text-muted !no-underline hover:!text-[color:var(--foreground)] ${ctaRingOffset}`}
               >

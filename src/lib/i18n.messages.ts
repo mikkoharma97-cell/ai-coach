@@ -2,6 +2,10 @@
  * UI strings — Finnish default, English parity. Key:value tables only.
  */
 export const fi = {
+  "build.newVersionLoaded": "Uusi versio ladattu.",
+  "build.dismiss": "Selvä",
+  "build.hardRefresh": "Päivitä näkymä (täysi reload)",
+
   "common.loading": "Ladataan…",
   "common.show": "Näytä",
   "common.hide": "Piilota",
@@ -1619,6 +1623,7 @@ export const fi = {
   "preview.markerTitle": "Preview build",
   "preview.markerDev": "Paikallinen dev",
 
+  "settings.buildMarkerEyebrow": "Build / versio",
   "settings.previewEyebrow": "Testaus / tunneli",
   "settings.previewBuildLabel": "Build-aika (ISO)",
   "settings.previewEnvBuildLabel": "Ympäristö · build",
@@ -1808,6 +1813,10 @@ export const fi = {
 export type MessageKey = keyof typeof fi;
 
 export const en: { [K in MessageKey]: string } = {
+  "build.newVersionLoaded": "New version loaded.",
+  "build.dismiss": "OK",
+  "build.hardRefresh": "Refresh view (full reload)",
+
   "common.loading": "Loading…",
   "common.show": "Show",
   "common.hide": "Hide",
@@ -3435,6 +3444,7 @@ export const en: { [K in MessageKey]: string } = {
   "preview.markerTitle": "Preview build",
   "preview.markerDev": "Local dev",
 
+  "settings.buildMarkerEyebrow": "Build / version",
   "settings.previewEyebrow": "Testing / tunnel",
   "settings.previewBuildLabel": "Build time (ISO)",
   "settings.previewEnvBuildLabel": "Environment · build",

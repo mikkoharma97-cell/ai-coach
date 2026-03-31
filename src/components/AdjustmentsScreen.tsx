@@ -1,5 +1,6 @@
 "use client";
 
+import { BuildMarkerLine } from "@/components/build/BuildMarkerLine";
 import { CoachAppShortcuts } from "@/components/app/CoachAppShortcuts";
 import { ProfileProgramSummary } from "@/components/profile/ProfileProgramSummary";
 import { CoachBuildsEmpty } from "@/components/ui/CoachBuildsEmpty";
@@ -541,6 +542,15 @@ export function AdjustmentsScreen() {
           >
             {t("adjust.backToday")}
           </Link>
+        </div>
+
+        <div className="mt-10 border-t border-border/40 pt-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+            {t("settings.buildMarkerEyebrow")}
+          </p>
+          <div className="mt-2">
+            <BuildMarkerLine compact />
+          </div>
         </div>
 
         <CoachAppShortcuts

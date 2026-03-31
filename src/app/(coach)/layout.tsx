@@ -3,6 +3,7 @@
 import { AnalyticsSession } from "@/components/AnalyticsSession";
 import { DemoModeLoader } from "@/components/DemoModeLoader";
 import { AppShell } from "@/components/app/AppShell";
+import { BuildRefreshToast } from "@/components/build/BuildRefreshToast";
 import { SubscriptionGate } from "@/components/SubscriptionGate";
 import { LocaleProvider } from "@/hooks/useTranslation";
 import type { ReactNode } from "react";
@@ -17,6 +18,7 @@ export default function CoachLayout({ children }: { children: ReactNode }) {
           <div className="app-device-frame w-full max-md:max-w-none">
             <div className="app-device-screen">
               <AppShell>{children}</AppShell>
+              <BuildRefreshToast />
             </div>
           </div>
         </div>

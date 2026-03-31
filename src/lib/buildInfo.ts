@@ -1,5 +1,66 @@
 import { APP_VERSION, BUILD_TIME_ISO } from "./buildInfo.generated";
 
+export type PublicBuildInfo = {
+  /** Näkyvä versio (env tai package / generoitu) */
+  buildVersion: string;
+  /** ISO-aikaleima tai "dev" */
+  buildTimestamp: string;
+  /** Yksi rivi diagnostiikkaan / UI:hin */
+  buildLabel: string;
+};
+
+/**
+ * Julkinen build-tieto — toimii clientissä ja serverillä.
+ * Prioriteetti: NEXT_PUBLIC_* → generoitu → "dev".
+ */
+export function getPublicBuildInfo(): PublicBuildInfo {
+  const envVer = process.env.NEXT_PUBLIC_APP_VERSION?.trim();
+  const envTime = process.env.NEXT_PUBLIC_BUILD_TIME?.trim();
+
+  const buildVersion =
+    envVer ||
+    (APP_VERSION && APP_VERSION.length > 0 ? APP_VERSION : "") ||
+    "dev";
+
+  const buildTimestamp =
+    envTime ||
+    (BUILD_TIME_ISO && BUILD_TIME_ISO !== "not-yet-built" ? BUILD_TIME_ISO : "") ||
+    "dev";
+
+  const buildLabel = `${getBuildLabelShort()} · v${buildVersion} · ${buildTimestamp}`;
+
+  return { buildVersion, buildTimestamp, buildLabel };
+}
+
+/** Lyhyt aikaleima UI:hin (locale). */
+export function formatBuildTimestampForUi(
+  iso: string,
+  locale: "fi" | "en",
+): string {
+  if (!iso || iso === "dev") {
+    return locale === "en" ? "dev" : "dev";
+  }
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) {
+    return iso;
+  }
+  return d.toLocaleString(locale === "en" ? "en-US" : "fi-FI", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
+/**
+ * Cache-bustin testilinkkeihin — ei muuta Next Link -reititystä.
+ * Lisää ?b= tai &b= vain kun versio ei ole pelkkä "dev".
+ */
+export function appendBuildQuery(href: string): string {
+  const v = getPublicBuildInfo().buildVersion;
+  if (!v || v === "dev") return href;
+  const sep = href.includes("?") ? "&" : "?";
+  return `${href}${sep}b=${encodeURIComponent(v)}`;
+}
+
 /** package.json — sama kuin buildInfo.generated (kirjoitetaan buildissa). */
 export function getAppVersion(): string {
   return APP_VERSION;
@@ -44,10 +105,7 @@ export function getEnvironmentMarker():
 
 /** Yksi rivi: versio + ympäristö + build-aika (deploy-testit). */
 export function getBuildDisplayString(): string {
-  const env = getEnvironmentMarker();
-  const time =
-    BUILD_TIME_ISO === "not-yet-built" ? "dev" : BUILD_TIME_ISO;
-  return `v${APP_VERSION} · ${env} · ${time}`;
+  return getPublicBuildInfo().buildLabel;
 }
 
 /** Lyhyt label badgeille (esim. "Preview build"). */

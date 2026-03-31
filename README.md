@@ -26,6 +26,8 @@ Oletusportti: **3000**.
 
 Tarkempi checklist (klikkaukset, smoke-testit, mobiili): [docs/vercel.md](./docs/vercel.md).
 
+**Build-versio / cache / uusi deploy:** [docs/dev-preview.md](./docs/dev-preview.md).
+
 1. **Push GitHubiin**  
    - Luo repo GitHubissa (tai käytä olemassa olevaa).  
    - `git remote add origin …` jos puuttuu, sitten `git push -u origin main` (tai `master`).

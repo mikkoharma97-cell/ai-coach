@@ -16,6 +16,7 @@ import { LandingComingNext } from "@/components/landing/LandingComingNext";
 import { LandingFreeTrialSection } from "@/components/landing/LandingFreeTrialSection";
 import { LandingGuidanceNotProgram } from "@/components/landing/LandingGuidanceNotProgram";
 import { LandingSystemAngle } from "@/components/landing/LandingSystemAngle";
+import { BuildMarkerLine } from "@/components/build/BuildMarkerLine";
 import { LocaleProvider } from "@/hooks/useTranslation";
 
 export const metadata: Metadata = {
@@ -35,6 +36,9 @@ export default function MarketingHomePage() {
       <AnalyticsRouteBeacon event="open_home" />
       <SiteHeader />
       <HeroSection />
+      <div className="border-b border-white/[0.06] bg-[var(--background)] px-4 pb-8 pt-2">
+        <BuildMarkerLine />
+      </div>
       <LandingOpenKnowWhatToDo />
       <LandingGuidanceNotProgram />
       <LandingSystemAngle />

@@ -1,5 +1,6 @@
 "use client";
 
+import { BuildMarkerLine } from "@/components/build/BuildMarkerLine";
 import { SettingsPreviewDiagnostics } from "@/components/SettingsPreviewDiagnostics";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
@@ -190,6 +191,15 @@ export function SettingsScreen() {
             {t("nav.backToToday")}
           </Link>
         </p>
+
+        <div className="mt-5 rounded-[var(--radius-lg)] border border-border/50 bg-card/40 px-4 py-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+            {t("settings.buildMarkerEyebrow")}
+          </p>
+          <div className="mt-2">
+            <BuildMarkerLine />
+          </div>
+        </div>
 
         {!storageOk ? (
           <p

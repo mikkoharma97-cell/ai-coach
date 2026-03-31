@@ -1,56 +1,22 @@
-# Puhelin-preview — aina tuore tuotantoversio
+# Dev / preview — uusi deploy, sama URL
 
-Tavoite: ei vanhaa `.next`-cachea, ei jumiin jäänyttä `next start` / tunnelia, ei vanhaa trycloudflare-linkkiä.
+Vercelissä **sama osoite** päivittyy uuteen buildiin automaattisesti uuden deployn jälkeen. Jos puhelin näyttää vanhaa:
 
-## A) Tuotantopreview paikallisesti
+1. **Tarkista build-marker** — `/home` (hero alla) tai **Asetukset** / **Säädöt** näyttää `v{versio}` ja päiväyksen.
+2. **Sulje välilehti** tai käytä **incognito / yksityinen**-ikkunaa (Service Worker / välimuisti).
+3. Lisää URL:iin manuaalinen cache-testi: `?v=123` tai sovelluksen `appendBuildQuery()` lisää `?b={versio}` (esim. marketing-CTA:t).
+4. **Esikatselu-buildissa** (`NEXT_PUBLIC_PREVIEW_BUILD=1`) Asetuksissa näkyy **Päivitä näkymä (täysi reload)**.
 
-1. Puhdas tila + uusi build + käynnistys:
+## Ympäristömuuttujat (valinnaiset)
 
-   ```bash
-   npm run preview:full
-   ```
+| Muuttuja | Käyttö |
+|----------|--------|
+| `NEXT_PUBLIC_APP_VERSION` | Korvaa näkyvän version (esim. Git tag tai `1.0.3`). Jos tyhjä → `package.json` / build-info. |
+| `NEXT_PUBLIC_BUILD_TIME` | ISO-aikaleima näyttöön. Jos tyhjä → generoitu build-aika. |
+| `NEXT_PUBLIC_PREVIEW_BUILD` | `1` = preview-diagnostiikka + kova reload -nappi. |
 
-   Tai vaiheittain:
+Joku näistä puuttuu → **fallback**, build ei hajoa.
 
-   ```bash
-   npm run preview:clean
-   npm run preview:start
-   ```
+## Uusi versio ladattu
 
-   - `preview:clean` sammuttaa tyypilliset `next dev` / `next start` / `cloudflared tunnel` -prosessit (macOS/Linux) ja poistaa `.next`-kansion.
-   - `preview:start` asettaa `NEXT_PUBLIC_PREVIEW_BUILD=1`, ajaa `npm run build` ja `npm run start` (oletusportti **3000**).
-
-2. Varmista että sovelluksessa näkyy **Preview build** -merkki (keltainen nauha navin yläpuolella) ja **Asetukset** näyttää build-ajan ja originin.
-
-## B) Uusi cloudflared-tunneli
-
-Toisessa terminaalissa (kun `next start` pyörii):
-
-```bash
-./.tools/cloudflared tunnel --url http://localhost:3000
-```
-
-Kopioi terminaaliin tulostuva **uusi** `https://….trycloudflare.com` -osoite.
-
-## C) Käytä aina uutta trycloudflare-linkkiä
-
-Jokainen `cloudflared`-ajo antaa uuden satunnaisen alidomainin. **Älä** käytä eilistä tai tallennettua URL:ia — vanha linkki tai kuollut tunneli voi näyttää välimuistia tai tyhjää näkymää ilman selkeää virhettä.
-
-## D) Testaa puhelimella
-
-- **Chrome / Safari — yksityinen välilehti** (tai tyhjä profiili), jotta vältät aggressiivisen välimuistin.
-- Varmista että **build-aika** asetuksissa vastaa juuri ajettua `preview:start` / `preview:full` -buildia.
-
-## Nopein rutiini tiimille
-
-```bash
-npm run preview:full
-# toinen terminaali:
-./.tools/cloudflared tunnel --url http://localhost:3000
-```
-
-→ avaa uusin trycloudflare-URL puhelimella (private tab).
-
-## Tekninen huomio (Windows)
-
-`preview:clean` ei käytä `pkill`-vastausta Windowsissa; sulje Node/cloudflared Tehtäväpalkista tarvittaessa. `NEXT_PUBLIC_PREVIEW_BUILD=1` vaatii Git Bash / WSL tai `cross-env` (ei pakollinen macOS/Linux).
+Sovellus tallentaa viimeksi nähdyn version `localStorage`-avaimella `coach_seen_build_version`. Kun deploy vaihtaa version, näkyy kevyt ilmoitus: **Uusi versio ladattu** (ei automaattista reloadia).
