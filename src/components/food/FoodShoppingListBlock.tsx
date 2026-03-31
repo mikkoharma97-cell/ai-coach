@@ -2,11 +2,11 @@
 
 import { buildStoreBaskets } from "@/lib/food/storeSuggestions";
 import { getProductCatalog } from "@/lib/food/productCatalog";
+import { weeklySpendFromStoreBaskets } from "@/lib/food/weeklySpendDisplay";
 import type { WeeklyShoppingEngineResult } from "@/lib/food/shoppingList";
 import type { Locale } from "@/lib/i18n";
 import type { TranslateFn } from "@/lib/i18n";
-import type { StoreBasket } from "@/types/grocery";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 type Props = {
   weekly: WeeklyShoppingEngineResult;
@@ -23,17 +23,17 @@ export function FoodShoppingListBlock({
   locale,
   t,
 }: Props) {
-  const [showStores, setShowStores] = useState(false);
-
-  const { baskets, labels } = useMemo(() => {
+  const { baskets } = useMemo(() => {
     return buildStoreBaskets({
       shoppingList: weekly.items,
       productCatalog: getProductCatalog(),
     });
   }, [weekly.items]);
 
-  const title = locale === "en" ? weekly.titleEn : weekly.titleFi;
-  const lead = locale === "en" ? weekly.leadEn : weekly.leadFi;
+  const spend = useMemo(
+    () => weeklySpendFromStoreBaskets(baskets),
+    [baskets],
+  );
 
   return (
     <section
@@ -41,19 +41,28 @@ export function FoodShoppingListBlock({
       aria-labelledby="weekly-shopping"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <h2
             id="weekly-shopping"
             className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2"
           >
-            {title}
+            {t("food.shoppingTitle")}
           </h2>
-          <p className="mt-2 max-w-[22rem] text-[12px] leading-snug text-muted">
-            {lead}
+          <p className="mt-2 text-[13px] font-semibold leading-snug text-foreground">
+            {t("food.shoppingWeekRange", {
+              low: String(spend.lowEur),
+              high: String(spend.highEur),
+            })}
+          </p>
+          <p className="mt-1.5 text-[12px] leading-snug text-muted">
+            {t("food.shoppingCovers", { days: String(shopDays) })}
+          </p>
+          <p className="mt-2 text-[12px] font-medium text-accent/95">
+            {t("food.shoppingSaveLine", { save: String(spend.saveEur) })}
           </p>
         </div>
         <div
-          className="flex rounded-full border border-border/60 bg-surface-subtle/50 p-0.5"
+          className="flex shrink-0 rounded-full border border-border/60 bg-surface-subtle/50 p-0.5"
           role="group"
           aria-label={t("food.shoppingDaySpanAria")}
         >
@@ -126,20 +135,6 @@ export function FoodShoppingListBlock({
       <p className="mt-6 text-[11px] leading-relaxed text-muted-2">
         {t("food.shoppingPriceDisclaimer")}
       </p>
-
-      <button
-        type="button"
-        onClick={() => setShowStores((s) => !s)}
-        className="mt-4 flex min-h-[48px] w-full items-center justify-center rounded-2xl border border-accent/40 bg-accent-soft/30 px-4 text-[14px] font-semibold text-accent transition hover:bg-accent-soft/50"
-      >
-        {showStores
-          ? t("food.shoppingHideStores")
-          : t("food.shoppingShowStores")}
-      </button>
-
-      {showStores ? (
-        <StoreBasketGrid baskets={baskets} labels={labels} locale={locale} t={t} />
-      ) : null}
     </section>
   );
 }
@@ -154,81 +149,4 @@ function formatAmount(
   if (unit === "piece")
     return locale === "en" ? `${amount} pcs` : `${amount} kpl`;
   return `${amount} ${unit}`;
-}
-
-function StoreBasketGrid({
-  baskets,
-  labels,
-  locale,
-  t,
-}: {
-  baskets: StoreBasket[];
-  labels: { kind: string; labelFi: string; labelEn: string }[];
-  locale: Locale;
-  t: TranslateFn;
-}) {
-  return (
-    <div className="mt-5 space-y-4">
-      <p className="text-[12px] font-semibold text-foreground">
-        {t("food.shoppingPickBasket")}
-      </p>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {baskets.map((b, i) => {
-          const lbl = labels[i];
-          const name =
-            b.storeId === "store_a"
-              ? t("food.storeOptionA")
-              : b.storeId === "store_b"
-                ? t("food.storeOptionB")
-                : t("food.storeOptionC");
-          const tag = lbl
-            ? locale === "en"
-              ? lbl.labelEn
-              : lbl.labelFi
-            : "";
-          return (
-            <div
-              key={b.storeId}
-              className="rounded-[var(--radius-xl)] border border-border/55 bg-card/50 px-4 py-4"
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-                {name}
-              </p>
-              {tag ? (
-                <p className="mt-1 text-[11px] text-accent">{tag}</p>
-              ) : null}
-              <p className="mt-3 text-[1.35rem] font-semibold tabular-nums text-foreground">
-                €{b.estimatedTotal.toFixed(2)}
-              </p>
-              <p className="mt-1 text-[11px] leading-snug text-muted-2">
-                {t("food.shoppingEstimatedTotal")}
-              </p>
-              <ul className="mt-3 max-h-[140px] space-y-1 overflow-y-auto text-[11px] text-muted">
-                {b.items.slice(0, 4).map((line) => (
-                  <li key={line.ingredientKey + line.productId}>
-                    {line.productName}{" "}
-                    <span className="text-muted-2">
-                      · €{line.estimatedPrice.toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-                {b.items.length > 4 ? (
-                  <li className="text-muted-2">
-                    +{b.items.length - 4}{" "}
-                    {t("food.shoppingMoreLines")}
-                  </li>
-                ) : null}
-              </ul>
-              <button
-                type="button"
-                className="mt-4 w-full rounded-[var(--radius-lg)] border border-border/70 bg-background py-2.5 text-[12px] font-semibold text-foreground"
-              >
-                {t("food.shoppingSelectBasket")}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
 }

@@ -26,7 +26,6 @@ import { FoodLibraryQuickBlock } from "@/components/food/FoodLibraryQuickBlock";
 import { FoodOffPlanQuickBlock } from "@/components/food/FoodOffPlanQuickBlock";
 import { FoodIntelligenceBlock } from "@/components/food/FoodIntelligenceBlock";
 import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
-import { RetailProgramShoppingBlock } from "@/components/food/RetailProgramShoppingBlock";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
 import { FoodSwipePanels } from "@/components/food/FoodSwipePanels";
 import { foodDataFallbackKey } from "@/lib/dataConfidence";
@@ -978,11 +977,6 @@ export function FoodScreen() {
 
         {weeklyShopping ? (
           <div id="food-shopping" className="scroll-mt-6">
-            <RetailProgramShoppingBlock
-              weekly={weeklyShopping}
-              locale={locale}
-              t={t}
-            />
             <FoodShoppingListBlock
               weekly={weeklyShopping}
               shopDays={shopListDays}

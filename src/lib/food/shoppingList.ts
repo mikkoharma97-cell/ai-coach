@@ -301,7 +301,8 @@ function amountUnit(emit: Emit, totalG: number): { amount: number; unit: string 
     return { amount: n, unit: "piece" };
   }
   if (emit.ingredientKey === "olive_oil") {
-    return { amount: Math.max(50, Math.round(totalG * 8)), unit: "ml" };
+    const raw = Math.max(50, Math.round(totalG * 8));
+    return { amount: Math.min(400, raw), unit: "ml" };
   }
   return { amount: Math.round(totalG), unit: "g" };
 }

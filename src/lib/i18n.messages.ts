@@ -856,13 +856,18 @@ export const fi = {
   "food.titleGuidance": "Syö tämä päivä.",
   "food.titleGuidanceAdjusted": "Päivä muuttui. Korjataan loppu.",
   "food.recommendedSection": "Ateriat",
+  "food.shoppingTitle": "Osta tämä viikolle",
+  "food.shoppingWeekRange": "Viikon ostokset ~{{low}}–{{high}} €",
+  "food.shoppingCovers": "Riittää {{days}} päiväksi · kattaa ohjelman",
+  "food.shoppingSaveLine":
+    "Säästät arviolta ~{{save}} € verrattuna kalleimpaan arvioon tässä.",
   "food.shopping3Days": "3 pv",
   "food.shopping7Days": "7 pv",
   "food.shoppingDaySpanAria": "Ostoslistan jakso",
   "food.shoppingDaysUsed": "Päivät:",
   "food.shoppingSuggestions": "Ehdotukset (oma katalogi)",
   "food.shoppingPriceDisclaimer":
-    "Arvioitu yhteishinta — hintataso voi vaihdella. Päivitä hinnat myöhemmin integraatiosta.",
+    "Hinnat ovat suuntaa-antavia (oma katalogi) — kassa vaihtelee.",
   "food.shoppingShowStores": "Näytä kauppaehdotukset",
   "food.shoppingHideStores": "Piilota kauppaehdotukset",
   "food.shoppingPickBasket": "Valitse sinulle sopivin kori",
@@ -873,7 +878,7 @@ export const fi = {
   "food.shoppingMoreLines": "muuta riviä",
   "food.shoppingSelectBasket": "Valitse tämä kori",
   "grocery.retailWeekEyebrow": "Hinta-arvio & tarjoukset",
-  "grocery.retailWeekTitle": "Tämän viikon ostokset (ohjelmaan sidottu)",
+  "grocery.retailWeekTitle": "Osta tämä viikolle (ohjelmaan sidottu)",
   "grocery.retailWeekLead":
     "Rivit perustuvat viikon aterioihisi. Hinnat ovat esimerkkitasoa — ei reaaliaikaista kauppadataa.",
   "grocery.retailDataDisclaimer":
@@ -2710,13 +2715,18 @@ export const en: { [K in MessageKey]: string } = {
   "food.titleGuidance": "Eat this day.",
   "food.titleGuidanceAdjusted": "Day shifted. Fix the rest.",
   "food.recommendedSection": "Meals",
+  "food.shoppingTitle": "Buy for this week",
+  "food.shoppingWeekRange": "Week’s groceries ~€{{low}}–{{high}}",
+  "food.shoppingCovers": "Enough for {{days}} days · covers your plan",
+  "food.shoppingSaveLine":
+    "Save ~€{{save}} vs the highest estimate shown here.",
   "food.shopping3Days": "3 days",
   "food.shopping7Days": "7 days",
   "food.shoppingDaySpanAria": "Shopping list span",
   "food.shoppingDaysUsed": "Days:",
   "food.shoppingSuggestions": "Suggestions (our catalog)",
   "food.shoppingPriceDisclaimer":
-    "Estimated total — prices may vary. Update later via integration.",
+    "Illustrative prices from our catalog — checkout will vary.",
   "food.shoppingShowStores": "Show store options",
   "food.shoppingHideStores": "Hide store options",
   "food.shoppingPickBasket": "Pick the basket that fits you",
@@ -2727,7 +2737,7 @@ export const en: { [K in MessageKey]: string } = {
   "food.shoppingMoreLines": "more lines",
   "food.shoppingSelectBasket": "Choose this basket",
   "grocery.retailWeekEyebrow": "Prices & offers (estimate)",
-  "grocery.retailWeekTitle": "This week’s groceries (tied to your plan)",
+  "grocery.retailWeekTitle": "Buy for this week (tied to your plan)",
   "grocery.retailWeekLead":
     "Lines follow your week’s meals. Prices are illustrative — not live store data.",
   "grocery.retailDataDisclaimer":
