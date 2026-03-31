@@ -18,6 +18,10 @@ import {
 import type { MessageKey } from "@/lib/i18n";
 import type { WorkoutVoiceCommand } from "@/lib/workout/voiceParser";
 import { logButtonClick } from "@/lib/uiInteractionDebug";
+import {
+  saveWorkoutSession,
+  serializeWorkoutSession,
+} from "@/lib/workoutLogStorage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -57,7 +61,22 @@ type Props = {
   showHelpVideos?: boolean;
   /** Valmentajan runkoviiva (moottori) */
   coachFrameLine?: string | null;
+  /** Lokidatasta: viimeisin volyymi / trendi per liike (locale jo valittu) */
+  exercisePerformanceHints?: { exerciseId: string; line: string }[];
 };
+
+function exerciseRowsToSerializable(rows: ExerciseRow[]) {
+  return rows.map((ex) => ({
+    id: ex.id,
+    name: ex.name,
+    sets: ex.sets.map((s) => ({
+      reps: s.reps,
+      weight: s.weight,
+      rpe: s.rpe,
+      completed: s.completed,
+    })),
+  }));
+}
 
 function cloneExercises(list: WorkoutViewExercise[]): ExerciseRow[] {
   return list.map((ex) => ({
@@ -126,6 +145,7 @@ export function WorkoutView({
   showVoiceWorkout = true,
   showHelpVideos = true,
   coachFrameLine,
+  exercisePerformanceHints,
 }: Props) {
   const { t, locale } = useTranslation();
   const router = useRouter();
@@ -135,6 +155,8 @@ export function WorkoutView({
   const initialRows = useMemo(() => cloneExercises(list), [list]);
 
   const [rows, setRows] = useState<ExerciseRow[]>(initialRows);
+  const rowsRef = useRef(rows);
+  rowsRef.current = rows;
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [activeSetIndex, setActiveSetIndex] = useState(0);
   const [feedbackLine, setFeedbackLine] = useState<string | null>(null);
@@ -176,6 +198,14 @@ export function WorkoutView({
     },
     [],
   );
+
+  const saveSessionAndGoApp = useCallback(() => {
+    const log = serializeWorkoutSession(
+      exerciseRowsToSerializable(rowsRef.current),
+    );
+    saveWorkoutSession(log);
+    router.push("/app");
+  }, [router]);
 
   const applyCommand = useCallback(
     (cmd: WorkoutVoiceCommand) => {
@@ -262,9 +292,14 @@ export function WorkoutView({
             }
             return next;
           }
-          case "finish_workout":
+          case "finish_workout": {
+            const log = serializeWorkoutSession(
+              exerciseRowsToSerializable(prev),
+            );
+            saveWorkoutSession(log);
             router.push("/app");
-            return next;
+            return prev;
+          }
           default:
             return next;
         }
@@ -320,6 +355,15 @@ export function WorkoutView({
     return "workout.flow.continue";
   }, [setsDone, setsTotal]);
 
+  const activePerfHint = useMemo(() => {
+    const ex = rows[activeExerciseIndex];
+    if (!ex || !exercisePerformanceHints?.length) return null;
+    return (
+      exercisePerformanceHints.find((h) => h.exerciseId === ex.id)?.line ??
+      null
+    );
+  }, [rows, activeExerciseIndex, exercisePerformanceHints]);
+
   return (
     <main className="coach-page pb-10">
       <Container size="phone" className="px-5">
@@ -328,12 +372,16 @@ export function WorkoutView({
           title={t("workout.title")}
           description={desc}
           action={
-            <Link
-              href="/app"
+            <button
+              type="button"
+              onClick={() => {
+                logButtonClick("WorkoutView", "backToTodayHeader");
+                saveSessionAndGoApp();
+              }}
               className="inline-flex min-h-[44px] items-center text-[13px] font-semibold text-accent underline-offset-[3px] transition hover:text-foreground hover:underline"
             >
               {t("workout.backToday")}
-            </Link>
+            </button>
           }
         />
 
@@ -363,6 +411,11 @@ export function WorkoutView({
             <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
               {rows[activeExerciseIndex].target}
             </p>
+            {activePerfHint ? (
+              <p className="mt-2 text-[12px] font-medium leading-snug text-accent/95">
+                {activePerfHint}
+              </p>
+            ) : null}
             <ul className="mt-4 divide-y divide-white/[0.06]">
               {rows[activeExerciseIndex].sets.map((row, i) => {
                 const isActive = i === activeSetIndex;
@@ -469,13 +522,16 @@ export function WorkoutView({
 
         {list.length > 0 && setsTotal > 0 && setsDone >= setsTotal ? (
           <div className="mt-4">
-            <Link
-              href="/app"
+            <button
+              type="button"
               className="flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-lg)] border border-accent/40 bg-accent/15 px-4 text-[13px] font-semibold text-accent transition hover:bg-accent/25"
-              onClick={() => logButtonClick("WorkoutView", "backToToday")}
+              onClick={() => {
+                logButtonClick("WorkoutView", "backToToday");
+                saveSessionAndGoApp();
+              }}
             >
               {t("workout.backToday")}
-            </Link>
+            </button>
           </div>
         ) : null}
 

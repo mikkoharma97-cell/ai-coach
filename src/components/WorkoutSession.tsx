@@ -18,6 +18,7 @@ import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
 import { getWorkShiftForDate, WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
+import { exercisePerformanceHints } from "@/lib/coach/coaching-engine";
 import { flowLog } from "@/lib/flowLog";
 import { computeStreakSummary } from "@/lib/streaks";
 import type { ProExercise } from "@/types/pro";
@@ -128,6 +129,18 @@ export function WorkoutSession() {
     });
   }, [normalizedProfile, now, locale]);
 
+  const perfHintsForView = useMemo(() => {
+    if (!generated || generated.exercises.length === 0) return [];
+    const loc = locale === "en" ? "en" : "fi";
+    return exercisePerformanceHints(
+      generated.exercises.map((e) => e.id),
+      loc,
+    ).map((h) => ({
+      exerciseId: h.exerciseId,
+      line: loc === "en" ? h.lineEn : h.lineFi,
+    }));
+  }, [generated, locale]);
+
   useEffect(() => {
     if (!generated) return;
     flowLog("workout.session", {
@@ -221,6 +234,7 @@ export function WorkoutSession() {
       showVoiceWorkout={features.showVoiceWorkout}
       showHelpVideos={features.showHelpVideos}
       coachFrameLine={coachFrameWithShift}
+      exercisePerformanceHints={perfHintsForView}
     />
   );
 }

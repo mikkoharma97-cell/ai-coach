@@ -9,16 +9,19 @@ import type { OnboardingAnswers } from "@/types/coach";
 import { useMemo, useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-function Card({
+export function NutritionStructureCard({
   entry,
   selected,
   onSelect,
   recommended,
+  showMeta = false,
 }: {
   entry: NutritionLibraryEntry;
   selected?: boolean;
   onSelect: () => void;
   recommended?: boolean;
+  /** Selaa-sivulla: idealFor + ateriat / vuoro */
+  showMeta?: boolean;
 }) {
   const { locale } = useTranslation();
   const fi = locale === "fi";
@@ -43,6 +46,18 @@ function Card({
       <p className="mt-2 text-[13px] leading-snug text-muted">
         {fi ? entry.shortDescriptionFi : entry.shortDescriptionEn}
       </p>
+      {showMeta ? (
+        <>
+          <p className="mt-2 text-[12px] leading-snug text-muted-2">
+            {fi ? entry.idealForFi : entry.idealForEn}
+          </p>
+          <p className="mt-1.5 text-[11px] text-muted-2">
+            {fi
+              ? `${entry.mealsPerDay} ateriaa · ${entry.shiftCompatible ? "vuoro ok" : "ei vuoroa"}`
+              : `${entry.mealsPerDay} meals · ${entry.shiftCompatible ? "shift ok" : "no shift focus"}`}
+          </p>
+        </>
+      ) : null}
       <span className="mt-3 inline-block rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">
         {entry.styleTag}
       </span>
@@ -69,7 +84,7 @@ export function NutritionStructurePicker({ profile, onConfirm }: Props) {
 
   return (
     <div>
-      <Card
+      <NutritionStructureCard
         entry={recommended}
         recommended
         selected={selectedId === recommended.id}
@@ -82,7 +97,7 @@ export function NutritionStructurePicker({ profile, onConfirm }: Props) {
           </p>
           <div className="mt-3 flex flex-col gap-2.5">
             {alternatives.map((e: NutritionLibraryEntry) => (
-              <Card
+              <NutritionStructureCard
                 key={e.id}
                 entry={e}
                 selected={selectedId === e.id}

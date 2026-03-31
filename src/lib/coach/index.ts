@@ -51,3 +51,12 @@ export {
   buildReviewCoachLine,
 } from "@/lib/coach/feedbackEngine";
 export { buildCoachEngineBundle } from "@/lib/coach/coachEngineBundle";
+export {
+  buildCoachingEngineResult,
+  exercisePerformanceHints,
+  type ExercisePerformanceHint,
+} from "@/lib/coach/coaching-engine";
+export {
+  buildSupplementProductRecommendations,
+  buildSupplementRecommendationInput,
+} from "@/lib/supplements/recommendationEngine";

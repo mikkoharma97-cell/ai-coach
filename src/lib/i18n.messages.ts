@@ -28,6 +28,14 @@ export const fi = {
   "swipe.todaySwipeEyebrow": "Tänään — pyyhkäise",
   "swipe.openShoppingList": "Avaa ostoslista",
 
+  "supplement.sectionTitle": "Täsmätuki — valmentajan linja",
+  "supplement.sectionSubtitle":
+    "Ei mainosta: tarve syntyy tavoitteesta, päivän ravinnosta ja kuormasta.",
+  "supplement.embeddedEyebrow": "Täsmätukivihjeet",
+  "supplement.frame.recommendedForYou": "Sinulle sopiva",
+  "supplement.frame.coachSuggestion": "Valmentajan ehdotus",
+  "supplement.frame.basedOnProgress": "Nykyisen etenemisen perusteella",
+
   "pwa.installPrompt":
     "Asenna Coach kotiruudulle — nopea käyttö ilman selainta.",
   "pwa.installCta": "Asenna",
@@ -1461,6 +1469,9 @@ export const fi = {
   "nutritionLibrary.alternatives": "Muut ruokarytmit",
   "plans.title": "Ohjelmat",
   "plans.browseHint": "Suodata tavoitteen ja paikan mukaan.",
+  "nutritionPlans.title": "Ruokarakenteet",
+  "nutritionPlans.browseHint":
+    "Ateriarytmi ja makrotuki — valitse rakenne, joka sopii kalenteriin.",
   "foodLibrary.pageTitle": "Ruokakirjasto",
   "foodLibrary.searchPlaceholder": "Hae nimellä tai tagilla",
   "programChange.confirmTitle": "Vaihdetaanko ohjelma?",
@@ -2000,6 +2011,14 @@ export const en: { [K in MessageKey]: string } = {
   "swipe.openFood": "Open food",
   "swipe.todaySwipeEyebrow": "Today — swipe",
   "swipe.openShoppingList": "Open shopping list",
+
+  "supplement.sectionTitle": "Targeted support — coach line",
+  "supplement.sectionSubtitle":
+    "Not ads: needs come from your goal, today’s intake, and training load.",
+  "supplement.embeddedEyebrow": "Targeted picks",
+  "supplement.frame.recommendedForYou": "Recommended for you",
+  "supplement.frame.coachSuggestion": "Coach suggestion",
+  "supplement.frame.basedOnProgress": "Based on your current progress",
 
   "pwa.installPrompt":
     "Install Coach on your home screen — faster access without the browser chrome.",
@@ -3438,6 +3457,9 @@ export const en: { [K in MessageKey]: string } = {
   "nutritionLibrary.alternatives": "Other meal rhythms",
   "plans.title": "Programs",
   "plans.browseHint": "Filter by goal and venue.",
+  "nutritionPlans.title": "Meal structures",
+  "nutritionPlans.browseHint":
+    "Meal rhythm and macro support — pick what fits your calendar.",
   "foodLibrary.pageTitle": "Food library",
   "foodLibrary.searchPlaceholder": "Search by name or tag",
   "programChange.confirmTitle": "Switch program?",

@@ -28,6 +28,7 @@ import { FoodIntelligenceBlock } from "@/components/food/FoodIntelligenceBlock";
 import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
 import { FoodTodayStrip } from "@/components/food/FoodTodayStrip";
+import { SupplementCoachRecommendations } from "@/components/coach/SupplementCoachRecommendations";
 import { foodDataFallbackKey } from "@/lib/dataConfidence";
 import { generateWeeklyShoppingListForProfile } from "@/lib/food/shoppingList";
 import {
@@ -50,6 +51,10 @@ import {
   removeFoodLogItem,
   removeSavedMeal,
 } from "@/lib/foodStorage";
+import {
+  buildSupplementProductRecommendations,
+  buildSupplementRecommendationInput,
+} from "@/lib/supplements/recommendationEngine";
 import { estimateConsumedFromKcalLog } from "@/lib/food/dayMacros";
 import { nutritionKcalRangeHint } from "@/lib/nutrition";
 import { loadOffPlanMealsForDay, saveOffPlanMealsForDay } from "@/lib/food/offPlanStorage";
@@ -63,6 +68,7 @@ import { useClientProfile } from "@/hooks/useClientProfile";
 import { foodCoachLineKey } from "@/lib/coachPresenceCopy";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { loadOutcomeHint } from "@/lib/storage";
+import { WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
 import { getMondayBasedIndex } from "@/lib/plan";
 import Link from "next/link";
 import type { FoodLibraryItem } from "@/lib/foodLibrary";
@@ -171,7 +177,7 @@ export function FoodScreen() {
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
-  const [, refresh] = useReducer((x: number) => x + 1, 0);
+  const [renderTick, refresh] = useReducer((x: number) => x + 1, 0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetSlot, setSheetSlot] = useState<MealSlot>("lunch");
   const [swapBySlot, setSwapBySlot] = useState<Partial<Record<MealSlot, number>>>(
@@ -212,6 +218,12 @@ export function FoodScreen() {
     const b = () => setExTick((x) => x + 1);
     window.addEventListener(EXCEPTION_STATE_CHANGED, b);
     return () => window.removeEventListener(EXCEPTION_STATE_CHANGED, b);
+  }, []);
+
+  useEffect(() => {
+    const b = () => refresh();
+    window.addEventListener(WORKOUT_LOG_CHANGED, b);
+    return () => window.removeEventListener(WORKOUT_LOG_CHANGED, b);
   }, []);
 
   const dayKeyFood = useMemo(() => dayKeyFromDate(now), [now]);
@@ -330,6 +342,13 @@ export function FoodScreen() {
       locale,
     });
   }, [profile, plan, shopListDays, locale]);
+
+  const supplementPicks = useMemo(() => {
+    if (!profile) return [];
+    return buildSupplementProductRecommendations(
+      buildSupplementRecommendationInput(profile, now),
+    );
+  }, [profile, now, renderTick]);
 
   const log = loadFoodLog(now);
   const foodFallbackKey = foodDataFallbackKey(now);
@@ -580,6 +599,11 @@ export function FoodScreen() {
           showRebalanceUi={Boolean(
             ft.showNutritionCorrections && plan.rebalancePlan,
           )}
+        />
+
+        <SupplementCoachRecommendations
+          picks={supplementPicks}
+          className="mt-5"
         />
 
         {kcalRangeHintText ? (
@@ -1050,6 +1074,7 @@ export function FoodScreen() {
           extra={[
             { href: "/food-library", labelKey: "foodLibrary.pageTitle" },
             { href: "/plans", labelKey: "plans.title" },
+            { href: "/nutrition-plans", labelKey: "nutritionPlans.title" },
           ]}
         />
 

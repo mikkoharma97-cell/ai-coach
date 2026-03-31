@@ -1,62 +1,107 @@
-# Feature audit — kokonaisuudet (HÄRMÄ3)
+# Feature audit — kokonaisuudet
 
-**Versio:** näkyvä badge `HÄRMÄ3` (`VersionBadge` → `HARMÄ_BUILD`). Juokseva numero nousee jokaisen viimeistelypassin jälkeen.
+**Näkyvä badge:** `HÄRMÄ5` (`VersionBadge` → `HARMÄ_BUILD`). Juokseva numero nousee jokaisen viimeistelypassin jälkeen. *(Dokumentissa viitattu “HÄRMÄ3 / kirjastovaihe” = tuotekehityksen milestone; ei sama kuin badge-numero.)*
 
-Tilat: **verified** = testattu / linjassa · **partial** = osin · **planned** = suunniteltu / future · **missing** = ei toteutettu.
+Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osin · **planned** = suunniteltu · **missing** = ei toteutettu.
 
-| Feature | Status | Tiedostot (pää) | Testipolku | Mobiili | Huomautukset |
-|---------|--------|-------------------|------------|---------|--------------|
-| **Training Program Library** | verified | `src/lib/coachProgramCatalog.ts`, `src/types/programLibrary.ts`, `src/lib/trainingCategoryLibrary.ts` (liikekategoriat) | `/start` askeleet 9–10, `/plans` | Kyllä | `forcedPresetId` lukitsee presetin; kategoriajako erillisessä moduulissa |
-| **Nutrition Library** | verified | `src/lib/nutritionLibrary.ts`, `src/types/nutritionLibrary.ts` | `/start` askel 10 | Kyllä | `selectedNutritionLibraryId` + `nutritionBlueprintId` → `refinePresetBlueprints` kunnioittaa |
-| **Food Search Library** | verified | `src/types/foodLibrary.ts`, `src/lib/foodLibrary.ts`, `src/lib/food/foodSearchExtra.ts`, `FoodLibrarySearch` | `/food-library` | Kyllä | 70+ riviä (ydin + extra), haku + suodattimet |
-| **Onboarding** | verified | `src/app/start/StartFlow.tsx`, `src/lib/storage.ts` | `/start` → tallenna → `/app` | Kyllä | PreStartSalesWall; tavoite ensin → … → ohjelma + ruokarakenne |
-| **Profile engine** | partial | `src/lib/coach/profileNormalizer.ts`, `src/types/coach.ts`, `src/hooks/useClientProfile.ts` | Profiili → Today | Kyllä | Täysi “miksi tämä ohjelma” hajautettu |
-| **Training engine** | partial | `src/lib/training/generator.ts`, `src/lib/coach/programDecisionEngine.ts`, `src/lib/coach/trainingEngine.ts`, blueprints | `/workout` | Kyllä | Archetype + blueprint; Pro vs guided erot |
-| **Nutrition engine** | partial | `src/lib/nutrition*.ts`, `src/lib/mealEngine.ts`, `src/lib/adaptive.ts` | `/food` | Kyllä | Makrot, rakenne; shift-kerros `shiftAdaptation.ts` |
-| **Week adaptation** | partial | `src/lib/coach/weekAdaptationEngine.ts`, `src/lib/weeklyReview.ts` | `/review` | Kyllä | Viikkopalaute + shift-linja |
-| **Today** | verified | `src/app/(coach)/app/AppDashboard.tsx`, `src/components/TodayCard.tsx`, `src/lib/dailyEngine.ts` | `/app` | Kyllä | Completion-modali + thinkless + streak-bump |
-| **Food** | partial | `src/components/FoodScreen.tsx`, `src/lib/food/*` | `/food` | Kyllä | Lisää ruoka -flow: tarkista modaalit jos jumi |
-| **Workout** | verified | `src/components/WorkoutSession.tsx`, `src/components/WorkoutView.tsx` | `/workout` | Kyllä | Voice + media fallback |
-| **Progress** | partial | `src/components/ProgressPage.tsx`, `src/lib/progress/*`, `DevelopmentTrajectoryCard` | `/progress` | Kyllä | Paino + käyrät + hero insight; data riippuu logeista |
-| **Review** | verified | `src/components/WeeklyReviewScreen.tsx`, `src/lib/weeklyReview.ts` | `/review` | Kyllä | Lyhyt coach + shift-viikko |
-| **Paywall** | verified | `src/components/paywall/PaywallScreen.tsx`, `src/lib/subscription.ts` | `/paywall`, `/subscribe`, `/premium` | Kyllä | premium = alias paywallille |
-| **Landing** | verified | `src/app/home/page.tsx`, `src/components/landing/*` | `/home` | Kyllä | Scroll, ei pakotettua swipea koko sivulle |
-| **Feature toggles** | verified | `src/components/PreferencesScreen.tsx`, `src/types/coachPreferences.ts` | `/preferences` | Kyllä | Oma valmentaja -kytkimet |
-| **Shift work adaptation** | verified | `src/types/workShifts.ts`, `src/lib/workShiftStorage.ts`, `src/lib/shiftAdaptation.ts`, `WorkShiftPlanner`, `adaptive.ts`, `decisionEngineV2.ts` | `/adjustments` → tallenna → `/app` | Kyllä | Myynti: `landing.shiftSell*`, paywall sell10/11, prestart feat9 |
-| **Daily activity** | verified | `src/lib/activityStorage.ts`, `DailyActivityInput` | Today | Kyllä | Bonus kcal päiväsuunnitelmaan |
-| **Rebalance** | verified | `src/lib/nutrition/rebalance*.ts`, `adaptive.ts` | Food, Today | Kyllä | Ylisyönti-tasapaino |
-| **Exception engine** | verified | `src/lib/exceptions/*`, `ExceptionEnginePanel` | `/adjustments` | Kyllä | mergeExceptionIntoDailyPlan |
-| **Voice workout** | verified | `WorkoutView`, toggles | `/workout` | Osittain | Selain riippuvainen |
-| **Quick voice logging** | partial | Food, activity, weight - pikaviestit | Food, Today | Osittain | Tunnistuslaatu / selaimet |
-| **Exercise media** | verified | `WorkoutView` / panelit | `/workout` | Kyllä | Fallback |
-| **Machine scan** | partial | `MachineScanCard`, scan route | `/scan` | Kyllä | Ei live CV -disclaimer |
-| **Grocery / shopping** | partial | `FoodShoppingListBlock`, `src/lib/food/storeSuggestions.ts`, `weeklySpendDisplay.ts` | `/food` → ostoslista | Kyllä | Haarukka €, ei live-API; kova clamp koodissa |
-| **Version marker** | verified | `src/components/common/VersionBadge.tsx`, `src/app/layout.tsx` | Kaikki sivut | Kyllä | Fixed, safe-area, pointer-events-none |
-| **Swipe panels** | partial | Reusable swipe -komponentit missä käytössä | Food / Today tarvittaessa | Kyllä | Ei pakotettu joka näkymään |
-| **Build / preview** | verified | `src/lib/buildInfo.ts`, `PreviewBuildStrip`, `BuildRefreshToast` | Coach shell | Kyllä | |
+---
+
+## A. Treeniohjelmat — totuus reposta (ei oletuksia)
+
+### Presetit (`ProgramPresetId`, `src/lib/programPresets.ts`)
+
+Olemassa olevat preset-avaimet: `beginner_foundation`, `fat_loss_rhythm`, `muscle_growth_structure`, `performance_block`, `home_consistency`, `busy_life_reset`, `pro_control`, `comeback_restart` (8 kpl). Jokainen mappaa `programBlueprintId` + `nutritionBlueprintId` + `programTrackId` + rationale-avain.
+
+### Treenirungot (`ProgramBlueprintId`, `src/types/coach.ts`)
+
+Tyypit: `steady_begin`, `base_strength`, `hypertrophy_4`, `hypertrophy_5`, `fat_loss_light`, `tight_block`, `shift_flex`, `pro_training`. Generaattori / paketit viittaavat näihin; kaikki eivät ole erillisenä “valittavana listana” UI:ssa vaan **moottorikerroksen** tunnisteita.
+
+### Ohjelmakirjasto (käyttäjälle valittavat rivit)
+
+- **Lähde:** `src/lib/coachProgramCatalog.ts` (`PROGRAM_LIBRARY`), uudelleenexport: `src/lib/programLibrary.ts`.
+- **Määrä:** 14 kirjasto-ohjelmaa (tavoite × paikka × päivät suodatus), mm. `fat_loss_*`, `muscle_growth_*`, `hypertrophy_gym_split`, `beginner_foundation`, `comeback_restart`, `busy_life_reset`, `home_consistency`, `performance_block`, `pro_control` (Pro).
+- **Valinta:** onboarding askel 9 (`ProgramPicker`), myöhemmin `/plans` vahvistusmodaalilla (`applyProgramLibraryEntry` → `forcedPresetId`, `selectedProgramLibraryId`, `selectedPackageId`, `programTrackId`).
+- **Engine fallback:** jos `forcedPresetId` / kirjastovalinta puuttuu → `resolveProgramPresetId` (`programPresets.ts`) päättää presetin profiilista.
+
+---
+
+## B. Ruokarakenne / nutrition — totuus reposta
+
+### Nutrition blueprintit (`NutritionBlueprintId`, `src/types/coach.ts`)
+
+`easy_daily`, `steady_meals`, `muscle_fuel`, `light_cut_meal`, `train_vs_rest`, `shift_clock`, `event_balance`, `pro_nutrition` — **moottorin** ruokarunkoja; osa tulee presetistä / paketista, osa kirjastosta.
+
+### Ateriarakenne (UI + profiili)
+
+`MealStructurePreference`: `three_meals`, `lighter_evening`, `snack_forward` (`src/types/coach.ts`). Kirjasto voi kirjoittaa näitä `applyNutritionLibraryEntry`:lla.
+
+### Ruokarakenteiden kirjasto (käyttäjälle valittavat rivit)
+
+- **Lähde:** `src/lib/nutritionLibrary.ts` (`NUTRITION_LIBRARY`), tyypit `src/types/nutritionLibrary.ts`.
+- **Määrä:** 8 rakennetta (mm. `easy_3_meals`, `normal_4_meals`, `performance_5_meals`, `busy_day_meals`, `shift_work_structure`, `social_flex_structure`, `high_protein_cut`, `muscle_gain_meal_flow`).
+- **Valinta:** onboarding askel 10 (`NutritionStructurePicker`), myöhemmin **`/nutrition-plans`** vahvistusmodaalilla (`applyNutritionLibraryEntry` → `selectedNutritionLibraryId`, `nutritionBlueprintId`, `mealStructure`).
+- **Engine fallback:** `recommendNutritionForProfile` / `resolveProgramFromProfile` jos kirjastoa ei ole valittu.
+
+### Food Search Library
+
+- **Lähde:** `src/lib/foodLibrary.ts` (ydin) + `src/lib/food/foodSearchExtra.ts`, yhdistetty `FOOD_LIBRARY`.
+- **Seed-määrä:** **72** ruokariviä (27 ydin + 45 extra). Haku / suodattimet: `FoodLibrarySearch`, reitti `/food-library`.
+
+---
+
+## C. Taulukko — tilakatsaus
+
+| Feature | Status | Tiedostot (pää) | Testipolku | Huomautukset |
+|---------|--------|-------------------|------------|--------------|
+| **Training Program Library** | verified | `coachProgramCatalog.ts`, `programLibrary.ts`, `types/programLibrary.ts` | `/start` askel 9, `/plans` | Suositus + vaihtoehdot; vahvistus ennen tallennusta |
+| **Nutrition Library** | verified | `nutritionLibrary.ts`, `types/nutritionLibrary.ts` | `/start` askel 10, **`/nutrition-plans`** | Selaus + vaihto vahvistuksella |
+| **Food Search Library** | verified | `foodLibrary.ts`, `food/foodSearchExtra.ts`, `FoodLibrarySearch` | `/food-library` | 72 seed-riviä |
+| **Onboarding goal-first** | verified | `StartFlow.tsx` | `/start` | Tavoite → … → ohjelma → ruokarakenne |
+| **Profile → engine** | partial | `profileNormalizer`, `programPresets`, `dailyEngine` | `/app` | Manuaalinen kirjasto ohittaa automaatin kun asetettu |
+| **Today / Food näyttö** | verified | `AppDashboard`, `TodayCard`, `FoodScreen` | `/app`, `/food` | `librarySelectionLine` tms. (ohjelma + ruoka) kun profiilissa |
+| **Workout** | verified | `WorkoutSession`, `WorkoutView` | `/workout` | Paketti + blueprint generatorilta |
+| **Review** | verified | `WeeklyReviewScreen` | `/review` | Viikkopalaute |
+
+---
 
 ## P0 — interaktio / overlay (tarkistuslista)
 
-- `useAsyncButtonState`: failsafe timeout (oletus 3000 ms) + `finally` — käytössä kriittisissä napeissa.
-- Modaalit: `DayCompletionModal` z-index 100; globaali badge z-index 9999, `pointer-events-none` (ei klikkiblokkausta).
-- **Jatkossa:** jokaiselle uudelle modalille: ESC, backdrop, loading reset max ~4 s.
+- Modaalit: ohjelma- ja ruokavaihdon vahvistus `/plans` ja `/nutrition-plans` (z-index 200).
+- **Jatkossa:** ESC / backdrop-yhtenäisyys kaikille modaaleille.
 
-## Navigaatio — ydinpolku
+## Navigaatio — ydin + kirjastot
 
 | Reitti | Rooli |
 |--------|--------|
-| `/home`, `/start`, `/app`, `/food`, `/workout`, `/progress`, `/review`, `/adjustments`, `/paywall`, `/plans`, `/food-library` | Pääpolku + kirjastot |
-| `/subscribe`, `/premium` | Paywall-alias |
-| `/plan`, `/preferences`, `/settings`, `/profile`, `/packages`, `/scan`, `/pro` | Tuki / profiili / Pro — ei yhdistetty tässä passissa (audit vain) |
+| `/app`, `/food`, `/workout`, `/progress`, `/review` | Pääpolku |
+| `/plans` | Treeniohjelmakirjasto |
+| **`/nutrition-plans`** | Ruokarakenteiden kirjasto |
+| `/food-library` | Ruokahaku |
+| `/start`, `/adjustments`, `/paywall` | Aloitus / poikkeukset / tilaus |
 
-## Future work (ei tässä passissa)
+## Future work
 
-- Täysi copy-pass kaikille näkymille (cool coach, yhtenäinen).
-- Landing/paywall “aggressive premium” -tiivistys erillisellä copy-passilla.
-- Desktop-sidebar: ei, ellei erikseen pyydetä.
-- Stripe / pilvi-sync: missing.
+- Täysi copy-pass “cool coach”.
+- Stripe / pilvi-sync.
+- Automaattinen E2E-mobiilitesti CI:ssä (nyt manuaalinen checklist).
 
 ## Linkit
 
-- Ihmislukuinen konteksti: `PROJECT_BRIEF.md` (jos olemassa)
-- Vanhempi taulukko: `docs/product-audit.md`
+- `docs/product-audit.md`
+- `PROJECT_BRIEF.md` (jos olemassa)
+
+---
+
+## §15 Raportti (tämän audit-päivityksen vastaukset)
+
+1. **Valittavissa olevat treeniohjelmat:** `PROGRAM_LIBRARY` 14 riviä — näkyvät onboardingissa ja `/plans` (suodatus tavoitteen mukaan).
+2. **Valittavissa olevat ruokarakenteet:** `NUTRITION_LIBRARY` 8 riviä — onboarding + `/nutrition-plans`.
+3. **Manuaalinen selaus:** Kyllä — `/plans`, `/nutrition-plans`, `/food-library`.
+4. **Seed-ruokien määrä:** **72** (`FOOD_LIBRARY`).
+5. **Badge:** Näkyy **HÄRMÄ5** (ei HÄRMÄ3; ks. alku).
+6. **Ohjelman vaihto:** Kyllä — `/plans`, modaali, `saveProfile` + `applyProgramLibraryEntry`.
+7. **Ruokarakenteen vaihto:** Kyllä — `/nutrition-plans`, modaali, `applyNutritionLibraryEntry`.
+8. **Yhteinen profiilivalinta:** Kyllä — `selectedProgramLibraryId`, `forcedPresetId`, `selectedNutritionLibraryId`, blueprintit; `normalizeProfileForEngine` / generatorit lukevat profiilia.
+9. **Mobiilitesti:** Kehittäjä-ympäristö: `npm run build` OK; **fyysistä puhelinta / live URL:ia ei ole tässä istunnossa ajettu** — lista poluista alla manuaaliseen testiin.
+10. **Live URL:** Ei määritelty tässä ajossa (Vercel-projekti käyttäjällä).
+11. **Future work:** Aggressiivisempi pre-start / paywall-copy erillisellä passilla; nutrition-plans suodattimet (ateriat/vuoro) tiivistettävissä; automated mobile E2E.

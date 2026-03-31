@@ -45,6 +45,7 @@ function headerTitleKey(path: string): MessageKey {
   if (path === "/settings") return "nav.settings";
   if (path === "/preferences" || path === "/profile") return "ui.preferences";
   if (path === "/plans") return "plans.title";
+  if (path === "/nutrition-plans") return "nutritionPlans.title";
   if (path === "/food-library") return "foodLibrary.pageTitle";
   if (path === "/scan") return "nav.scan";
   if (path === "/workout") return "ui.workout";

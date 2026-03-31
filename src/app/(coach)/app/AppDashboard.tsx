@@ -73,6 +73,8 @@ import {
   THINKLESS_CHANGED,
 } from "@/lib/thinklessDayStorage";
 import { WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
+import { WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
+import { CoachingInsightsSection } from "@/components/coach/CoachingInsightsSection";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -105,6 +107,7 @@ export function AppDashboard() {
   const [completeModalOpen, setCompleteModalOpen] = useState(false);
   const [streakRefresh, setStreakRefresh] = useState(0);
   const [thinklessTick, setThinklessTick] = useState(0);
+  const [workoutLogTick, setWorkoutLogTick] = useState(0);
 
   useEffect(() => {
     if (profile === undefined) return;
@@ -141,6 +144,12 @@ export function AppDashboard() {
     const bump = () => setThinklessTick((x) => x + 1);
     window.addEventListener(THINKLESS_CHANGED, bump);
     return () => window.removeEventListener(THINKLESS_CHANGED, bump);
+  }, []);
+
+  useEffect(() => {
+    const bump = () => setWorkoutLogTick((x) => x + 1);
+    window.addEventListener(WORKOUT_LOG_CHANGED, bump);
+    return () => window.removeEventListener(WORKOUT_LOG_CHANGED, bump);
   }, []);
 
   const dayKeyToday = useMemo(() => dayKeyFromDate(now), [now]);
@@ -578,6 +587,13 @@ export function AppDashboard() {
           />
         </div>
 
+        <CoachingInsightsSection
+          profile={profile}
+          referenceDate={now}
+          locale={locale}
+          refreshKey={workoutLogTick}
+        />
+
         <details className="coach-panel-subtle mt-8 group">
           <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
             <span className="flex items-center justify-between gap-3">
@@ -621,6 +637,18 @@ export function AppDashboard() {
               className="font-semibold text-accent underline-offset-[3px] hover:underline"
             >
               {t("ui.review")}
+            </Link>
+            <Link
+              href="/plans"
+              className="font-semibold text-accent underline-offset-[3px] hover:underline"
+            >
+              {t("plans.title")}
+            </Link>
+            <Link
+              href="/nutrition-plans"
+              className="font-semibold text-accent underline-offset-[3px] hover:underline"
+            >
+              {t("nutritionPlans.title")}
             </Link>
             <Link
               href="/adjustments"
