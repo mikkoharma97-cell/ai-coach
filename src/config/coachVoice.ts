@@ -15,6 +15,7 @@ export const coachVoice = {
     "Suora, rauhallinen, varma — ei gym-bro -karikatyyriä.",
     "Myynti: kipu → ratkaisu, kiire ilman huutoa, luottamus ilman hypeä (HÄRMÄ15).",
     "Demo-myynti: avaus → polku (Today→Workout→Food→Progress) → arvo → kenelle → close alle ~2 min (HÄRMÄ18).",
+    "Päätös: yksi moottori yhdistää tavoitteen, edistymisen, ruoan ja treenin → tänään + seuraava säätö (HÄRMÄ19).",
   ],
   bannedPhrasesFi: [
     "optimoi",

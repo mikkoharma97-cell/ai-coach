@@ -8,8 +8,7 @@ import { Container } from "@/components/ui/Container";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
-  buildCoachEngineBundle,
-  getDailyCoachDecisionV2,
+  buildCoachAiEngineResult,
   mergeExceptionIntoDailyPlan,
   normalizeProfileForEngine,
   resolveExceptionGuidance,
@@ -184,9 +183,9 @@ export function AppDashboard() {
     activeException,
   ]);
 
-  const coachEngine = useMemo(() => {
+  const coachAi = useMemo(() => {
     if (!normalizedProfile || !plan) return null;
-    return buildCoachEngineBundle({
+    return buildCoachAiEngineResult({
       profile: normalizedProfile,
       locale,
       now,
@@ -338,9 +337,9 @@ export function AppDashboard() {
   }, [normalizedProfile, locale]);
 
   const engineWeekLine = useMemo(() => {
-    if (!features.showCoachLines || !coachEngine) return null;
-    return t(coachEngine.adaptation.headlineKey);
-  }, [features.showCoachLines, coachEngine, t]);
+    if (!features.showCoachLines || !coachAi) return null;
+    return t(coachAi.bundle.adaptation.headlineKey);
+  }, [features.showCoachLines, coachAi, t]);
 
   const quickNoteLine = useMemo(() => {
     if (!normalizedProfile) return null;
@@ -370,19 +369,12 @@ export function AppDashboard() {
   }, [normalizedProfile, now, t]);
 
   const coachHero = useMemo(() => {
-    if (!normalizedProfile || !plan) return null;
-    const d = getDailyCoachDecisionV2({
-      profile: normalizedProfile,
-      referenceDate: now,
-      locale,
-      plan,
-    });
-    const en = locale === "en";
+    if (!coachAi) return null;
     return {
-      mainMessage: en ? d.mainMessageEn : d.mainMessageFi,
-      direction: en ? d.directionEn : d.directionFi,
+      mainMessage: coachAi.nextAdjustment.heroMain,
+      direction: coachAi.nextAdjustment.heroDirection,
     };
-  }, [normalizedProfile, plan, now, locale]);
+  }, [coachAi]);
 
   const generatedWorkout = useMemo(() => {
     if (!normalizedProfile) return null;

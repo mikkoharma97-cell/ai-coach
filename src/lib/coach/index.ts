@@ -52,6 +52,12 @@ export {
 } from "@/lib/coach/feedbackEngine";
 export { buildCoachEngineBundle } from "@/lib/coach/coachEngineBundle";
 export {
+  buildCoachAiEngineResult,
+  type CoachAiEngineResult,
+  type CoachAiInputsEcho,
+  type CoachNextAdjustment,
+} from "@/lib/coach/aiDecisionEngine";
+export {
   buildCoachingEngineResult,
   exercisePerformanceHints,
   type ExercisePerformanceHint,
