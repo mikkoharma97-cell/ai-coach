@@ -58,6 +58,7 @@ import {
   OUTCOME_HINT_CHANGED,
   setDayMarkedDone,
 } from "@/lib/storage";
+import { WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -88,6 +89,7 @@ export function AppDashboard() {
   const [activityPlanTick, setActivityPlanTick] = useState(0);
   const [signalTick, setSignalTick] = useState(0);
   const [exTick, setExTick] = useState(0);
+  const [shiftTick, setShiftTick] = useState(0);
 
   useEffect(() => {
     if (profile === undefined) return;
@@ -114,6 +116,12 @@ export function AppDashboard() {
     return () => window.removeEventListener(OUTCOME_HINT_CHANGED, bump);
   }, []);
 
+  useEffect(() => {
+    const bump = () => setShiftTick((x) => x + 1);
+    window.addEventListener(WORK_SHIFTS_CHANGED, bump);
+    return () => window.removeEventListener(WORK_SHIFTS_CHANGED, bump);
+  }, []);
+
   const dayKeyToday = useMemo(() => dayKeyFromDate(now), [now]);
   const activeException = useMemo(
     () => loadActiveExceptionForDay(dayKeyToday),
@@ -135,7 +143,15 @@ export function AppDashboard() {
     } catch {
       return null;
     }
-  }, [normalizedProfile, now, locale, activityPlanTick, signalTick, activeException]);
+  }, [
+    normalizedProfile,
+    now,
+    locale,
+    activityPlanTick,
+    signalTick,
+    shiftTick,
+    activeException,
+  ]);
 
   const coachEngine = useMemo(() => {
     if (!normalizedProfile || !plan) return null;
@@ -483,6 +499,8 @@ export function AppDashboard() {
             engineWeekLine={engineWeekLine}
             quickNoteLine={quickNoteLine}
             coachPresenceLine={coachPresenceLine}
+            shiftBadgeKey={plan.shiftToday?.badgeKey ?? null}
+            shiftRationaleKey={plan.shiftToday?.rationaleKey ?? null}
             dataFallbackKey={dataFallbackKey}
             realityScore={realityScore}
             streakSummary={streaks ?? undefined}

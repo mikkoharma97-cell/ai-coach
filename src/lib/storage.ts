@@ -6,6 +6,7 @@ import {
   SUBSCRIPTION_STORAGE_KEY,
 } from "@/lib/subscription";
 import { savePlannedEvents } from "@/lib/eventsStorage";
+import { clearWorkShiftStorage } from "@/lib/workShiftStorage";
 import { clearExceptionStorage } from "@/lib/exceptionStorage";
 import { normalizeNutritionBlueprintId } from "@/lib/nutritionBlueprints";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
@@ -131,6 +132,7 @@ export function clearProfile(): void {
 export function clearAllCoachLocalData(): void {
   if (typeof window === "undefined") return;
   clearProfile();
+  clearWorkShiftStorage();
   try {
     localStorage.removeItem(PRO_WORKSPACE_KEY);
     localStorage.removeItem(SUBSCRIPTION_STORAGE_KEY);

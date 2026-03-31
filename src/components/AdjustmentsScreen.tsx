@@ -6,6 +6,7 @@ import { ProfileProgramSummary } from "@/components/profile/ProfileProgramSummar
 import { CoachBuildsEmpty } from "@/components/ui/CoachBuildsEmpty";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
+import { WorkShiftPlanner } from "@/components/coach/WorkShiftPlanner";
 import { ExceptionEnginePanel } from "@/components/exceptions/ExceptionEnginePanel";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -27,6 +28,7 @@ import {
 } from "@/lib/eventsStorage";
 import { dateLocaleForUi, type Locale, type TranslateFn } from "@/lib/i18n";
 import { hasEverMarkedDayDone } from "@/lib/storage";
+import { WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import type { PlannedEvent } from "@/types/coach";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -76,6 +78,7 @@ export function AdjustmentsScreen() {
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
   const [, bumpEvents] = useReducer((x: number) => x + 1, 0);
+  const [shiftTick, setShiftTick] = useState(0);
   const [newLabel, setNewLabel] = useState("");
   const [newDateIso, setNewDateIso] = useState("");
   const [newKind, setNewKind] = useState<PlannedEvent["kind"]>("social");
@@ -91,6 +94,12 @@ export function AdjustmentsScreen() {
     }
   }, [profile, router]);
 
+  useEffect(() => {
+    const b = () => setShiftTick((x) => x + 1);
+    window.addEventListener(WORK_SHIFTS_CHANGED, b);
+    return () => window.removeEventListener(WORK_SHIFTS_CHANGED, b);
+  }, []);
+
   const normalizedProfile = useMemo(
     () => (profile ? normalizeProfileForEngine(profile) : null),
     [profile],
@@ -103,7 +112,7 @@ export function AdjustmentsScreen() {
     } catch {
       return null;
     }
-  }, [normalizedProfile, now, locale]);
+  }, [normalizedProfile, now, locale, shiftTick]);
 
   const adjustEngineLine = useMemo(() => {
     if (!normalizedProfile || !plan) return null;
@@ -424,6 +433,13 @@ export function AdjustmentsScreen() {
             </section>
           </div>
         </details>
+
+        <section
+          className="mt-8 border-t-2 border-border/50 pt-5"
+          aria-labelledby="work-shifts"
+        >
+          <WorkShiftPlanner profile={profile} />
+        </section>
 
         {/* 5 — Tapahtuma (työkalu, erotettu) */}
         <section

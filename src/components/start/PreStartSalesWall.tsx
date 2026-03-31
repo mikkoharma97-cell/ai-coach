@@ -11,6 +11,7 @@ const FEAT_KEYS = [
   "prestart.feat6",
   "prestart.feat7",
   "prestart.feat8",
+  "prestart.feat9",
 ] as const;
 
 const MAP_KEYS = [

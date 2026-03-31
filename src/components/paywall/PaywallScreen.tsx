@@ -30,6 +30,8 @@ const SELL_KEYS = [
   "paywall.sell7",
   "paywall.sell8",
   "paywall.sell9",
+  "paywall.sell10",
+  "paywall.sell11",
 ] as const satisfies readonly MessageKey[];
 
 const LEFT_KEYS = [

@@ -22,6 +22,7 @@ import {
   isDayMarkedDone,
   loadOutcomeHint,
 } from "@/lib/storage";
+import { loadWorkShifts, normalizeShiftDateKey } from "@/lib/workShiftStorage";
 import type {
   OnboardingAnswers,
   PlannedEvent,
@@ -97,6 +98,21 @@ function plannedEventsInWeek(monday: Date, events: PlannedEvent[]): boolean {
     if (!d) return false;
     return isDateInRange(d, monday, end);
   });
+}
+
+/** Työvuoromerkintöjä kalenteriviikolla — palautteen rytmi ei vertaa 9–17-”normaaliin”. */
+function shiftPlanTouchesWeek(monday: Date): boolean {
+  if (typeof window === "undefined") return false;
+  const end = addDays(monday, 6);
+  for (const e of loadWorkShifts()) {
+    const p = normalizeShiftDateKey(e.date)
+      .split("-")
+      .map((x) => parseInt(x, 10));
+    if (p.length !== 3 || p.some((n) => Number.isNaN(n))) continue;
+    const d = new Date(p[0], p[1] - 1, p[2]);
+    if (isDateInRange(d, monday, end)) return true;
+  }
+  return false;
 }
 
 function deriveStrength(
@@ -378,9 +394,15 @@ export function generateWeeklyReview(
         }).trim()
       : null;
 
+  const shiftWeekLine =
+    typeof window !== "undefined" && shiftPlanTouchesWeek(monday)
+      ? tr(locale, "review.shift.nextMove")
+      : null;
+
   const nextMove = [
     ...coach.nextMove,
     ...(trainMissLine ? [trainMissLine] : []),
+    ...(shiftWeekLine ? [shiftWeekLine] : []),
     flexLine,
   ].slice(0, 5);
 

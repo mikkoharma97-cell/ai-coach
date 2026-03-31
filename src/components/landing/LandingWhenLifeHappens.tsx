@@ -10,6 +10,9 @@ const BULLETS = [
   "landing.lifeHappensB4",
   "landing.lifeHappensB5",
   "landing.lifeHappensB6",
+  "landing.shiftSell1",
+  "landing.shiftSell2",
+  "landing.shiftSell3",
 ] as const satisfies readonly MessageKey[];
 
 export function LandingWhenLifeHappens() {

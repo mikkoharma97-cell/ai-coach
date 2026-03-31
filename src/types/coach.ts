@@ -1,6 +1,8 @@
+import type { MessageKey } from "@/lib/i18n";
 import type { CoachFeatureToggles } from "@/types/coachPreferences";
 import type { LimitationTag } from "@/types/exercise";
 import type { RebalancePlan } from "@/types/rebalance";
+import type { WorkShiftEntry, WorkShiftType } from "@/types/workShifts";
 
 export type Goal = "lose_weight" | "build_muscle" | "improve_fitness";
 
@@ -163,6 +165,10 @@ export interface OnboardingAnswers {
   lifeSchedule?: LifeSchedule;
   /** Oma valmentaja — mitä näytetään (oletus täydet). */
   coachFeatureToggles?: CoachFeatureToggles;
+  /** Vuorotyö — käyttäjä on aktivoinut vuorosuunnittelun (synkassa workShiftStorage) */
+  shiftMode?: boolean;
+  /** Valinnainen peilaus / export; lähde: `workShiftStorage` */
+  workShifts?: WorkShiftEntry[];
 }
 
 export interface WeekDayEntry {
@@ -182,6 +188,15 @@ export interface CoachPlan {
   todayFoodTask: string;
   todayActivityTask: string;
   coachMessage: string;
+  /**
+   * Kun käyttäjällä on työvuoro tälle päivälle — `composeCoachDailyPlan` täyttää.
+   * Myöhemmin: kalenterisynk voi kirjoittaa samaan rakenteeseen.
+   */
+  shiftToday?: {
+    shiftType: WorkShiftType;
+    badgeKey: MessageKey;
+    rationaleKey: MessageKey;
+  } | null;
 }
 
 /** Optional same-day log — used when present; no UI required for hints to stay unused. */

@@ -29,6 +29,8 @@ import {
   packageActivityStepDelta,
   packageNutritionMultipliers,
 } from "@/lib/programPackages";
+import { applyShiftLayerToAdjustments } from "@/lib/shiftAdaptation";
+import { loadWorkShifts } from "@/lib/workShiftStorage";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import type { RebalancePlan } from "@/types/rebalance";
 import { applyRebalanceToFoodTargets } from "@/lib/nutrition/rebalance";
@@ -411,7 +413,21 @@ export function composeCoachDailyPlan(
     userState.referenceDate,
     locale,
   );
-  const adjusted = generateDailyAdjustments(userState, base, locale);
+  let adjusted = generateDailyAdjustments(userState, base, locale);
+  let shiftToday: CoachDailyPlan["shiftToday"] = null;
+  if (typeof window !== "undefined") {
+    const shiftEntries = loadWorkShifts();
+    if (shiftEntries.length > 0) {
+      const shiftLayer = applyShiftLayerToAdjustments(
+        adjusted,
+        locale,
+        userState.referenceDate,
+        shiftEntries,
+      );
+      adjusted = shiftLayer.merged;
+      shiftToday = shiftLayer.shiftToday;
+    }
+  }
   const { todayCalories, todayMacros } = generateFoodTargets(
     userState,
     adjusted.systemLine,
@@ -449,6 +465,7 @@ export function composeCoachDailyPlan(
   return {
     ...base,
     ...adjusted,
+    shiftToday,
     todayCalories: finalCalories,
     todayMacros: finalMacros,
     activityEnergyBonusKcal,

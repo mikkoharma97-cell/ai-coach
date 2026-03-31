@@ -157,6 +157,89 @@ export const fi = {
   "daily.food.overLose":
     "Laadukas proteiini tänään — pidä tutut ateria-ajat",
 
+  "shift.badge.morning": "Aamuvuoro",
+  "shift.badge.evening": "Iltavuoro",
+  "shift.badge.night": "Yövuoro",
+  "shift.badge.off": "Vapaa",
+  "shift.rationale.line":
+    "Tämän päivän rakenne tehty työvuoron mukaan.",
+  "shift.food.morning":
+    "Aikaisempi ateriarytmi — proteiini ankkurina ennen työpäivää.",
+  "shift.food.evening":
+    "Ateriat siirtyvät — pidä proteiini tasaisena ennen vuoroa.",
+  "shift.food.night":
+    "Yövuoro alla — syöt vuoron ympärillä, ei ‘normaalin päivän’ mukaan.",
+  "shift.food.off":
+    "Vapaapäivä — rakenna ateriat normaalisti; tässä on tilaa tehdä kunnolla.",
+  "shift.workout.morning":
+    "Treeni työpäivän ympärille — pidä kuorma hallittuna.",
+  "shift.workout.evening":
+    "Jos treeni tänään, tee se ennen iltavuoroa.",
+  "shift.workout.night":
+    "Yövuoro: kevyt tai lyhyt — palautuminen ensin.",
+  "shift.workout.off":
+    "Vapaapäivä — tässä on paras paikka tehdä kunnolla tai palauttaa.",
+  "shift.activity.morning":
+    "Liikettä työpäivän lomaan — kävely tai kevyt extra.",
+  "shift.activity.evening":
+    "Askeleet ennen vuoroa tai sen jälkeen — ei suorituspaineita.",
+  "shift.activity.night":
+    "Kevyt liike heräämisen mukaan — uni kunniaan.",
+  "shift.activity.off":
+    "Kevyt liike tai kävely — päivä kestää enemmän.",
+  "shift.sys.morning": "Vuoro huomioitu — aamuvuoro, rytmi aikaisempi.",
+  "shift.sys.evening": "Iltavuoro tulossa. Tee treeni ennen sitä.",
+  "shift.sys.night": "Yövuoro alla. Pidetään tämä yksinkertaisena.",
+  "shift.sys.off": "Vapaapäivä. Tässä on paras paikka tehdä kunnolla.",
+  "shift.coach.main.morning":
+    "Aamuvuoro — ei vedetä tätä väkisin iltarytmiin.",
+  "shift.coach.dir.morning":
+    "Ruoka aikaisemmin · treeni sopii työpäivän ympärille.",
+  "shift.coach.main.evening":
+    "Iltavuoro — ohjelma ei oleta että ehdit aina samaan treeni-ikkunaan.",
+  "shift.coach.dir.evening":
+    "Tee treeni ennen vuoroa jos se on tänään vuorossa.",
+  "shift.coach.main.night":
+    "Yövuoro — ei oleteta normaalia päivärytmiä.",
+  "shift.coach.dir.night":
+    "Palautuminen korostuu · pidä treeni kevyenä tai siirrä.",
+  "shift.coach.main.off":
+    "Vapaapäivä — tässä on paras paikka tehdä kunnolla.",
+  "shift.coach.dir.off":
+    "Voit nostaa laatua tai pitää täysin palauttavan päivän.",
+  "shift.ws.morning":
+    "Vuoro huomioitu: aamuvuoro — treeni-ikkuna työpäivän ympärillä.",
+  "shift.ws.evening":
+    "Vuoro huomioitu: iltavuoro — jos treeniä, ennen vuoroa.",
+  "shift.ws.night":
+    "Vuoro huomioitu: yövuoro — kevyempi sävy, uni ensin.",
+  "shift.ws.off":
+    "Vuoro huomioitu: vapaa — käytä päivä tarkoituksella.",
+  "shift.plannerTitle": "Seuraavat 7 päivää — työvuorot",
+  "shift.plannerHint":
+    "Napauta vuoro / vapaa. Ohjelma, ruoka ja treenin sävy mukautuvat.",
+  "shift.save": "Tallenna vuorot",
+  "shift.saved": "Tallennettu — Today päivittyy.",
+  "shift.type.morning": "Aamu",
+  "shift.type.evening": "Ilta",
+  "shift.type.night": "Yö",
+  "shift.type.off": "Vapaa",
+
+  "landing.shiftSell1":
+    "Syötä työvuorot — ohjelma mukautuu niiden mukaan.",
+  "landing.shiftSell2":
+    "Vuorotyö huomioitu. Päivä ei hajoa, vaikka rytmi vaihtuu.",
+  "landing.shiftSell3":
+    "Aamu-, ilta- ja yövuorot eivät kaada ohjelmaa.",
+  "paywall.sell10":
+    "Vuorotyöläiselle ohjelma ei oleta normaalia arkea.",
+  "paywall.sell11":
+    "Työvuorot sisään → treeni, ruoka ja rytmi niiden mukaan.",
+  "prestart.feat9":
+    "Työvuorojen mukaan mukautuva valmennus — ei vain ‘normaalia päivää’.",
+  "review.shift.nextMove":
+    "Viikolla oli vuoropeittoa — emme vertaa tätä tavalliseen 9–17-rytmiin.",
+
   "nav.today": "Tänään",
   "nav.food": "Ruoka",
   "nav.plan": "Suunnitelma",
@@ -2016,6 +2099,89 @@ export const en: { [K in MessageKey]: string } = {
     "Lighter plates today — same meal rhythm, extra vegetables",
   "daily.food.missedElse": "Steady meals today — protein at each sitting",
   "daily.food.overLose": "Lean protein focus today — keep usual meal times",
+
+  "shift.badge.morning": "Morning shift",
+  "shift.badge.evening": "Evening shift",
+  "shift.badge.night": "Night shift",
+  "shift.badge.off": "Off",
+  "shift.rationale.line":
+    "Today’s structure follows your work shift.",
+  "shift.food.morning":
+    "Earlier meal rhythm — anchor protein before the workday.",
+  "shift.food.evening":
+    "Meals shift — keep protein steady before your shift.",
+  "shift.food.night":
+    "Night shift on — eat around the shift, not a ‘normal day’.",
+  "shift.food.off":
+    "Off day — build meals normally; room to do this properly.",
+  "shift.workout.morning":
+    "Training around the workday — keep load controlled.",
+  "shift.workout.evening":
+    "If you train today, do it before the evening shift.",
+  "shift.workout.night":
+    "Night shift: light or short — recovery first.",
+  "shift.workout.off":
+    "Off day — best slot to go hard or recover.",
+  "shift.activity.morning":
+    "Movement around work — walking or light extra.",
+  "shift.activity.evening":
+    "Steps before or after shift — no pressure.",
+  "shift.activity.night":
+    "Light movement after sleep — sleep wins.",
+  "shift.activity.off":
+    "Light movement or walking — the day can take more.",
+  "shift.sys.morning": "Shift noted — morning shift, earlier rhythm.",
+  "shift.sys.evening": "Evening shift ahead. Train before it.",
+  "shift.sys.night": "Night shift on. We keep this simple.",
+  "shift.sys.off": "Off day. Best place to go hard or recover.",
+  "shift.coach.main.morning":
+    "Morning shift — we’re not forcing an evening rhythm.",
+  "shift.coach.dir.morning":
+    "Eat earlier · training fits around the workday.",
+  "shift.coach.main.evening":
+    "Evening shift — we don’t assume you always hit the same training window.",
+  "shift.coach.dir.evening":
+    "Train before your shift if it’s a training day.",
+  "shift.coach.main.night":
+    "Night shift — we’re not assuming a normal day rhythm.",
+  "shift.coach.dir.night":
+    "Recovery first · keep training light or move it.",
+  "shift.coach.main.off":
+    "Off day — this is the place to go hard or recover fully.",
+  "shift.coach.dir.off":
+    "Raise quality or take a full recovery day.",
+  "shift.ws.morning":
+    "Shift noted: morning — training window around the workday.",
+  "shift.ws.evening":
+    "Shift noted: evening — if you train, before the shift.",
+  "shift.ws.night":
+    "Shift noted: night — lighter tone, sleep first.",
+  "shift.ws.off":
+    "Shift noted: off — use the day with intent.",
+  "shift.plannerTitle": "Next 7 days — work shifts",
+  "shift.plannerHint":
+    "Tap shift / off. Training, food, and tone adapt.",
+  "shift.save": "Save shifts",
+  "shift.saved": "Saved — Today updates.",
+  "shift.type.morning": "Morning",
+  "shift.type.evening": "Evening",
+  "shift.type.night": "Night",
+  "shift.type.off": "Off",
+
+  "landing.shiftSell1":
+    "Enter your shifts — the program adapts to them.",
+  "landing.shiftSell2":
+    "Shift work accounted for. Your day doesn’t fall apart when rhythm changes.",
+  "landing.shiftSell3":
+    "Morning, evening, and night shifts don’t break the plan.",
+  "paywall.sell10":
+    "For shift workers, the plan doesn’t assume a normal day.",
+  "paywall.sell11":
+    "Shifts in → training, food, and rhythm follow them.",
+  "prestart.feat9":
+    "Coaching that adapts to your shifts — not just ‘a normal day’.",
+  "review.shift.nextMove":
+    "This week had shift overlap — we’re not scoring you against a 9–5 rhythm.",
 
   "nav.today": "Today",
   "nav.food": "Food",

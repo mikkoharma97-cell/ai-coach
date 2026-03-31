@@ -27,6 +27,7 @@ Tilat: **DONE** valmis käyttöön · **PARTIAL** osin · **MISSING** ei toteute
 | Machine scan | PARTIAL | Kuva + selkeä “ei live AI” -V1 (MachineScanCard) |
 | Sisäiset linkit | DONE | CoachAppShortcuts, nav, dead-end redirectit (SubscriptionGate, profiili) |
 | Mobile preview | DONE | docs/dev-preview.md, preview-skriptit, build-merkki |
+| **Shift work adaptation V1** | DONE | Työvuorot 7 pv → `workShiftStorage` → `applyShiftLayerToAdjustments` + coach hero (`mergeShiftCoachHero`); badge Today; workout/food copy; viikkopalaute `review.shift.nextMove`; myynti: `landing.shiftSell*`, `paywall.sell10/11`, `prestart.feat9`. Tiedostot: `src/types/workShifts.ts`, `src/lib/workShiftStorage.ts`, `src/lib/shiftAdaptation.ts`, `src/components/coach/WorkShiftPlanner.tsx`, `src/lib/adaptive.ts`, `src/lib/coach/decisionEngineV2.ts`, `WeeklyReview`, `WorkoutSession`, `TodayCard`. **Testipolku:** `/adjustments` → tallenna vuorot → `/app` (badge + coach) → `/food` → `/workout` → `/review`. Kalenteri/toistuvat mallit: ei V1. |
 
 ## Launch / future
 

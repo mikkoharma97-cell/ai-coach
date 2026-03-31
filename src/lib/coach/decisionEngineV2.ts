@@ -10,6 +10,7 @@ import {
   type DailyCoachDecision,
   type DailyCoachDecisionInput,
 } from "@/lib/coach/decisionEngine";
+import { mergeShiftCoachHero } from "@/lib/shiftAdaptation";
 import { resolveProgramTrackId } from "@/lib/programTracks";
 import type { ProgramTrackId } from "@/types/coach";
 import type { LimitationTag } from "@/types/exercise";
@@ -98,11 +99,20 @@ export function getDailyCoachDecisionV2(
     directionEn = `${directionEn} ${tr.en}`;
   }
 
+  const shiftMerged = mergeShiftCoachHero(
+    priority,
+    input.plan.shiftToday,
+    base.mainMessageFi,
+    base.mainMessageEn,
+    directionFi,
+    directionEn,
+  );
+
   return {
-    mainMessageFi: trimCoachCopy(base.mainMessageFi, 2),
-    mainMessageEn: trimCoachCopy(base.mainMessageEn, 2),
-    directionFi: trimCoachCopy(directionFi, 2),
-    directionEn: trimCoachCopy(directionEn, 2),
+    mainMessageFi: trimCoachCopy(shiftMerged.mainFi, 2),
+    mainMessageEn: trimCoachCopy(shiftMerged.mainEn, 2),
+    directionFi: trimCoachCopy(shiftMerged.dirFi, 2),
+    directionEn: trimCoachCopy(shiftMerged.dirEn, 2),
     engineVersion: "v2",
     priority,
     signals,

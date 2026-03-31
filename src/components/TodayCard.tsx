@@ -74,6 +74,9 @@ type Props = {
   engineWeekLine?: string | null;
   /** Pikamuistiinpano (esim. äänellä) */
   quickNoteLine?: string | null;
+  /** Työvuoro — badge + perustelu (kun `plan.shiftToday`) */
+  shiftBadgeKey?: MessageKey | null;
+  shiftRationaleKey?: MessageKey | null;
   /** Valmentajan ääni — yksi lyhyt linja */
   coachPresenceLine?: string | null;
   /** Kun dataa on vähän — yksi fallback-lause */
@@ -119,6 +122,8 @@ export function TodayCard({
   programRationaleLine,
   engineWeekLine,
   quickNoteLine,
+  shiftBadgeKey,
+  shiftRationaleKey,
   coachPresenceLine,
   dataFallbackKey,
   realityScore,
@@ -153,6 +158,18 @@ export function TodayCard({
             text={t(systemStatusKey)}
             liveSignal={systemStatusLive}
           />
+          {shiftBadgeKey ? (
+            <div className="flex w-full max-w-[26rem] flex-col items-center gap-1 sm:items-start">
+              <span className="inline-flex rounded-full border border-accent/35 bg-accent/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
+                {t(shiftBadgeKey)}
+              </span>
+              {shiftRationaleKey ? (
+                <p className="text-center text-[11px] font-medium leading-snug text-muted-2 sm:text-left">
+                  {t(shiftRationaleKey)}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         <p className="mt-4 text-center text-[13px] font-semibold leading-snug text-accent sm:text-left">

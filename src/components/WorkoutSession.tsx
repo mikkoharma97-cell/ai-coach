@@ -17,6 +17,7 @@ import { getMondayBasedIndex } from "@/lib/plan";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
+import { getWorkShiftForDate, WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import { flowLog } from "@/lib/flowLog";
 import { computeStreakSummary } from "@/lib/streaks";
 import type { ProExercise } from "@/types/pro";
@@ -58,6 +59,7 @@ export function WorkoutSession() {
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
+  const [shiftTick, setShiftTick] = useState(0);
 
   useEffect(() => {
     if (profile === undefined) return;
@@ -65,6 +67,12 @@ export function WorkoutSession() {
       router.replace("/start");
     }
   }, [profile, router]);
+
+  useEffect(() => {
+    const b = () => setShiftTick((x) => x + 1);
+    window.addEventListener(WORK_SHIFTS_CHANGED, b);
+    return () => window.removeEventListener(WORK_SHIFTS_CHANGED, b);
+  }, []);
 
   const streaks = useMemo(
     () => (profile ? computeStreakSummary(profile, now) : null),
@@ -91,6 +99,17 @@ export function WorkoutSession() {
     const d = buildCoachProgramDecision(normalizedProfile);
     return buildWorkoutCoachLine(locale, d);
   }, [normalizedProfile, locale]);
+
+  const shiftSupplementLine = useMemo(() => {
+    const e = getWorkShiftForDate(now);
+    if (!e) return null;
+    return t(`shift.ws.${e.shiftType}` as MessageKey);
+  }, [now, shiftTick, t]);
+
+  const coachFrameWithShift = useMemo(() => {
+    const parts = [workoutCoachLine, shiftSupplementLine].filter(Boolean);
+    return parts.length ? parts.join("\n\n") : null;
+  }, [workoutCoachLine, shiftSupplementLine]);
 
   const generated = useMemo(() => {
     if (!normalizedProfile) return null;
@@ -154,9 +173,9 @@ export function WorkoutSession() {
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
             {generated.workout}
           </p>
-          {workoutCoachLine ? (
+          {coachFrameWithShift ? (
             <p className="mt-3 text-[12px] font-semibold leading-snug text-muted">
-              {workoutCoachLine}
+              {coachFrameWithShift}
             </p>
           ) : null}
           <p className="mt-3 text-[14px] font-medium leading-snug text-foreground/90">
@@ -201,7 +220,7 @@ export function WorkoutSession() {
       dataFallbackKey={dataFallbackKey}
       showVoiceWorkout={features.showVoiceWorkout}
       showHelpVideos={features.showHelpVideos}
-      coachFrameLine={workoutCoachLine}
+      coachFrameLine={coachFrameWithShift}
     />
   );
 }
