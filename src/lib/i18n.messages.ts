@@ -245,6 +245,8 @@ export const fi = {
     "Työvuorot sisään → treeni, ruoka ja rytmi niiden mukaan.",
   "prestart.feat9":
     "Työvuorojen mukaan mukautuva valmennus — ei vain ‘normaalia päivää’.",
+  "prestart.feat10":
+    "Et jää yhden ohjelman varaan — tavoitteesi sisällä useita runkoja ja ruokarytmejä.",
   "review.shift.nextMove":
     "Viikolla oli vuoropeittoa — emme vertaa tätä tavalliseen 9–17-rytmiin.",
 
@@ -649,6 +651,8 @@ export const fi = {
   "today.systemStatus.fixInProgress": "Korjaus käynnissä",
   "today.labelFocus": "Pääfokus",
   "today.doThisToday": "Tämä riittää tänään.",
+  "today.changeProgram": "Vaihda ohjelmaa",
+  "today.changeNutrition": "Vaihda ruokarakennetta",
   "today.todayRhythmBlock": "Ruoka & liike tänään",
   "today.quickAdjustFold": "Lisää valintoja",
   "today.quickActionsEyebrow": "Yksi napilla",
@@ -1469,6 +1473,7 @@ export const fi = {
   "nutritionLibrary.alternatives": "Muut ruokarytmit",
   "plans.title": "Ohjelmat",
   "plans.browseHint": "Suodata tavoitteen ja paikan mukaan.",
+  "plans.recommendedEyebrow": "Tämän hetken suositus",
   "nutritionPlans.title": "Ruokarakenteet",
   "nutritionPlans.browseHint":
     "Ateriarytmi ja makrotuki — valitse rakenne, joka sopii kalenteriin.",
@@ -2228,6 +2233,8 @@ export const en: { [K in MessageKey]: string } = {
     "Shifts in → training, food, and rhythm follow them.",
   "prestart.feat9":
     "Coaching that adapts to your shifts — not just ‘a normal day’.",
+  "prestart.feat10":
+    "You’re not locked to one program — several frames and meal rhythms within your goal.",
   "review.shift.nextMove":
     "This week had shift overlap — we’re not scoring you against a 9–5 rhythm.",
 
@@ -2625,6 +2632,8 @@ export const en: { [K in MessageKey]: string } = {
   "today.systemStatus.fixInProgress": "Correction in motion",
   "today.labelFocus": "Focus",
   "today.doThisToday": "This is enough for today.",
+  "today.changeProgram": "Change program",
+  "today.changeNutrition": "Change meal structure",
   "today.todayRhythmBlock": "Food & movement today",
   "today.quickAdjustFold": "More options",
   "today.quickActionsEyebrow": "One tap",
@@ -3457,6 +3466,7 @@ export const en: { [K in MessageKey]: string } = {
   "nutritionLibrary.alternatives": "Other meal rhythms",
   "plans.title": "Programs",
   "plans.browseHint": "Filter by goal and venue.",
+  "plans.recommendedEyebrow": "Recommended for you now",
   "nutritionPlans.title": "Meal structures",
   "nutritionPlans.browseHint":
     "Meal rhythm and macro support — pick what fits your calendar.",

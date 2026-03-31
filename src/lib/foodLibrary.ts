@@ -3,6 +3,7 @@
  * Hakukirjasto: valinnaiset kentät suodattimille.
  */
 import { FOOD_SEARCH_EXTRA } from "@/lib/food/foodSearchExtra";
+import { FOOD_SEARCH_EXTRA_BATCH2 } from "@/lib/food/foodSearchExtraBatch2";
 import type { FoodLibraryItem } from "@/types/foodLibrary";
 
 export type { FoodLibraryItem } from "@/types/foodLibrary";
@@ -40,6 +41,7 @@ const FOOD_LIBRARY_CORE: FoodLibraryItem[] = [
 export const FOOD_LIBRARY: FoodLibraryItem[] = [
   ...FOOD_LIBRARY_CORE,
   ...FOOD_SEARCH_EXTRA,
+  ...FOOD_SEARCH_EXTRA_BATCH2,
 ];
 
 export function foodLibrarySample(count = 8): FoodLibraryItem[] {

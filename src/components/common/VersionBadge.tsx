@@ -1,8 +1,8 @@
 "use client";
 
 // TEMP: version marker for release validation, remove later
-/** Juokseva HÄRMÄ-numero — nosta yhdellä jokaisen viimeistelypassin jälkeen (3, 4, …). */
-export const HARMÄ_BUILD = 5;
+/** Juokseva HÄRMÄ-numero — nousee jokaisen ison viimeistely-/data-passin jälkeen. */
+export const HARMÄ_BUILD = 3;
 
 export function VersionBadge() {
   const label = `HÄRMÄ${HARMÄ_BUILD}`;

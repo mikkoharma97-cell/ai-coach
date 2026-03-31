@@ -5,24 +5,61 @@ import { Container } from "@/components/ui/Container";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useClientProfile } from "@/hooks/useClientProfile";
-import { PROGRAM_LIBRARY, applyProgramLibraryEntry } from "@/lib/coachProgramCatalog";
+import {
+  PROGRAM_LIBRARY,
+  applyProgramLibraryEntry,
+  recommendProgramForProfile,
+} from "@/lib/coachProgramCatalog";
 import type { Goal } from "@/types/coach";
 import { useMemo, useState } from "react";
 import { saveProfile } from "@/lib/storage";
 import { useRouter } from "next/navigation";
+
+type VenueFilter = "all" | "gym" | "home" | "mixed";
+type LevelFilter = "all" | "beginner" | "intermediate" | "advanced";
 
 export default function PlansPage() {
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const router = useRouter();
   const [goalFilter, setGoalFilter] = useState<Goal | "all">("all");
+  const [venueFilter, setVenueFilter] = useState<VenueFilter>("all");
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const recommended = useMemo(
+    () => (profile ? recommendProgramForProfile(profile) : null),
+    [profile],
+  );
 
   const pool = useMemo(() => {
     if (!profile) return PROGRAM_LIBRARY;
     const g = goalFilter === "all" ? profile.goal : goalFilter;
-    return PROGRAM_LIBRARY.filter((e) => e.goal === g);
-  }, [profile, goalFilter]);
+    let list = PROGRAM_LIBRARY.filter((e) => e.goal === g);
+
+    if (venueFilter !== "all") {
+      list = list.filter((e) => {
+        if (venueFilter === "mixed") return e.trainingVenue === "any";
+        if (e.trainingVenue === "any") return true;
+        return e.trainingVenue === venueFilter;
+      });
+    }
+
+    if (levelFilter !== "all") {
+      list = list.filter((e) => {
+        const lv = e.level ?? "intermediate";
+        if (lv === "any") return true;
+        return lv === levelFilter;
+      });
+    }
+
+    return list;
+  }, [profile, goalFilter, venueFilter, levelFilter]);
+
+  const restOfPool = useMemo(() => {
+    if (!recommended) return pool;
+    return pool.filter((e) => e.id !== recommended.id);
+  }, [pool, recommended]);
 
   if (profile === undefined) {
     return (
@@ -32,6 +69,8 @@ export default function PlansPage() {
     );
   }
   if (!profile) return <CoachProfileMissingFallback />;
+
+  const fi = locale === "fi";
 
   return (
     <main className="coach-page">
@@ -54,7 +93,7 @@ export default function PlansPage() {
               }`}
             >
               {g === "all"
-                ? locale === "fi"
+                ? fi
                   ? "Oma tavoite"
                   : "My goal"
                 : g === "lose_weight"
@@ -66,8 +105,90 @@ export default function PlansPage() {
           ))}
         </div>
 
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+            {fi ? "Paikka" : "Venue"}
+          </span>
+          {(["all", "gym", "home", "mixed"] as const).map((v) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setVenueFilter(v)}
+              className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
+                venueFilter === v
+                  ? "border-accent bg-accent-soft text-accent"
+                  : "border-border/80 text-muted"
+              }`}
+            >
+              {v === "all"
+                ? fi
+                  ? "Kaikki"
+                  : "All"
+                : v === "gym"
+                  ? fi
+                    ? "Sali"
+                    : "Gym"
+                  : v === "home"
+                    ? fi
+                      ? "Koti"
+                      : "Home"
+                    : fi
+                      ? "Sekä"
+                      : "Mixed"}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+            {fi ? "Taso" : "Level"}
+          </span>
+          {(["all", "beginner", "intermediate", "advanced"] as const).map((lv) => (
+            <button
+              key={lv}
+              type="button"
+              onClick={() => setLevelFilter(lv)}
+              className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
+                levelFilter === lv
+                  ? "border-accent bg-accent-soft text-accent"
+                  : "border-border/80 text-muted"
+              }`}
+            >
+              {lv === "all"
+                ? fi
+                  ? "Kaikki"
+                  : "All"
+                : lv === "beginner"
+                  ? fi
+                    ? "Aloitus"
+                    : "Beginner"
+                  : lv === "intermediate"
+                    ? fi
+                      ? "Keskitaso"
+                      : "Intermediate"
+                    : fi
+                      ? "Kova"
+                      : "Advanced"}
+            </button>
+          ))}
+        </div>
+
+        {recommended && pool.some((e) => e.id === recommended.id) ? (
+          <div className="mt-8">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
+              {t("plans.recommendedEyebrow")}
+            </p>
+            <div className="mt-3">
+              <ProgramRecommendationCard entry={recommended} recommended />
+            </div>
+          </div>
+        ) : null}
+
         <div className="mt-8 flex flex-col gap-3">
-          {pool.map((e) => (
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+            {fi ? "Kaikki listatut ohjelmat" : "All listed programs"}
+          </p>
+          {restOfPool.map((e) => (
             <ProgramRecommendationCard
               key={e.id}
               entry={e}

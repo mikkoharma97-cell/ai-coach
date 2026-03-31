@@ -8,8 +8,14 @@ import { ProgramPicker } from "@/components/programs/ProgramPicker";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
-import { applyNutritionLibraryEntry } from "@/lib/nutritionLibrary";
-import { applyProgramLibraryEntry } from "@/lib/coachProgramCatalog";
+import {
+  applyNutritionLibraryEntry,
+  recommendNutritionForProfile,
+} from "@/lib/nutritionLibrary";
+import {
+  applyProgramLibraryEntry,
+  recommendProgramForProfile,
+} from "@/lib/coachProgramCatalog";
 import { emptyAnswers } from "@/lib/plan";
 import { trackEvent } from "@/lib/analytics";
 import { flowLog } from "@/lib/flowLog";
@@ -589,8 +595,13 @@ export function StartFlow() {
                 <ProgramPicker
                   profile={answers}
                   onConfirm={(programLibraryId) => {
+                    const rec = recommendProgramForProfile(answers);
                     const patch = applyProgramLibraryEntry(programLibraryId, answers);
-                    const next = { ...answers, ...patch };
+                    const next = {
+                      ...answers,
+                      ...patch,
+                      recommendedProgramLibraryId: rec.id,
+                    };
                     setAnswers(next);
                     try {
                       saveProfile(next);
@@ -621,8 +632,13 @@ export function StartFlow() {
                 <NutritionStructurePicker
                   profile={answers}
                   onConfirm={(nutritionLibraryId) => {
+                    const recN = recommendNutritionForProfile(answers);
                     const patch = applyNutritionLibraryEntry(nutritionLibraryId);
-                    const next = { ...answers, ...patch };
+                    const next = {
+                      ...answers,
+                      ...patch,
+                      recommendedNutritionLibraryId: recN.id,
+                    };
                     setAnswers(next);
                     try {
                       saveProfile(next);

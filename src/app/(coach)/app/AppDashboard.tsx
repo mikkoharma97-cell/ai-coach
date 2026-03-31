@@ -302,23 +302,30 @@ export function AppDashboard() {
     };
   }, [normalizedProfile, t]);
 
-  const librarySelectionLine = useMemo(() => {
-    if (!normalizedProfile) return null;
-    const pl = normalizedProfile.selectedProgramLibraryId
-      ? getProgramLibraryEntry(normalizedProfile.selectedProgramLibraryId)
-      : null;
-    const nl = normalizedProfile.selectedNutritionLibraryId
-      ? getNutritionLibraryEntry(normalizedProfile.selectedNutritionLibraryId)
-      : null;
+  const { libraryProgramLine, libraryNutritionLine } = useMemo(() => {
+    if (!normalizedProfile) {
+      return {
+        libraryProgramLine: null as string | null,
+        libraryNutritionLine: null as string | null,
+      };
+    }
     const fi = locale === "fi";
-    const parts: string[] = [];
-    if (pl) {
-      parts.push(`${fi ? "Ohjelma" : "Program"}: ${fi ? pl.nameFi : pl.nameEn}`);
-    }
-    if (nl) {
-      parts.push(`${fi ? "Ruoka" : "Food"}: ${fi ? nl.nameFi : nl.nameEn}`);
-    }
-    return parts.length ? parts.join(" · ") : null;
+    const pid =
+      normalizedProfile.selectedProgramLibraryId ??
+      normalizedProfile.recommendedProgramLibraryId;
+    const nid =
+      normalizedProfile.selectedNutritionLibraryId ??
+      normalizedProfile.recommendedNutritionLibraryId;
+    const pl = pid ? getProgramLibraryEntry(pid) : null;
+    const nl = nid ? getNutritionLibraryEntry(nid) : null;
+    return {
+      libraryProgramLine: pl
+        ? `${fi ? "Ohjelma" : "Program"}: ${fi ? pl.nameFi : pl.nameEn}`
+        : null,
+      libraryNutritionLine: nl
+        ? `${fi ? "Ruoka" : "Food"}: ${fi ? nl.nameFi : nl.nameEn}`
+        : null,
+    };
   }, [normalizedProfile, locale]);
 
   const engineWeekLine = useMemo(() => {
@@ -572,7 +579,9 @@ export function AppDashboard() {
             }
             trialBanner={trialBanner}
             trialBannerHref={trialBanner ? "/paywall" : undefined}
-            librarySelectionLine={librarySelectionLine}
+            libraryProgramLine={libraryProgramLine}
+            libraryNutritionLine={libraryNutritionLine}
+            showLibraryChangeLinks
             programPresetLine={programPresetLine}
             programRationaleLine={programRationaleLine}
             engineWeekLine={engineWeekLine}

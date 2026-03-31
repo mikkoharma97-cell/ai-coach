@@ -146,8 +146,12 @@ export interface OnboardingAnswers {
   forcedPresetId?: string;
   /** Ohjelmakirjaston valinnan id (näyttö / audit) */
   selectedProgramLibraryId?: string;
+  /** Moottorin suositus (askel 9) — näyttö; ei korvaa valittua */
+  recommendedProgramLibraryId?: string;
   /** Ruokarakenteen kirjaston valinta */
   selectedNutritionLibraryId?: string;
+  /** Moottorin suositus (askel 10) */
+  recommendedNutritionLibraryId?: string;
   /** Valinnainen treenirunko; tyhjä = paketti + Pro-tilan oletus */
   programBlueprintId?: ProgramBlueprintId;
   /** Valinnainen ruokarunko; tyhjä = paketti + Pro-tilan oletus */

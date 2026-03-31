@@ -79,8 +79,12 @@ type Props = {
   trialBanner?: string | null;
   /** Kun asetettu, kokeilurivi on linkki esim. /paywall */
   trialBannerHref?: string;
-  /** Kirjastosta valitut nimet (ohjelma + ruoka) */
+  /** @deprecated käytä libraryProgramLine + libraryNutritionLine */
   librarySelectionLine?: string | null;
+  libraryProgramLine?: string | null;
+  libraryNutritionLine?: string | null;
+  /** Linkit /plans ja /nutrition-plans */
+  showLibraryChangeLinks?: boolean;
   /** Lyhyt: rungon nimi (esim. “Tämän profiilin runko · …”) */
   programPresetLine?: string | null;
   /** Yksi lause: miksi tämä viikko vastaa profiilia */
@@ -139,6 +143,9 @@ export function TodayCard({
   trialBanner,
   trialBannerHref,
   librarySelectionLine,
+  libraryProgramLine,
+  libraryNutritionLine,
+  showLibraryChangeLinks = false,
   programPresetLine,
   programRationaleLine,
   engineWeekLine,
@@ -254,7 +261,9 @@ export function TodayCard({
           )
         ) : null}
 
-        {librarySelectionLine ? (
+        {librarySelectionLine &&
+        !libraryProgramLine &&
+        !libraryNutritionLine ? (
           <p
             className="mt-3 max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left"
             role="status"
@@ -262,10 +271,46 @@ export function TodayCard({
             {librarySelectionLine}
           </p>
         ) : null}
+        {libraryProgramLine || libraryNutritionLine ? (
+          <div
+            className="mt-3 max-w-[26rem] space-y-1 text-center sm:text-left"
+            role="status"
+          >
+            {libraryProgramLine ? (
+              <p className="text-[12px] font-medium leading-snug text-muted">
+                {libraryProgramLine}
+              </p>
+            ) : null}
+            {libraryNutritionLine ? (
+              <p className="text-[12px] font-medium leading-snug text-muted">
+                {libraryNutritionLine}
+              </p>
+            ) : null}
+            {showLibraryChangeLinks ? (
+              <p className="pt-1 text-[11px] font-semibold leading-snug">
+                <Link
+                  href="/plans"
+                  className="text-accent underline-offset-2 hover:underline"
+                >
+                  {t("today.changeProgram")}
+                </Link>
+                <span className="mx-2 text-muted-2" aria-hidden>
+                  ·
+                </span>
+                <Link
+                  href="/nutrition-plans"
+                  className="text-accent underline-offset-2 hover:underline"
+                >
+                  {t("today.changeNutrition")}
+                </Link>
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         {programPresetLine ? (
           <p
-            className={`max-w-[26rem] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-accent/90 sm:text-left ${librarySelectionLine ? "mt-2" : "mt-3"}`}
+            className={`max-w-[26rem] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-accent/90 sm:text-left ${libraryProgramLine || libraryNutritionLine || librarySelectionLine ? "mt-2" : "mt-3"}`}
             role="status"
           >
             {programPresetLine}
@@ -274,7 +319,7 @@ export function TodayCard({
 
         {programRationaleLine ? (
           <p
-            className={`max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left ${programPresetLine || librarySelectionLine ? "mt-2" : "mt-3"}`}
+            className={`max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left ${programPresetLine || libraryProgramLine || libraryNutritionLine || librarySelectionLine ? "mt-2" : "mt-3"}`}
             role="status"
           >
             {programRationaleLine}

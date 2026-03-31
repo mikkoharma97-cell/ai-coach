@@ -1,6 +1,6 @@
 "use client";
 
-import { NutritionStructureCard } from "@/components/nutrition/NutritionStructurePicker";
+import { NutritionRecommendationCard } from "@/components/nutrition/NutritionRecommendationCard";
 import { Container } from "@/components/ui/Container";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -75,7 +75,7 @@ export default function NutritionPlansPage() {
 
         <div className="mt-8 flex flex-col gap-3">
           {pool.map((e) => (
-            <NutritionStructureCard
+            <NutritionRecommendationCard
               key={e.id}
               entry={e}
               showMeta
