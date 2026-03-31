@@ -1,15 +1,17 @@
 # Feature audit — kokonaisuudet
 
-**Näkyvä badge:** `HÄRMÄ5` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ5 · BUILD v5` + semver-aika.
+**Näkyvä badge:** `HÄRMÄ6` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ6 · BUILD v6` + semver-aika.
+
+**HÄRMÄ6 progress-pilarit:** `docs/harma6_progress.md` (consistency / weekly summary / coach insight / daily completion sync → koodiviitteet).
 
 Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osin · **planned** = suunniteltu · **missing** = ei toteutettu.
 
-### Coach Voice System (HÄRMÄ5)
+### Coach Voice System (HÄRMÄ5→6)
 
 | Asia | Status |
 |------|--------|
 | **Source of truth** | `src/config/coachVoice.ts` — säännöt, kielletyt fraasit, `fragments` |
-| **Versio** | `src/config/version.ts` — `APP_VERSION` v5, `HARMÄ_BUILD` 5 |
+| **Versio** | `src/config/version.ts` — `APP_VERSION` v6, `HARMÄ_BUILD` 6 |
 | **Käyttäjälle näkyvä teksti** | **partial** → pääpolku (`src/lib/i18n.messages.ts` FI + EN), komponentit `t()`-avaimilla; ei täyttä literaalien ajoa joka tiedostossa tässä passissa |
 | **Tarkistettu laiteella** | **planned** — tuotantobuild + push; Vercel smoke |
 
@@ -141,7 +143,7 @@ Profiili (`OnboardingAnswers`): `goal`, `level` / `trainingLevel`, `daysPerWeek`
 4. **Intensifierit:** eristyksissä / koneissa policy:n mukaan; compound strength ei drop-oletusta.
 5. **Liikevaihto:** `rotationAdviceForExercise` (neuvo); generaattori käyttää `rotationBlockIndex`-siementä.
 6. **Synkka:** profiili → blueprint + policy → sama `generateWorkoutDay` Workoutissa; Today näyttää kirjaston + jakorivin.
-7. **HÄRMÄ5:** kyllä (`coachVoice.ts` + copy-passi + `version.ts`).
+7. **HÄRMÄ6:** kyllä (`coachVoice.ts` + copy-passi + `version.ts`; progress-pilarit `docs/harma6_progress.md`).
 8. **Mobiili:** tuotantobuildin jälkeen smoke (planned / CI).
 9. **Live URL:** Vercel deploy — tarkista manuaalisesti.
 10. **Jatkossa:** jäljellä olevat literaalit komponenteissa; syvempi Review-EN/FI -parity.
