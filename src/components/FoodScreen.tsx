@@ -6,7 +6,9 @@ import { Container } from "@/components/ui/Container";
 import { CoachSystemStatus } from "@/components/ui/CoachSystemStatus";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
+  buildCoachEngineBundle,
   mergeExceptionIntoDailyPlan,
+  normalizeProfileForEngine,
   resolveExceptionGuidance,
 } from "@/lib/coach";
 import { trackEvent } from "@/lib/analytics";
@@ -26,6 +28,7 @@ import { FoodIntelligenceBlock } from "@/components/food/FoodIntelligenceBlock";
 import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
 import { RetailProgramShoppingBlock } from "@/components/food/RetailProgramShoppingBlock";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
+import { FoodSwipePanels } from "@/components/food/FoodSwipePanels";
 import { foodDataFallbackKey } from "@/lib/dataConfidence";
 import { generateWeeklyShoppingListForProfile } from "@/lib/food/shoppingList";
 import {
@@ -73,6 +76,9 @@ import type {
 } from "@/types/coach";
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
+import { flowLog } from "@/lib/flowLog";
+import { logButtonClick } from "@/lib/uiInteractionDebug";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 
 function mealCardSubtitleKey(
@@ -180,8 +186,16 @@ export function FoodScreen() {
   const [offPlanMeals, setOffPlanMeals] = useState<OffPlanMeal[]>([]);
   const [missedMeals, setMissedMeals] = useState(0);
   const [exTick, setExTick] = useState(0);
-  const addFood = useAsyncButtonState({ name: "FoodScreen.addFood" });
+  const addFood = useAsyncButtonState({
+    name: "FoodScreen.addFood",
+    timeoutMs: 3000,
+  });
+  const [portalReady, setPortalReady] = useState(false);
   const [sheetError, setSheetError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
 
   useEffect(() => {
     if (profile === undefined) return;
@@ -207,17 +221,39 @@ export function FoodScreen() {
     [dayKeyFood, exTick],
   );
 
+  const normalizedProfile = useMemo(
+    () => (profile ? normalizeProfileForEngine(profile) : null),
+    [profile],
+  );
+
   const plan = useMemo(() => {
-    if (!profile) return null;
+    if (!normalizedProfile) return null;
     try {
-      const base = generateDailyPlan(profile, now, locale);
+      const base = generateDailyPlan(normalizedProfile, now, locale);
       return activeException
         ? mergeExceptionIntoDailyPlan(base, activeException, locale)
         : base;
     } catch {
       return null;
     }
-  }, [profile, now, locale, activeException]);
+  }, [normalizedProfile, now, locale, activeException]);
+
+  const coachEngine = useMemo(() => {
+    if (!normalizedProfile || !plan) return null;
+    return buildCoachEngineBundle({
+      profile: normalizedProfile,
+      locale,
+      now,
+      plan,
+      activeException: Boolean(activeException),
+    });
+  }, [normalizedProfile, plan, locale, now, activeException]);
+
+  const foodEngineLine = useMemo(() => {
+    const toggles = getCoachFeatureToggles(normalizedProfile ?? null);
+    if (!toggles.showCoachLines || !coachEngine) return null;
+    return coachEngine.lines.food;
+  }, [normalizedProfile, coachEngine]);
 
   const exceptionGuidanceFood = useMemo(() => {
     if (!activeException) return null;
@@ -244,9 +280,9 @@ export function FoodScreen() {
   );
 
   const dailyMeals = useMemo(() => {
-    if (!profile || !plan) return null;
+    if (!normalizedProfile || !plan) return null;
     return generateDailyMeals(
-      profile,
+      normalizedProfile,
       {
         caloriesTarget: plan.todayCalories,
         proteinTarget: plan.todayMacros.proteinG,
@@ -254,7 +290,7 @@ export function FoodScreen() {
       dateSalt,
       locale,
     );
-  }, [profile, plan, dateSalt, locale]);
+  }, [normalizedProfile, plan, dateSalt, locale]);
 
   const macros = plan?.todayMacros;
   const p = macros?.proteinG ?? 0;
@@ -262,9 +298,9 @@ export function FoodScreen() {
   const f = macros?.fatG ?? 0;
 
   const energyStatusKey = useMemo(() => {
-    if (!profile || !plan || !macros) return "food.goalLose" as MessageKey;
-    return foodEnergyStatusKey(profile, plan, { p, c, f });
-  }, [profile, plan, macros, p, c, f]);
+    if (!normalizedProfile || !plan || !macros) return "food.goalLose" as MessageKey;
+    return foodEnergyStatusKey(normalizedProfile, plan, { p, c, f });
+  }, [normalizedProfile, plan, macros, p, c, f]);
 
   const goalSupportEnergyKey = useMemo(() => {
     if (!plan) return "food.goalLose" as MessageKey;
@@ -331,6 +367,7 @@ export function FoodScreen() {
 
   const openAdd = useCallback(
     (slot: MealSlot, option?: MealOption | null) => {
+      logButtonClick("FoodScreen", "openAdd");
       setSheetError(null);
       setSheetSlot(slot);
       if (option) {
@@ -366,6 +403,7 @@ export function FoodScreen() {
   }, [profile, t]);
 
   const closeSheet = useCallback(() => {
+    logButtonClick("FoodScreen", "closeSheet");
     setSheetOpen(false);
     setSheetError(null);
     addFood.reset();
@@ -386,6 +424,7 @@ export function FoodScreen() {
         trackEvent("add_food");
         if (saveRepeat) addSavedMeal(label, kcal);
         bump();
+        flowLog("food.logged");
         setFormLabel("");
         setFormKcal("");
         setSaveRepeat(false);
@@ -450,7 +489,7 @@ export function FoodScreen() {
     Boolean(plan.foodAdjustmentNote) || Boolean(plan.rebalancePlan);
   const slots = slotList;
   const ratio = macroRatioBar(plan.todayMacros);
-  const ft = getCoachFeatureToggles(profile);
+  const ft = getCoachFeatureToggles(normalizedProfile ?? profile);
 
   return (
     <main className="coach-page">
@@ -473,6 +512,12 @@ export function FoodScreen() {
             </p>
           }
         />
+
+        {foodEngineLine ? (
+          <p className="mt-3 max-w-xl text-[12px] font-semibold leading-snug text-muted">
+            {foodEngineLine}
+          </p>
+        ) : null}
 
         {nextMealSlot && nextMealOption ? (
           <div
@@ -515,6 +560,27 @@ export function FoodScreen() {
           pageId="food"
           enabled={ft.showHelpVideos}
           className="mt-4"
+        />
+
+        <FoodSwipePanels
+          todaySummary={plan.todayFoodTask}
+          consumedKcal={consumed}
+          targetKcal={target}
+          rebalanceLine={
+            plan.rebalancePlan && ft.showNutritionCorrections
+              ? getRebalanceMessage(plan.rebalancePlan, locale)
+              : null
+          }
+          shoppingTeaser={
+            weeklyShopping
+              ? locale === "fi"
+                ? `${weeklyShopping.items.length} riviä ostoslistalla`
+                : `${weeklyShopping.items.length} lines on your list`
+              : null
+          }
+          showRebalanceUi={Boolean(
+            ft.showNutritionCorrections && plan.rebalancePlan,
+          )}
         />
 
         {kcalRangeHintText ? (
@@ -911,7 +977,7 @@ export function FoodScreen() {
         </div>
 
         {weeklyShopping ? (
-          <>
+          <div id="food-shopping" className="scroll-mt-6">
             <RetailProgramShoppingBlock
               weekly={weeklyShopping}
               locale={locale}
@@ -924,7 +990,7 @@ export function FoodScreen() {
               locale={locale}
               t={t}
             />
-          </>
+          </div>
         ) : null}
 
         <section className="mt-9 border-t border-border/40 pt-8" aria-labelledby="saved-meals">
@@ -991,21 +1057,27 @@ export function FoodScreen() {
         </p>
       </Container>
 
-      {sheetOpen ? (
-        <div
-          className="fixed inset-0 z-[110] flex touch-manipulation flex-col justify-end bg-foreground/25 backdrop-blur-[2px]"
-          role="presentation"
-          onPointerDown={(e) => {
-            if (e.target === e.currentTarget) closeSheet();
-          }}
-        >
-          <div
-            className="max-h-[85dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)]"
-            onPointerDown={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="add-food-title"
-          >
+      {portalReady && sheetOpen
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[50] flex touch-manipulation flex-col justify-end"
+              role="presentation"
+            >
+              <button
+                type="button"
+                tabIndex={-1}
+                aria-label={t("food.cancel")}
+                className="absolute inset-0 z-0 cursor-default border-0 bg-foreground/25 backdrop-blur-[2px] p-0"
+                onClick={closeSheet}
+              />
+              <div
+                className="relative z-[60] mt-auto w-full max-h-[85dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-food-title"
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border-strong/80" />
             <h2
               id="add-food-title"
@@ -1107,9 +1179,11 @@ export function FoodScreen() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      ) : null}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </main>
   );
 }

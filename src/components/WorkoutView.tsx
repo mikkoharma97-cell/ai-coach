@@ -1,7 +1,11 @@
 "use client";
 
 import { CoachAppShortcuts } from "@/components/app/CoachAppShortcuts";
-import { ExerciseMediaPanel } from "@/components/workout/ExerciseMediaPanel";
+import {
+  ExerciseCoachTipsPanel,
+  ExerciseMediaVideoSlot,
+} from "@/components/workout/ExerciseMediaPanel";
+import { SwipePanels } from "@/components/ui/SwipePanels";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
 import { Container } from "@/components/ui/Container";
@@ -52,6 +56,8 @@ type Props = {
   dataFallbackKey?: MessageKey | null;
   showVoiceWorkout?: boolean;
   showHelpVideos?: boolean;
+  /** Valmentajan runkoviiva (moottori) */
+  coachFrameLine?: string | null;
 };
 
 function cloneExercises(list: WorkoutViewExercise[]): ExerciseRow[] {
@@ -120,6 +126,7 @@ export function WorkoutView({
   dataFallbackKey,
   showVoiceWorkout = true,
   showHelpVideos = true,
+  coachFrameLine,
 }: Props) {
   const { t, locale } = useTranslation();
   const router = useRouter();
@@ -331,6 +338,12 @@ export function WorkoutView({
           }
         />
 
+        {coachFrameLine ? (
+          <p className="mt-3 max-w-[26rem] text-[12px] font-semibold leading-snug text-muted">
+            {coachFrameLine}
+          </p>
+        ) : null}
+
         {list.length > 0 && setsTotal > 0 ? (
           <p
             className="mt-4 rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.1] px-4 py-3 text-center text-[13px] font-semibold leading-snug text-foreground"
@@ -388,10 +401,59 @@ export function WorkoutView({
         />
 
         {list.length > 0 && rows[activeExerciseIndex] ? (
-          <ExerciseMediaPanel
-            exercise={rows[activeExerciseIndex]}
-            index={activeExerciseIndex}
-            total={rows.length}
+          <SwipePanels
+            className="mt-4"
+            ariaLabel={t("workout.title")}
+            showLabels
+            showDots
+            panelMinHeightClassName="min-h-[12rem]"
+            items={[
+              {
+                key: "move",
+                label: t("swipe.panelMove"),
+                children: (
+                  <div className="text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2">
+                      {t("workout.exercise.activeEyebrow", {
+                        current: activeExerciseIndex + 1,
+                        total: rows.length,
+                      })}
+                    </p>
+                    <h3 className="mt-1 text-[1.08rem] font-semibold leading-tight text-foreground">
+                      {rows[activeExerciseIndex].name}
+                    </h3>
+                    <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
+                      {rows[activeExerciseIndex].target}
+                    </p>
+                    <p className="mt-4 text-[13px] text-muted">
+                      {t("workout.setLabel", { n: activeSetIndex + 1 })} ·{" "}
+                      {rows[activeExerciseIndex].sets[activeSetIndex]?.reps}
+                      {rows[activeExerciseIndex].sets[activeSetIndex]?.weight
+                        ? ` · ${rows[activeExerciseIndex].sets[activeSetIndex]?.weight} kg`
+                        : ""}
+                    </p>
+                  </div>
+                ),
+              },
+              {
+                key: "coach",
+                label: t("swipe.panelCoach"),
+                children: (
+                  <ExerciseCoachTipsPanel
+                    exercise={rows[activeExerciseIndex]}
+                  />
+                ),
+              },
+              {
+                key: "media",
+                label: t("swipe.panelMedia"),
+                children: (
+                  <ExerciseMediaVideoSlot
+                    exercise={rows[activeExerciseIndex]}
+                  />
+                ),
+              },
+            ]}
           />
         ) : null}
 

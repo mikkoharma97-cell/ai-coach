@@ -30,6 +30,8 @@ import {
   loadWeightSeries,
   WEIGHT_LOG_CHANGED,
 } from "@/lib/progress";
+import { DevelopmentTrajectoryCard } from "@/components/progress/DevelopmentTrajectoryCard";
+import { ProgressSwipeStrip } from "@/components/progress/ProgressSwipeStrip";
 import { WeightQuickLog } from "@/components/progress/WeightQuickLog";
 import { progressDataFallbackKey } from "@/lib/dataConfidence";
 import { progressContinueReasonKey } from "@/lib/progressContinueReason";
@@ -119,6 +121,44 @@ export function ProgressPage() {
     [profile],
   );
 
+  const progressSwipeLines = useMemo(() => {
+    if (!streaks || !consistency) return null;
+    const ft = features;
+    const weekLine =
+      locale === "en"
+        ? `${streaks.combined} day streak · ${consistency.pct}% (14d)`
+        : `${streaks.combined} pv putkeen · ${consistency.pct}% (14 pv)`;
+    const growthLine =
+      heroInsight && ft.showCoachLines
+        ? t(heroInsight.headlineKey, heroInsight.proofParams)
+        : continueReasonKey
+          ? t(continueReasonKey)
+          : t("progress.pageLead");
+    const truthLine =
+      realityScore && ft.showRealityScore
+        ? locale === "en"
+          ? realityScore.labelEn
+          : realityScore.labelFi
+        : ft.showCoachLines
+          ? t(
+              progressInterpretationKey({
+                combinedStreakDays: streaks.combined,
+                consistencyPct: consistency.pct,
+              }),
+            )
+          : t("progress.pageLead");
+    return { weekLine, growthLine, truthLine };
+  }, [
+    streaks,
+    consistency,
+    features,
+    locale,
+    heroInsight,
+    continueReasonKey,
+    realityScore,
+    t,
+  ]);
+
   if (profile === undefined) {
     return (
       <Container className="py-6">
@@ -185,6 +225,21 @@ export function ProgressPage() {
           enabled={ft.showHelpVideos}
           className="mb-4"
         />
+        {progressSwipeLines ? (
+          <ProgressSwipeStrip
+            weekLine={progressSwipeLines.weekLine}
+            growthLine={progressSwipeLines.growthLine}
+            truthLine={progressSwipeLines.truthLine}
+          />
+        ) : null}
+        <div className="mt-5">
+          <DevelopmentTrajectoryCard
+            profile={profile}
+            consistencyPct={consistency.pct}
+            streakDays={streaks.combined}
+            version={weightTick}
+          />
+        </div>
         <WeightQuickLog onLogged={bumpWeight} />
         <div className="space-y-7">
           <ProgressHeroInsightCard

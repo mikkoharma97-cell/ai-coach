@@ -25,3 +25,29 @@ export {
   resolveExceptionGuidance,
   shouldSuppressWorkoutLink,
 } from "@/lib/coach/exceptionEngine";
+
+export { normalizeProfileForEngine } from "@/lib/coach/profileNormalizer";
+export {
+  buildCoachProgramDecision,
+  type CoachProgramDecision,
+} from "@/lib/coach/programDecisionEngine";
+export {
+  trainingArchetypeFromDecision,
+  isTrainingBlueprintAllowedForProfile,
+  describeTrainingFrame,
+} from "@/lib/coach/trainingEngine";
+export { buildNutritionEngineSnapshot } from "@/lib/coach/nutritionEngine";
+export {
+  buildWeeklyAdaptation,
+  weeklySignalsFromReviewMetrics,
+  type WeeklyAdaptation,
+  type WeeklyRecentSignals,
+} from "@/lib/coach/weekAdaptationEngine";
+export { buildCoachExplanation } from "@/lib/coach/explanationEngine";
+export {
+  buildTodayCoachLine,
+  buildFoodCoachLine,
+  buildWorkoutCoachLine,
+  buildReviewCoachLine,
+} from "@/lib/coach/feedbackEngine";
+export { buildCoachEngineBundle } from "@/lib/coach/coachEngineBundle";

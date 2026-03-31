@@ -7,8 +7,10 @@ import { Container } from "@/components/ui/Container";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
+  buildCoachEngineBundle,
   getDailyCoachDecisionV2,
   mergeExceptionIntoDailyPlan,
+  normalizeProfileForEngine,
   resolveExceptionGuidance,
   shouldSuppressWorkoutLink,
 } from "@/lib/coach";
@@ -22,6 +24,7 @@ import {
   type Locale,
   type MessageKey,
 } from "@/lib/i18n";
+import { flowLog } from "@/lib/flowLog";
 import { dayKeyFromDate } from "@/lib/dateKey";
 import { DAILY_ACTIVITIES_CHANGED } from "@/lib/activityStorage";
 import { getMondayBasedIndex } from "@/lib/plan";
@@ -40,6 +43,7 @@ import {
   computeTodaySystemStatusKey,
 } from "@/lib/todaySystemStatus";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
+import { TodaySwipeStrip } from "@/components/today/TodaySwipeStrip";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import {
   EXCEPTION_STATE_CHANGED,
@@ -117,28 +121,50 @@ export function AppDashboard() {
     [dayKeyToday, exTick],
   );
 
+  const normalizedProfile = useMemo(
+    () => (profile ? normalizeProfileForEngine(profile) : null),
+    [profile],
+  );
+
   const plan = useMemo(() => {
-    if (!profile) return null;
+    if (!normalizedProfile) return null;
     try {
-      const base = generateDailyPlan(profile, now, locale);
+      const base = generateDailyPlan(normalizedProfile, now, locale);
       return activeException
         ? mergeExceptionIntoDailyPlan(base, activeException, locale)
         : base;
     } catch {
       return null;
     }
-  }, [profile, now, locale, activityPlanTick, signalTick, activeException]);
+  }, [normalizedProfile, now, locale, activityPlanTick, signalTick, activeException]);
+
+  const coachEngine = useMemo(() => {
+    if (!normalizedProfile || !plan) return null;
+    return buildCoachEngineBundle({
+      profile: normalizedProfile,
+      locale,
+      now,
+      plan,
+      activeException: Boolean(activeException),
+    });
+  }, [normalizedProfile, locale, now, plan, activeException]);
+
+  useEffect(() => {
+    if (profile && plan) {
+      flowLog("today.planReady", dayKeyToday);
+    }
+  }, [profile, plan, dayKeyToday]);
 
   const streaks = useMemo(
-    () => (profile ? computeStreakSummary(profile, now) : null),
-    [profile, now],
+    () => (normalizedProfile ? computeStreakSummary(normalizedProfile, now) : null),
+    [normalizedProfile, now],
   );
 
   const realityScore = useMemo(() => {
-    if (!profile) return null;
-    const ctx = gatherRealityScoreContext(profile, now);
+    if (!normalizedProfile) return null;
+    const ctx = gatherRealityScoreContext(normalizedProfile, now);
     return buildRealityScore({ ...ctx, locale });
-  }, [profile, now, locale]);
+  }, [normalizedProfile, now, locale]);
 
   const streakTone = useMemo(() => {
     if (!streaks) return undefined;
@@ -148,9 +174,9 @@ export function AppDashboard() {
   }, [streaks]);
 
   const dataFallbackKey = useMemo((): MessageKey | null => {
-    if (!profile || !streaks) return null;
-    return appDataFallbackKey(profile, streaks.combined);
-  }, [profile, streaks]);
+    if (!normalizedProfile || !streaks) return null;
+    return appDataFallbackKey(normalizedProfile, streaks.combined);
+  }, [normalizedProfile, streaks]);
 
   const trialBanner = useMemo(() => {
     const snap = getSubscriptionSnapshot();
@@ -159,11 +185,11 @@ export function AppDashboard() {
       return t("trial.headerLine", { days: snap.daysLeftInTrial });
     }
     return null;
-  }, [t, profile]);
+  }, [t]);
 
   const features = useMemo(
-    () => getCoachFeatureToggles(profile ?? null),
-    [profile],
+    () => getCoachFeatureToggles(normalizedProfile ?? null),
+    [normalizedProfile],
   );
 
   const exceptionGuidance = useMemo(() => {
@@ -184,51 +210,63 @@ export function AppDashboard() {
   const todayIdx = useMemo(() => getMondayBasedIndex(now), [now]);
 
   const focus = useMemo(() => {
-    if (!plan || !profile) return null;
+    if (!plan || !normalizedProfile) return null;
     const entry = plan.weeklyPlan.days[todayIdx];
     const isRest = Boolean(entry?.isRest);
     return getDailyFocus(
-      profile.selectedPackageId,
+      normalizedProfile.selectedPackageId,
       todayIdx,
       isRest,
       plan.todayWorkout,
       locale,
     );
-  }, [plan, profile, todayIdx, locale]);
+  }, [plan, normalizedProfile, todayIdx, locale]);
 
   const packageBadge = useMemo(() => {
-    if (!profile) return null;
-    const pkg = getProgramPackage(profile.selectedPackageId);
+    if (!normalizedProfile) return null;
+    const pkg = getProgramPackage(normalizedProfile.selectedPackageId);
     return locale === "en" ? pkg.nameEn : pkg.nameFi;
-  }, [profile, locale]);
+  }, [normalizedProfile, locale]);
 
   const { programRationaleLine, programPresetLine } = useMemo(() => {
-    if (!profile) {
+    if (!normalizedProfile) {
       return { programRationaleLine: null as string | null, programPresetLine: null as string | null };
     }
-    const r = resolveProgramFromProfile(profile);
+    const r = resolveProgramFromProfile(normalizedProfile);
     return {
       programRationaleLine: t(r.programRationaleKey),
       programPresetLine: `${t(r.presetFrameLabelKey)} · ${t(r.presetNameKey)}`,
     };
-  }, [profile, t]);
+  }, [normalizedProfile, t]);
+
+  const engineWeekLine = useMemo(() => {
+    if (!features.showCoachLines || !coachEngine) return null;
+    return t(coachEngine.adaptation.headlineKey);
+  }, [features.showCoachLines, coachEngine, t]);
 
   const quickNoteLine = useMemo(() => {
-    if (!profile) return null;
+    if (!normalizedProfile) return null;
     return loadOutcomeHint(now)?.quickNote?.trim() || null;
-  }, [profile, now, signalTick]);
+  }, [normalizedProfile, now, signalTick]);
 
   const coachPresenceLine = useMemo(() => {
     if (!features.showCoachLines) return null;
     return t(todayCoachVoiceKey(dayKeyToday));
   }, [features.showCoachLines, dayKeyToday, t]);
 
+  const rhythmExtra = useMemo(() => {
+    if (!streaks) return null;
+    return locale === "en"
+      ? `${streaks.combined} day streak`
+      : `${streaks.combined} pv putkeen`;
+  }, [streaks, locale]);
+
   const goalProgressRealism = useMemo(() => {
-    if (!profile) return null;
-    if (profile.targetWeight == null || !profile.targetDate?.trim()) {
+    if (!normalizedProfile) return null;
+    if (normalizedProfile.targetWeight == null || !normalizedProfile.targetDate?.trim()) {
       return null;
     }
-    const g = getGoalTimeline(profile, now);
+    const g = getGoalTimeline(normalizedProfile, now);
     if (!g.hasTarget || g.paceKey === "goalTimeline.noTarget") return null;
     const keyMap: Record<string, MessageKey> = {
       "goalTimeline.paceOk": "dashboard.goalPaceOk",
@@ -238,12 +276,12 @@ export function AppDashboard() {
     };
     const k = keyMap[g.paceKey] ?? "dashboard.goalPaceNeutral";
     return t(k);
-  }, [profile, now, t]);
+  }, [normalizedProfile, now, t]);
 
   const coachHero = useMemo(() => {
-    if (!profile || !plan) return null;
+    if (!normalizedProfile || !plan) return null;
     const d = getDailyCoachDecisionV2({
-      profile,
+      profile: normalizedProfile,
       referenceDate: now,
       locale,
       plan,
@@ -253,24 +291,24 @@ export function AppDashboard() {
       mainMessage: en ? d.mainMessageEn : d.mainMessageFi,
       direction: en ? d.directionEn : d.directionFi,
     };
-  }, [profile, plan, now, locale]);
+  }, [normalizedProfile, plan, now, locale]);
 
   const generatedWorkout = useMemo(() => {
-    if (!profile) return null;
+    if (!normalizedProfile) return null;
     return generateWorkoutDay({
-      package: normalizeProgramPackageId(profile.selectedPackageId),
-      goal: profile.goal,
-      level: profile.level,
+      package: normalizeProgramPackageId(normalizedProfile.selectedPackageId),
+      goal: normalizedProfile.goal,
+      level: normalizedProfile.level,
       week: 1,
       dayIndex: todayIdx,
       locale,
-      trainingLevel: effectiveTrainingLevel(profile),
-      limitations: profile.limitations,
-      coachMode: profile.mode ?? "guided",
-      programBlueprintId: profile.programBlueprintId,
-      sourceProfile: profile,
+      trainingLevel: effectiveTrainingLevel(normalizedProfile),
+      limitations: normalizedProfile.limitations,
+      coachMode: normalizedProfile.mode ?? "guided",
+      programBlueprintId: normalizedProfile.programBlueprintId,
+      sourceProfile: normalizedProfile,
     });
-  }, [profile, todayIdx, locale]);
+  }, [normalizedProfile, todayIdx, locale]);
 
   useEffect(
     () => () => {
@@ -307,24 +345,24 @@ export function AppDashboard() {
   }, [dayDone, now]);
 
   const todaySystemStatusKey = useMemo((): MessageKey => {
-    if (!profile || !plan) return "today.systemStatus.balanced";
+    if (!normalizedProfile || !plan) return "today.systemStatus.balanced";
     return computeTodaySystemStatusKey({
-      profile,
+      profile: normalizedProfile,
       plan,
       referenceDate: now,
       locale,
     });
-  }, [profile, plan, now, locale]);
+  }, [normalizedProfile, plan, now, locale]);
 
   const dayCloseRetention = useMemo(() => {
-    if (!profile || !plan) return null;
+    if (!normalizedProfile || !plan) return null;
     return computeDayCloseRetentionKeys({
-      profile,
+      profile: normalizedProfile,
       plan,
       referenceDate: now,
       locale,
     });
-  }, [profile, plan, now, locale]);
+  }, [normalizedProfile, plan, now, locale]);
 
   const onQuickDone = useCallback(() => {
     const href =
@@ -376,6 +414,21 @@ export function AppDashboard() {
           pageId="today"
           enabled={features.showHelpVideos}
           className="mt-2"
+        />
+
+        <TodaySwipeStrip
+          focus={focus!}
+          foodLine={plan.todayFoodTask}
+          workoutHref={
+            generatedWorkout &&
+            !generatedWorkout.isRestDay &&
+            generatedWorkout.exercises.length > 0 &&
+            !suppressWorkout
+              ? "/workout"
+              : undefined
+          }
+          coachPresenceLine={coachPresenceLine}
+          rhythmExtra={rhythmExtra}
         />
 
         <div className="relative">
@@ -450,6 +503,7 @@ export function AppDashboard() {
             trialBannerHref={trialBanner ? "/paywall" : undefined}
             programPresetLine={programPresetLine}
             programRationaleLine={programRationaleLine}
+            engineWeekLine={engineWeekLine}
             quickNoteLine={quickNoteLine}
             coachPresenceLine={coachPresenceLine}
             dataFallbackKey={dataFallbackKey}

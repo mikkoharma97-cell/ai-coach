@@ -70,6 +70,8 @@ type Props = {
   programPresetLine?: string | null;
   /** Yksi lause: miksi tämä viikko vastaa profiilia */
   programRationaleLine?: string | null;
+  /** Viikkoadaptaation otsikko (moottori) */
+  engineWeekLine?: string | null;
   /** Pikamuistiinpano (esim. äänellä) */
   quickNoteLine?: string | null;
   /** Valmentajan ääni — yksi lyhyt linja */
@@ -115,6 +117,7 @@ export function TodayCard({
   trialBannerHref,
   programPresetLine,
   programRationaleLine,
+  engineWeekLine,
   quickNoteLine,
   coachPresenceLine,
   dataFallbackKey,
@@ -193,6 +196,15 @@ export function TodayCard({
             role="status"
           >
             {programRationaleLine}
+          </p>
+        ) : null}
+
+        {engineWeekLine ? (
+          <p
+            className="mt-2 max-w-[26rem] text-center text-[11px] font-semibold leading-snug text-accent/90 sm:text-left"
+            role="status"
+          >
+            {engineWeekLine}
           </p>
         ) : null}
 

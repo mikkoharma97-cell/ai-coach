@@ -5,6 +5,11 @@ import { WorkoutView, type WorkoutViewExercise } from "@/components/WorkoutView"
 import { useTranslation } from "@/hooks/useTranslation";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { useClientProfile } from "@/hooks/useClientProfile";
+import {
+  buildCoachProgramDecision,
+  buildWorkoutCoachLine,
+  normalizeProfileForEngine,
+} from "@/lib/coach";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { workoutDataFallbackKey } from "@/lib/dataConfidence";
 import type { MessageKey } from "@/lib/i18n";
@@ -12,6 +17,7 @@ import { getMondayBasedIndex } from "@/lib/plan";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
+import { flowLog } from "@/lib/flowLog";
 import { computeStreakSummary } from "@/lib/streaks";
 import type { ProExercise } from "@/types/pro";
 import Link from "next/link";
@@ -75,22 +81,41 @@ export function WorkoutSession() {
     [profile],
   );
 
+  const normalizedProfile = useMemo(
+    () => (profile ? normalizeProfileForEngine(profile) : null),
+    [profile],
+  );
+
+  const workoutCoachLine = useMemo(() => {
+    if (!normalizedProfile) return null;
+    const d = buildCoachProgramDecision(normalizedProfile);
+    return buildWorkoutCoachLine(locale, d);
+  }, [normalizedProfile, locale]);
+
   const generated = useMemo(() => {
-    if (!profile) return null;
+    if (!normalizedProfile) return null;
     const dayIndex = getMondayBasedIndex(now);
     return generateWorkoutDay({
-      package: normalizeProgramPackageId(profile.selectedPackageId),
-      goal: profile.goal,
-      level: profile.level,
+      package: normalizeProgramPackageId(normalizedProfile.selectedPackageId),
+      goal: normalizedProfile.goal,
+      level: normalizedProfile.level,
       dayIndex,
       locale,
-      trainingLevel: effectiveTrainingLevel(profile),
-      limitations: profile.limitations,
-      coachMode: profile.mode ?? "guided",
-      programBlueprintId: profile.programBlueprintId,
-      sourceProfile: profile,
+      trainingLevel: effectiveTrainingLevel(normalizedProfile),
+      limitations: normalizedProfile.limitations,
+      coachMode: normalizedProfile.mode ?? "guided",
+      programBlueprintId: normalizedProfile.programBlueprintId,
+      sourceProfile: normalizedProfile,
     });
-  }, [profile, now, locale]);
+  }, [normalizedProfile, now, locale]);
+
+  useEffect(() => {
+    if (!generated) return;
+    flowLog("workout.session", {
+      rest: generated.isRestDay,
+      exercises: generated.exercises.length,
+    });
+  }, [generated]);
 
   if (profile === undefined) {
     return (
@@ -129,6 +154,11 @@ export function WorkoutSession() {
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
             {generated.workout}
           </p>
+          {workoutCoachLine ? (
+            <p className="mt-3 text-[12px] font-semibold leading-snug text-muted">
+              {workoutCoachLine}
+            </p>
+          ) : null}
           <p className="mt-3 text-[14px] font-medium leading-snug text-foreground/90">
             {t("workout.restHint")}
           </p>
@@ -171,6 +201,7 @@ export function WorkoutSession() {
       dataFallbackKey={dataFallbackKey}
       showVoiceWorkout={features.showVoiceWorkout}
       showHelpVideos={features.showHelpVideos}
+      coachFrameLine={workoutCoachLine}
     />
   );
 }

@@ -7,6 +7,23 @@ export const fi = {
   "common.hide": "Piilota",
   "common.none": "—",
 
+  "swipe.panelWorkout": "Treeni",
+  "swipe.panelFood": "Ruoka",
+  "swipe.panelRhythm": "Rytmi",
+  "swipe.panelToday": "Tänään",
+  "swipe.panelRebalance": "Korjaus",
+  "swipe.panelShop": "Ostokset",
+  "swipe.panelMove": "Liike",
+  "swipe.panelCoach": "Ohje",
+  "swipe.panelMedia": "Media",
+  "swipe.progressWeek": "Viikko",
+  "swipe.progressGrowth": "Kehitys",
+  "swipe.progressTruth": "Linja",
+  "swipe.openWorkout": "Avaa treeni",
+  "swipe.openFood": "Avaa ruoka",
+  "swipe.todaySwipeEyebrow": "Tänään — pyyhkäise",
+  "swipe.openShoppingList": "Avaa ostoslista",
+
   "pwa.installPrompt":
     "Asenna Coach kotiruudulle — nopea käyttö ilman selainta.",
   "pwa.installCta": "Asenna",
@@ -180,6 +197,53 @@ export const fi = {
     "Tämä viikko on rakennettu sinun rytmilläsi.",
   "program.rationale.proMode":
     "Pro-tila: oma runko, ohjaus täyttää yksityiskohdat.",
+
+  "engine.nutrition.structure.three_easy":
+    "Kolmen aterian rytmi — helppo pitää kiinni ilman säätöähkyä.",
+  "engine.nutrition.structure.four_normal":
+    "Neljän pisteen päivä — treeni ja arki jakavat saman kellon.",
+  "engine.nutrition.structure.five_performance":
+    "Viisi pistettä — energia ja proteiini kantavat kovemmat päivät.",
+  "engine.nutrition.structure.busy":
+    "Kiireinen päivä — rakenne on lyhyt, toisto korvaa täydellisyyden.",
+  "engine.nutrition.structure.social_flex":
+    "Sosiaalinen viikko — joustoa ilman että viikko leviää käsiin.",
+  "engine.nutrition.structure.shift":
+    "Vuororytmi — syömiset eivät nojaa ‘normaaliin’ päivään.",
+
+  "engine.week.neutralLine":
+    "Viikkolinja pysyy — seuraava askel on toisto, ei uusi ohjelma.",
+  "engine.week.keep.headline": "Pidä linja.",
+  "engine.week.keep.detail":
+    "Toisto kantaa — älä vaihda kaikkea kerralla.",
+  "engine.week.reduce.headline": "Kevyt kuorma.",
+  "engine.week.reduce.detail":
+    "Vähennä yhtä asiaa: määrää, intensiteettiä tai lisästressiä.",
+  "engine.week.simplifyFood.headline": "Yksinkertaista ruokaa.",
+  "engine.week.simplifyFood.detail":
+    "Sama ateriamalli useampana päivänä — vähemmän päätöksiä.",
+  "engine.week.correction.headline": "Korjaus päällä.",
+  "engine.week.correction.detail":
+    "Ei rankaisua — suunta takaisin, muutama päivä.",
+  "engine.week.recover.headline": "Suojaa palautuminen.",
+  "engine.week.recover.detail":
+    "Poikkeama näkyi — lepo ja rytmi ennen uutta kuormaa.",
+  "engine.week.tighten.headline": "Tiivitä rytmi.",
+  "engine.week.tighten.detail":
+    "Yksi ankkuri päivään — sama kellonaika, sama rakenne.",
+  "engine.week.resume.headline": "Paluu hillitysti.",
+  "engine.week.resume.detail":
+    "Aloita pienestä, pidä sarjat laadukkaina — ei kiirettä takaisin.",
+
+  "engine.feedback.today": "{{week}} — {{program}}",
+  "engine.feedback.food": "{{food}} · {{program}}",
+  "engine.feedback.workout": "Runko: {{track}} — pidä tekniikka, älä ego.",
+  "engine.feedback.review": "Seuraava viikko: {{line}}",
+  "engine.feedback.reviewNeutral": "Seuraava viikko: sama runko, parempi toisto.",
+
+  "engine.progressTrajectoryEyebrow": "Viikkolinja",
+  "engine.progressTrajectoryLine":
+    "{{weight}} · treenirytmi {{consistency}}% · {{streak}} pv putkeen",
 
   "program.presetFrameLabel": "Tämän profiilin runko",
   "program.preset.correction.gentle":
@@ -1550,6 +1614,7 @@ export const fi = {
 
   "settings.previewEyebrow": "Testaus / tunneli",
   "settings.previewBuildLabel": "Build-aika (ISO)",
+  "settings.previewEnvBuildLabel": "Ympäristö · build",
   "settings.previewOriginLabel": "Origin (tämä näkymä)",
   "settings.previewTunnelNote":
     "Jos esikatselulinkki ei päivity, käynnistä tunneli uudelleen ja käytä uusinta osoitetta.",
@@ -1741,6 +1806,23 @@ export const en: { [K in MessageKey]: string } = {
   "common.hide": "Hide",
   "common.none": "—",
 
+  "swipe.panelWorkout": "Training",
+  "swipe.panelFood": "Food",
+  "swipe.panelRhythm": "Rhythm",
+  "swipe.panelToday": "Today",
+  "swipe.panelRebalance": "Adjust",
+  "swipe.panelShop": "Shopping",
+  "swipe.panelMove": "Move",
+  "swipe.panelCoach": "Coach",
+  "swipe.panelMedia": "Media",
+  "swipe.progressWeek": "Week",
+  "swipe.progressGrowth": "Progress",
+  "swipe.progressTruth": "Line",
+  "swipe.openWorkout": "Open workout",
+  "swipe.openFood": "Open food",
+  "swipe.todaySwipeEyebrow": "Today — swipe",
+  "swipe.openShoppingList": "Open shopping list",
+
   "pwa.installPrompt":
     "Install Coach on your home screen — faster access without the browser chrome.",
   "pwa.installCta": "Install",
@@ -1904,6 +1986,54 @@ export const en: { [K in MessageKey]: string } = {
     "This week is built around your rhythm.",
   "program.rationale.proMode":
     "Pro: your frame, guidance fills the details.",
+
+  "engine.nutrition.structure.three_easy":
+    "Three-meal rhythm — easy to hold without micromanaging every bite.",
+  "engine.nutrition.structure.four_normal":
+    "Four touchpoints — training and life share the same clock.",
+  "engine.nutrition.structure.five_performance":
+    "Five meals — fuel matches the harder training days.",
+  "engine.nutrition.structure.busy":
+    "Busy days — structure is short; repetition beats perfection.",
+  "engine.nutrition.structure.social_flex":
+    "Social week — flexibility without letting the week unravel.",
+  "engine.nutrition.structure.shift":
+    "Shift rhythm — meals don’t assume a ‘normal’ day.",
+
+  "engine.week.neutralLine":
+    "The line holds — next step is repetition, not a new program.",
+  "engine.week.keep.headline": "Hold the line.",
+  "engine.week.keep.detail":
+    "Repetition carries — don’t reset everything at once.",
+  "engine.week.reduce.headline": "Ease the load.",
+  "engine.week.reduce.detail":
+    "Reduce one lever: volume, intensity, or extra stress.",
+  "engine.week.simplifyFood.headline": "Simplify food.",
+  "engine.week.simplifyFood.detail":
+    "Same meal pattern more days — fewer decisions.",
+  "engine.week.correction.headline": "Correction active.",
+  "engine.week.correction.detail":
+    "No punishment — direction back over a few days.",
+  "engine.week.recover.headline": "Protect recovery.",
+  "engine.week.recover.detail":
+    "A disruption showed — rhythm and rest before new load.",
+  "engine.week.tighten.headline": "Tighten rhythm.",
+  "engine.week.tighten.detail":
+    "One anchor per day — same time, same structure.",
+  "engine.week.resume.headline": "Return calmly.",
+  "engine.week.resume.detail":
+    "Start small, keep sets clean — no rush to ‘catch up’.",
+
+  "engine.feedback.today": "{{week}} — {{program}}",
+  "engine.feedback.food": "{{food}} · {{program}}",
+  "engine.feedback.workout": "Frame: {{track}} — technique over ego.",
+  "engine.feedback.review": "Next week: {{line}}",
+  "engine.feedback.reviewNeutral":
+    "Next week: same frame, better repeats.",
+
+  "engine.progressTrajectoryEyebrow": "Weekly line",
+  "engine.progressTrajectoryLine":
+    "{{weight}} · training rhythm {{consistency}}% · {{streak}}-day streak",
 
   "program.presetFrameLabel": "Your profile’s framework",
   "program.preset.correction.gentle":
@@ -3293,6 +3423,7 @@ export const en: { [K in MessageKey]: string } = {
 
   "settings.previewEyebrow": "Testing / tunnel",
   "settings.previewBuildLabel": "Build time (ISO)",
+  "settings.previewEnvBuildLabel": "Environment · build",
   "settings.previewOriginLabel": "Origin (this view)",
   "settings.previewTunnelNote":
     "If the preview link looks stale, restart the tunnel and use the newest URL.",

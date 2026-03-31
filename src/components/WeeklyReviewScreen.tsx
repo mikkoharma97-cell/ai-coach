@@ -12,6 +12,11 @@ import {
   computeWeeklyReviewWeekMetrics,
   generateWeeklyReview,
 } from "@/lib/weeklyReview";
+import {
+  buildWeeklyAdaptation,
+  normalizeProfileForEngine,
+  weeklySignalsFromReviewMetrics,
+} from "@/lib/coach";
 import { resolveProgramFromProfile } from "@/lib/profileProgramResolver";
 import { computeNextWeekMomentumKey } from "@/lib/review/nextWeekMomentum";
 import {
@@ -189,9 +194,25 @@ export function WeeklyReviewScreen() {
 
   const weekProgramLine = useMemo(() => {
     if (!profile) return null;
-    const r = resolveProgramFromProfile(profile);
+    const n = normalizeProfileForEngine(profile);
+    const r = resolveProgramFromProfile(n);
     return t(r.programRationaleKey);
   }, [profile, t]);
+
+  const reviewAdaptationLine = useMemo(() => {
+    if (!profile || !review) return null;
+    const n = normalizeProfileForEngine(profile);
+    const m = computeWeeklyReviewWeekMetrics(profile, now, locale);
+    const { exceptions } = computeWeeklyReviewContextFlags(profile, now);
+    const signals = weeklySignalsFromReviewMetrics({
+      trainingMissed: m.trainingMissed,
+      calorieDriftDays: m.calorieDriftDays,
+      exceptions,
+      consistency: review.strip.consistency,
+    });
+    const adaptation = buildWeeklyAdaptation(n, signals);
+    return t(adaptation.detailKey);
+  }, [profile, review, now, locale, t]);
 
   if (profile === undefined) {
     return (
@@ -229,6 +250,12 @@ export function WeeklyReviewScreen() {
         {weekProgramLine ? (
           <p className="mt-3 max-w-xl text-[13px] font-medium leading-snug text-muted">
             {weekProgramLine}
+          </p>
+        ) : null}
+
+        {ft.showCoachLines && reviewAdaptationLine ? (
+          <p className="mt-2 max-w-xl text-[12px] font-semibold leading-snug text-accent/90">
+            {reviewAdaptationLine}
           </p>
         ) : null}
 

@@ -12,6 +12,10 @@ import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFal
 import { useAsyncButtonState } from "@/hooks/useAsyncButtonState";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
+import {
+  buildCoachEngineBundle,
+  normalizeProfileForEngine,
+} from "@/lib/coach";
 import { displaySystemLine, generateDailyPlan } from "@/lib/dailyEngine";
 import { getProgramPackage, packageLabel } from "@/lib/programPackages";
 import { getYesterdayAdjustmentSignals } from "@/lib/adjustments";
@@ -86,14 +90,31 @@ export function AdjustmentsScreen() {
     }
   }, [profile, router]);
 
+  const normalizedProfile = useMemo(
+    () => (profile ? normalizeProfileForEngine(profile) : null),
+    [profile],
+  );
+
   const plan = useMemo(() => {
-    if (!profile) return null;
+    if (!normalizedProfile) return null;
     try {
-      return generateDailyPlan(profile, now, locale);
+      return generateDailyPlan(normalizedProfile, now, locale);
     } catch {
       return null;
     }
-  }, [profile, now, locale]);
+  }, [normalizedProfile, now, locale]);
+
+  const adjustEngineLine = useMemo(() => {
+    if (!normalizedProfile || !plan) return null;
+    const b = buildCoachEngineBundle({
+      profile: normalizedProfile,
+      locale,
+      now,
+      plan,
+      activeException: false,
+    });
+    return t(b.adaptation.headlineKey);
+  }, [normalizedProfile, plan, locale, now, t]);
 
   const packageContext = useMemo(() => {
     if (!profile?.selectedPackageId) return null;
@@ -394,6 +415,11 @@ export function AdjustmentsScreen() {
               <p className="mt-2 text-[14px] font-medium leading-snug tracking-[-0.02em] text-foreground">
                 {whyOneLiner}
               </p>
+              {adjustEngineLine ? (
+                <p className="mt-3 text-[12px] font-semibold leading-snug text-accent/90">
+                  {adjustEngineLine}
+                </p>
+              ) : null}
             </section>
           </div>
         </details>
