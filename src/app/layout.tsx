@@ -1,4 +1,9 @@
 import type { Metadata } from "next";
+import {
+  APP_DESCRIPTION,
+  APP_DISPLAY_NAME,
+  APP_SHORT_NAME,
+} from "@/config/appInfo";
 import { VersionBadge } from "@/components/common/VersionBadge";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { getPublicSiteUrl } from "@/lib/siteUrl";
@@ -19,14 +24,24 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getPublicSiteUrl()),
-  title: "Coach — Daily guidance",
-  description:
-    "Today tells you what to do: workout, food, activity — in order. No feed, no guesswork.",
-  applicationName: "Coach",
+  title: `${APP_DISPLAY_NAME} — Daily guidance`,
+  description: APP_DESCRIPTION,
+  applicationName: APP_DISPLAY_NAME,
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Coach",
+    title: APP_SHORT_NAME,
+  },
+  openGraph: {
+    type: "website",
+    siteName: APP_DISPLAY_NAME,
+    title: `${APP_DISPLAY_NAME} — Daily guidance`,
+    description: APP_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: `${APP_DISPLAY_NAME} — Daily guidance`,
+    description: APP_DESCRIPTION,
   },
   formatDetection: {
     telephone: false,

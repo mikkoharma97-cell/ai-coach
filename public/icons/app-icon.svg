@@ -7,5 +7,5 @@
   </defs>
   <rect width="512" height="512" rx="112" fill="#06070b"/>
   <rect x="48" y="48" width="416" height="416" rx="88" fill="url(#g)" opacity="0.92"/>
-  <text x="256" y="310" text-anchor="middle" font-family="system-ui,sans-serif" font-size="180" font-weight="700" fill="#f3f6ff">AI</text>
+  <text x="256" y="310" text-anchor="middle" font-family="system-ui,sans-serif" font-size="220" font-weight="700" fill="#f3f6ff">C</text>
 </svg>
