@@ -17,6 +17,7 @@ export const coachVoice = {
     "Demo-myynti: avaus → polku (Today→Workout→Food→Progress) → arvo → kenelle → close alle ~2 min (HÄRMÄ18).",
     "Päätös: yksi moottori yhdistää tavoitteen, edistymisen, ruoan ja treenin → tänään + seuraava säätö (HÄRMÄ19).",
     "Muistutukset: opt-in, max muutama päivässä, hiljaisuus yöllä — ei ärsyttävää spämmiä (HÄRMÄ20).",
+    "Asetukset: ensin tavoite, treenipäivät, ruokarakenne, muistutukset — muu piilossa (HÄRMÄ21).",
   ],
   bannedPhrasesFi: [
     "optimoi",

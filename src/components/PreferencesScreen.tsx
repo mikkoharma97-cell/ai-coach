@@ -1,7 +1,11 @@
 "use client";
 
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
-import { PreferenceField, PreferenceSection, preferenceSelectClass } from "@/components/preferences/PreferenceSection";
+import {
+  PreferenceField,
+  PreferenceSection,
+  preferenceSelectClass,
+} from "@/components/preferences/PreferenceSection";
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { Container } from "@/components/ui/Container";
@@ -196,33 +200,57 @@ export function PreferencesScreen() {
           </Link>
         </p>
 
-        <div className="mt-6">
-        <PreferenceSection title={t("preferences.coachTitle")}>
-          <p className="text-[12px] leading-relaxed text-muted-2">
-            {t("preferences.coachSubtitle")}
-          </p>
-          <div className="mt-3 divide-y divide-border/45 rounded-[var(--radius-lg)] border border-border/50 bg-white/[0.02] px-1">
-            {COACH_TOGGLE_KEYS.map((key) => (
-              <label
-                key={key}
-                className="flex cursor-pointer items-center justify-between gap-4 px-3 py-2.5"
+        <form onSubmit={onSubmit} className="mt-6 space-y-5 pb-10">
+          <PreferenceSection title={t("preferences.sectionSimple")}>
+            <PreferenceField label={t("onboarding.qGoal")}>
+              <select
+                className={sel}
+                value={form.goal}
+                onChange={(e) => patch({ goal: e.target.value as Goal })}
               >
-                <span className="text-[13px] leading-snug text-foreground">
-                  {t(TOGGLE_I18N[key])}
-                </span>
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 shrink-0 rounded border-border text-accent accent-accent"
-                  checked={coachFeatures[key]}
-                  onChange={() => toggleCoach(key)}
-                />
-              </label>
-            ))}
-          </div>
-        </PreferenceSection>
-        </div>
+                <option value="lose_weight">{t("onboarding.goalLose")}</option>
+                <option value="build_muscle">{t("onboarding.goalMuscle")}</option>
+                <option value="improve_fitness">
+                  {t("onboarding.goalFitness")}
+                </option>
+              </select>
+            </PreferenceField>
+            <PreferenceField label={t("onboarding.qDays")}>
+              <select
+                className={sel}
+                value={String(form.daysPerWeek)}
+                onChange={(e) =>
+                  patch({ daysPerWeek: Number(e.target.value) as DaysPerWeek })
+                }
+              >
+                {([1, 2, 3, 4, 5, 6] as const).map((n) => (
+                  <option key={n} value={n}>
+                    {n} {t("preferences.daysUnit")}
+                  </option>
+                ))}
+              </select>
+            </PreferenceField>
+            <PreferenceField label={t("onboarding.qMealStructure")}>
+              <select
+                className={sel}
+                value={form.mealStructure}
+                onChange={(e) =>
+                  patch({
+                    mealStructure: e.target.value as MealStructurePreference,
+                  })
+                }
+              >
+                <option value="three_meals">{t("onboarding.structThree")}</option>
+                <option value="lighter_evening">
+                  {t("onboarding.structLight")}
+                </option>
+                <option value="snack_forward">
+                  {t("onboarding.structSnack")}
+                </option>
+              </select>
+            </PreferenceField>
+          </PreferenceSection>
 
-        <div className="mt-6">
           <PreferenceSection title={t("notifications.prefsTitle")}>
             <p className="text-[12px] leading-relaxed text-muted-2">
               {t("notifications.prefsHint")}
@@ -245,398 +273,425 @@ export function PreferencesScreen() {
                 </p>
               )}
           </PreferenceSection>
-        </div>
 
-        <HelpVideoCard
-          pageId="preferences"
-          enabled={coachFeatures.showHelpVideos}
-          className="mt-4"
-        />
-
-        <form onSubmit={onSubmit} className="mt-8 space-y-4 pb-10">
-          <PreferenceSection title={t("preferences.sectionBasics")}>
-            <PreferenceField label={t("onboarding.qGoal")}>
-              <select
-                className={sel}
-                value={form.goal}
-                onChange={(e) => patch({ goal: e.target.value as Goal })}
-              >
-                <option value="lose_weight">{t("onboarding.goalLose")}</option>
-                <option value="build_muscle">{t("onboarding.goalMuscle")}</option>
-                <option value="improve_fitness">{t("onboarding.goalFitness")}</option>
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qLevel")}>
-              <select
-                className={sel}
-                value={form.level}
-                onChange={(e) => {
-                  const v = e.target.value as Level;
-                  patch({ level: v, trainingLevel: v });
-                }}
-              >
-                <option value="beginner">{t("onboarding.levelBeginner")}</option>
-                <option value="intermediate">{t("onboarding.levelMid")}</option>
-                <option value="advanced">{t("onboarding.levelAdvanced")}</option>
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qDays")}>
-              <select
-                className={sel}
-                value={String(form.daysPerWeek)}
-                onChange={(e) =>
-                  patch({ daysPerWeek: Number(e.target.value) as DaysPerWeek })
-                }
-              >
-                {([1, 2, 3, 4, 5, 6] as const).map((n) => (
-                  <option key={n} value={n}>
-                    {n} {t("preferences.daysUnit")}
-                  </option>
-                ))}
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qChallenge")}>
-              <select
-                className={sel}
-                value={form.biggestChallenge}
-                onChange={(e) =>
-                  patch({ biggestChallenge: e.target.value as BiggestChallenge })
-                }
-              >
-                <option value="motivation">{t("onboarding.chMotivation")}</option>
-                <option value="lack_of_time">{t("onboarding.chTime")}</option>
-                <option value="dont_know_what_to_do">{t("onboarding.chUnsure")}</option>
-                <option value="fall_off_after_starting">{t("onboarding.chFallOff")}</option>
-              </select>
-            </PreferenceField>
-          </PreferenceSection>
-
-          <PreferenceSection title={t("preferences.sectionGoals")}>
-            <PreferenceField label={t("preferences.qProgramTrack")}>
-              <select
-                className={sel}
-                value={normalizeProgramTrackId(form.programTrackId)}
-                onChange={(e) =>
-                  patch({ programTrackId: e.target.value as ProgramTrackId })
-                }
-              >
-                {PROGRAM_TRACKS.map((tr) => (
-                  <option key={tr.id} value={tr.id}>
-                    {t(`programTrack.${tr.id}` as const)}
-                  </option>
-                ))}
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("preferences.qCurrentWeight")}>
-              <input
-                type="number"
-                inputMode="decimal"
-                min={30}
-                max={300}
-                step="0.1"
-                className={sel}
-                value={form.currentWeight ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  patch({
-                    currentWeight:
-                      v === "" ? undefined : Number.parseFloat(v),
-                  });
-                }}
-                placeholder="—"
-                autoComplete="off"
-              />
-            </PreferenceField>
-            <PreferenceField label={t("preferences.qTargetWeight")}>
-              <input
-                type="number"
-                inputMode="decimal"
-                min={30}
-                max={300}
-                step="0.1"
-                className={sel}
-                value={form.targetWeight ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  patch({
-                    targetWeight:
-                      v === "" ? undefined : Number.parseFloat(v),
-                  });
-                }}
-                placeholder="—"
-                autoComplete="off"
-              />
-            </PreferenceField>
-            <PreferenceField label={t("preferences.qTargetDate")}>
-              <input
-                type="date"
-                className={sel}
-                value={form.targetDate ?? ""}
-                onChange={(e) =>
-                  patch({
-                    targetDate: e.target.value === "" ? undefined : e.target.value,
-                  })
-                }
-              />
-            </PreferenceField>
-            <PreferenceField label={t("preferences.qTargetReason")}>
-              <select
-                className={sel}
-                value={form.targetReason ?? "general"}
-                onChange={(e) =>
-                  patch({
-                    targetReason: e.target.value as TargetReason,
-                  })
-                }
-              >
-                <option value="general">
-                  {t("preferences.targetReason.general")}
-                </option>
-                <option value="wedding">
-                  {t("preferences.targetReason.wedding")}
-                </option>
-                <option value="event">
-                  {t("preferences.targetReason.event")}
-                </option>
-                <option value="summer">
-                  {t("preferences.targetReason.summer")}
-                </option>
-                <option value="performance">
-                  {t("preferences.targetReason.performance")}
-                </option>
-              </select>
-            </PreferenceField>
-          </PreferenceSection>
-
-          <PreferenceSection title={t("preferences.sectionProgramBlueprint")}>
-            <p className="text-[13px] leading-relaxed text-muted-2">
-              {t("preferences.pickTrainingShell")}
+          <details className="group rounded-[var(--radius-xl)] border border-border/50 bg-white/[0.02] px-4 py-3">
+            <summary className="cursor-pointer list-none text-[14px] font-semibold text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center justify-between gap-2">
+                {t("preferences.moreSettings")}
+                <span className="text-[12px] font-normal text-muted-2 group-open:rotate-180 transition">
+                  ▾
+                </span>
+              </span>
+            </summary>
+            <p className="mt-2 text-[12px] leading-relaxed text-muted-2">
+              {t("preferences.moreSettingsHint")}
             </p>
-            <div className="space-y-2">
-              {PROGRAM_BLUEPRINTS.map((bp) => {
-                const active =
-                  resolveProgramBlueprintId(form) === bp.id;
-                const en = locale === "en";
-                return (
-                  <button
-                    key={bp.id}
-                    type="button"
-                    onClick={() =>
+
+            <div className="mt-6 space-y-6">
+              <PreferenceSection title={t("preferences.coachTitle")}>
+                <p className="text-[12px] leading-relaxed text-muted-2">
+                  {t("preferences.coachSubtitle")}
+                </p>
+                <div className="mt-3 divide-y divide-border/45 rounded-[var(--radius-lg)] border border-border/50 bg-white/[0.02] px-1">
+                  {COACH_TOGGLE_KEYS.map((key) => (
+                    <label
+                      key={key}
+                      className="flex cursor-pointer items-center justify-between gap-4 px-3 py-2.5"
+                    >
+                      <span className="text-[13px] leading-snug text-foreground">
+                        {t(TOGGLE_I18N[key])}
+                      </span>
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 shrink-0 rounded border-border text-accent accent-accent"
+                        checked={coachFeatures[key]}
+                        onChange={() => toggleCoach(key)}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </PreferenceSection>
+
+              <HelpVideoCard
+                pageId="preferences"
+                enabled={coachFeatures.showHelpVideos}
+                className="opacity-95"
+              />
+
+              <PreferenceSection title={t("preferences.sectionBasics")}>
+                <PreferenceField label={t("onboarding.qLevel")}>
+                  <select
+                    className={sel}
+                    value={form.level}
+                    onChange={(e) => {
+                      const v = e.target.value as Level;
+                      patch({ level: v, trainingLevel: v });
+                    }}
+                  >
+                    <option value="beginner">
+                      {t("onboarding.levelBeginner")}
+                    </option>
+                    <option value="intermediate">
+                      {t("onboarding.levelMid")}
+                    </option>
+                    <option value="advanced">
+                      {t("onboarding.levelAdvanced")}
+                    </option>
+                  </select>
+                </PreferenceField>
+                <PreferenceField label={t("onboarding.qChallenge")}>
+                  <select
+                    className={sel}
+                    value={form.biggestChallenge}
+                    onChange={(e) =>
                       patch({
-                        programBlueprintId: bp.id as ProgramBlueprintId,
-                        daysPerWeek: Math.min(
-                          6,
-                          Math.max(1, bp.trainingDays),
-                        ) as DaysPerWeek,
+                        biggestChallenge: e.target.value as BiggestChallenge,
                       })
                     }
-                    className={`w-full rounded-[var(--radius-lg)] border px-3 py-3 text-left transition ${
-                      active
-                        ? "border-accent bg-[rgb(59_130_246/0.08)] ring-1 ring-accent"
-                        : "border-border bg-background hover:border-muted-2"
-                    }`}
                   >
-                    <div className="text-[15px] font-semibold text-foreground">
-                      {en ? bp.nameEn : bp.nameFi}
-                    </div>
-                    <div className="mt-1 text-[12px] text-muted-2">
-                      {en ? bp.audienceEn : bp.audienceFi} · {bp.trainingDays}{" "}
-                      {t("preferences.blueprintTrainingDaysUnit")}
-                    </div>
-                    <p className="mt-2 text-[13px] leading-snug text-muted">
-                      {en ? bp.benefitLineEn : bp.benefitLineFi}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-            <button
-              type="button"
-              className="text-[13px] font-medium text-accent underline-offset-2 hover:underline"
-              onClick={() => patch({ programBlueprintId: undefined })}
-            >
-              {t("preferences.blueprintUsePackageDefault")}
-            </button>
-          </PreferenceSection>
+                    <option value="motivation">
+                      {t("onboarding.chMotivation")}
+                    </option>
+                    <option value="lack_of_time">{t("onboarding.chTime")}</option>
+                    <option value="dont_know_what_to_do">
+                      {t("onboarding.chUnsure")}
+                    </option>
+                    <option value="fall_off_after_starting">
+                      {t("onboarding.chFallOff")}
+                    </option>
+                  </select>
+                </PreferenceField>
+              </PreferenceSection>
 
-          <PreferenceSection title={t("preferences.sectionNutritionBlueprint")}>
-            <p className="text-[13px] leading-relaxed text-muted-2">
-              {t("preferences.pickNutritionShell")}
-            </p>
-            <div className="space-y-2">
-              {NUTRITION_BLUEPRINTS.map((bp) => {
-                const active = resolveNutritionBlueprintId(form) === bp.id;
-                const en = locale === "en";
-                return (
-                  <button
-                    key={bp.id}
-                    type="button"
-                    onClick={() =>
+              <PreferenceSection title={t("preferences.sectionGoals")}>
+                <PreferenceField label={t("preferences.qProgramTrack")}>
+                  <select
+                    className={sel}
+                    value={normalizeProgramTrackId(form.programTrackId)}
+                    onChange={(e) =>
+                      patch({ programTrackId: e.target.value as ProgramTrackId })
+                    }
+                  >
+                    {PROGRAM_TRACKS.map((tr) => (
+                      <option key={tr.id} value={tr.id}>
+                        {t(`programTrack.${tr.id}` as const)}
+                      </option>
+                    ))}
+                  </select>
+                </PreferenceField>
+                <PreferenceField label={t("preferences.qCurrentWeight")}>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min={30}
+                    max={300}
+                    step="0.1"
+                    className={sel}
+                    value={form.currentWeight ?? ""}
+                    onChange={(e) => {
+                      const v = e.target.value;
                       patch({
-                        nutritionBlueprintId: bp.id as NutritionBlueprintId,
-                        mealStructure: mealStructureFromNutritionBlueprint(bp),
+                        currentWeight:
+                          v === "" ? undefined : Number.parseFloat(v),
+                      });
+                    }}
+                    placeholder="—"
+                    autoComplete="off"
+                  />
+                </PreferenceField>
+                <PreferenceField label={t("preferences.qTargetWeight")}>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min={30}
+                    max={300}
+                    step="0.1"
+                    className={sel}
+                    value={form.targetWeight ?? ""}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      patch({
+                        targetWeight:
+                          v === "" ? undefined : Number.parseFloat(v),
+                      });
+                    }}
+                    placeholder="—"
+                    autoComplete="off"
+                  />
+                </PreferenceField>
+                <PreferenceField label={t("preferences.qTargetDate")}>
+                  <input
+                    type="date"
+                    className={sel}
+                    value={form.targetDate ?? ""}
+                    onChange={(e) =>
+                      patch({
+                        targetDate:
+                          e.target.value === "" ? undefined : e.target.value,
                       })
                     }
-                    className={`w-full rounded-[var(--radius-lg)] border px-3 py-3 text-left transition ${
-                      active
-                        ? "border-accent bg-[rgb(59_130_246/0.08)] ring-1 ring-accent"
-                        : "border-border bg-background hover:border-muted-2"
-                    }`}
+                  />
+                </PreferenceField>
+                <PreferenceField label={t("preferences.qTargetReason")}>
+                  <select
+                    className={sel}
+                    value={form.targetReason ?? "general"}
+                    onChange={(e) =>
+                      patch({
+                        targetReason: e.target.value as TargetReason,
+                      })
+                    }
                   >
-                    <div className="text-[15px] font-semibold text-foreground">
-                      {en ? bp.nameEn : bp.nameFi}
-                    </div>
-                    <div className="mt-1 text-[12px] text-muted-2">
-                      {en ? bp.audienceEn : bp.audienceFi} · {bp.mealCount}{" "}
-                      {t("preferences.blueprintMealsUnit")}
-                    </div>
-                    <p className="mt-2 text-[13px] leading-snug text-muted">
-                      {en ? bp.benefitLineEn : bp.benefitLineFi}
-                    </p>
-                  </button>
-                );
-              })}
+                    <option value="general">
+                      {t("preferences.targetReason.general")}
+                    </option>
+                    <option value="wedding">
+                      {t("preferences.targetReason.wedding")}
+                    </option>
+                    <option value="event">
+                      {t("preferences.targetReason.event")}
+                    </option>
+                    <option value="summer">
+                      {t("preferences.targetReason.summer")}
+                    </option>
+                    <option value="performance">
+                      {t("preferences.targetReason.performance")}
+                    </option>
+                  </select>
+                </PreferenceField>
+              </PreferenceSection>
+
+              <PreferenceSection title={t("preferences.sectionProgramBlueprint")}>
+                <p className="text-[13px] leading-relaxed text-muted-2">
+                  {t("preferences.pickTrainingShell")}
+                </p>
+                <div className="space-y-2">
+                  {PROGRAM_BLUEPRINTS.map((bp) => {
+                    const active = resolveProgramBlueprintId(form) === bp.id;
+                    const en = locale === "en";
+                    return (
+                      <button
+                        key={bp.id}
+                        type="button"
+                        onClick={() =>
+                          patch({
+                            programBlueprintId: bp.id as ProgramBlueprintId,
+                            daysPerWeek: Math.min(
+                              6,
+                              Math.max(1, bp.trainingDays),
+                            ) as DaysPerWeek,
+                          })
+                        }
+                        className={`w-full rounded-[var(--radius-lg)] border px-3 py-3 text-left transition ${
+                          active
+                            ? "border-accent bg-[rgb(59_130_246/0.08)] ring-1 ring-accent"
+                            : "border-border bg-background hover:border-muted-2"
+                        }`}
+                      >
+                        <div className="text-[15px] font-semibold text-foreground">
+                          {en ? bp.nameEn : bp.nameFi}
+                        </div>
+                        <div className="mt-1 text-[12px] text-muted-2">
+                          {en ? bp.audienceEn : bp.audienceFi} · {bp.trainingDays}{" "}
+                          {t("preferences.blueprintTrainingDaysUnit")}
+                        </div>
+                        <p className="mt-2 text-[13px] leading-snug text-muted">
+                          {en ? bp.benefitLineEn : bp.benefitLineFi}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  type="button"
+                  className="text-[13px] font-medium text-accent underline-offset-2 hover:underline"
+                  onClick={() => patch({ programBlueprintId: undefined })}
+                >
+                  {t("preferences.blueprintUsePackageDefault")}
+                </button>
+              </PreferenceSection>
+
+              <PreferenceSection title={t("preferences.sectionNutritionBlueprint")}>
+                <p className="text-[13px] leading-relaxed text-muted-2">
+                  {t("preferences.pickNutritionShell")}
+                </p>
+                <div className="space-y-2">
+                  {NUTRITION_BLUEPRINTS.map((bp) => {
+                    const active = resolveNutritionBlueprintId(form) === bp.id;
+                    const en = locale === "en";
+                    return (
+                      <button
+                        key={bp.id}
+                        type="button"
+                        onClick={() =>
+                          patch({
+                            nutritionBlueprintId: bp.id as NutritionBlueprintId,
+                            mealStructure: mealStructureFromNutritionBlueprint(bp),
+                          })
+                        }
+                        className={`w-full rounded-[var(--radius-lg)] border px-3 py-3 text-left transition ${
+                          active
+                            ? "border-accent bg-[rgb(59_130_246/0.08)] ring-1 ring-accent"
+                            : "border-border bg-background hover:border-muted-2"
+                        }`}
+                      >
+                        <div className="text-[15px] font-semibold text-foreground">
+                          {en ? bp.nameEn : bp.nameFi}
+                        </div>
+                        <div className="mt-1 text-[12px] text-muted-2">
+                          {en ? bp.audienceEn : bp.audienceFi} · {bp.mealCount}{" "}
+                          {t("preferences.blueprintMealsUnit")}
+                        </div>
+                        <p className="mt-2 text-[13px] leading-snug text-muted">
+                          {en ? bp.benefitLineEn : bp.benefitLineFi}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button
+                  type="button"
+                  className="text-[13px] font-medium text-accent underline-offset-2 hover:underline"
+                  onClick={() => patch({ nutritionBlueprintId: undefined })}
+                >
+                  {t("preferences.blueprintUsePackageDefault")}
+                </button>
+              </PreferenceSection>
+
+              <PreferenceSection title={t("preferences.sectionFoodPrefs")}>
+                <PreferenceField label={t("onboarding.qEating")}>
+                  <select
+                    className={sel}
+                    value={form.eatingHabits}
+                    onChange={(e) =>
+                      patch({ eatingHabits: e.target.value as EatingHabits })
+                    }
+                  >
+                    <option value="irregular">
+                      {t("onboarding.eatIrregular")}
+                    </option>
+                    <option value="okay">{t("onboarding.eatOkay")}</option>
+                    <option value="good">{t("onboarding.eatGood")}</option>
+                  </select>
+                </PreferenceField>
+                <PreferenceField label={t("settings.fieldLikes")}>
+                  <input
+                    type="text"
+                    className={sel}
+                    value={joinList(form.foodPreferences)}
+                    onChange={(e) =>
+                      patch({ foodPreferences: splitList(e.target.value) })
+                    }
+                    placeholder={t("onboarding.foodLikesPlaceholder")}
+                    autoComplete="off"
+                  />
+                </PreferenceField>
+                <PreferenceField label={t("settings.fieldDislikes")}>
+                  <input
+                    type="text"
+                    className={sel}
+                    value={joinList(form.foodDislikes)}
+                    onChange={(e) =>
+                      patch({ foodDislikes: splitList(e.target.value) })
+                    }
+                    placeholder={t("onboarding.foodDislikesPlaceholder")}
+                    autoComplete="off"
+                  />
+                </PreferenceField>
+              </PreferenceSection>
+
+              <PreferenceSection title={t("preferences.sectionLifestyle")}>
+                <PreferenceField label={t("preferences.qCooking")}>
+                  <select
+                    className={sel}
+                    value={form.cookingTimePreference ?? "auto"}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      patch({
+                        cookingTimePreference:
+                          v === "auto"
+                            ? undefined
+                            : (v as CookingTimePreference),
+                      });
+                    }}
+                  >
+                    <option value="auto">{t("preferences.cookAuto")}</option>
+                    <option value="fast">{t("settings.cookFast")}</option>
+                    <option value="normal">{t("settings.cookNormal")}</option>
+                    <option value="any">{t("settings.cookAny")}</option>
+                  </select>
+                </PreferenceField>
+                <PreferenceField label={t("onboarding.qFlex")}>
+                  <select
+                    className={sel}
+                    value={form.flexibility}
+                    onChange={(e) =>
+                      patch({
+                        flexibility: e.target.value as FlexibilityPreference,
+                      })
+                    }
+                  >
+                    <option value="structured">
+                      {t("onboarding.flexStructured")}
+                    </option>
+                    <option value="balanced">
+                      {t("onboarding.flexBalanced")}
+                    </option>
+                    <option value="flexible">
+                      {t("onboarding.flexFlexible")}
+                    </option>
+                  </select>
+                </PreferenceField>
+                <PreferenceField label={t("onboarding.qSocial")}>
+                  <select
+                    className={sel}
+                    value={form.socialEatingFrequency}
+                    onChange={(e) =>
+                      patch({
+                        socialEatingFrequency: e.target.value as SocialEatingFrequency,
+                      })
+                    }
+                  >
+                    <option value="rare">{t("onboarding.socialRare")}</option>
+                    <option value="sometimes">
+                      {t("onboarding.socialSometimes")}
+                    </option>
+                    <option value="often">{t("onboarding.socialOften")}</option>
+                  </select>
+                </PreferenceField>
+                <PreferenceField label={t("onboarding.qEventDisruption")}>
+                  <select
+                    className={sel}
+                    value={form.eventDisruption ?? "snap_back"}
+                    onChange={(e) =>
+                      patch({
+                        eventDisruption: e.target.value as EventDisruptionStyle,
+                      })
+                    }
+                  >
+                    <option value="snap_back">{t("onboarding.eventSnap")}</option>
+                    <option value="reset">{t("onboarding.eventReset")}</option>
+                    <option value="loose">{t("onboarding.eventLoose")}</option>
+                  </select>
+                </PreferenceField>
+              </PreferenceSection>
+
+              <PreferenceSection title={t("preferences.sectionLanguage")}>
+                <PreferenceField label={t("settings.language")}>
+                  <select
+                    className={sel}
+                    value={form.uiLocale ?? "fi"}
+                    onChange={(e) =>
+                      patch({ uiLocale: e.target.value as UiLocale })
+                    }
+                  >
+                    <option value="fi">Suomi</option>
+                    <option value="en">English</option>
+                  </select>
+                </PreferenceField>
+              </PreferenceSection>
             </div>
-            <button
-              type="button"
-              className="text-[13px] font-medium text-accent underline-offset-2 hover:underline"
-              onClick={() => patch({ nutritionBlueprintId: undefined })}
-            >
-              {t("preferences.blueprintUsePackageDefault")}
-            </button>
-          </PreferenceSection>
-
-          <PreferenceSection title={t("preferences.sectionFoodPrefs")}>
-            <PreferenceField label={t("onboarding.qEating")}>
-              <select
-                className={sel}
-                value={form.eatingHabits}
-                onChange={(e) =>
-                  patch({ eatingHabits: e.target.value as EatingHabits })
-                }
-              >
-                <option value="irregular">{t("onboarding.eatIrregular")}</option>
-                <option value="okay">{t("onboarding.eatOkay")}</option>
-                <option value="good">{t("onboarding.eatGood")}</option>
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("settings.fieldLikes")}>
-              <input
-                type="text"
-                className={sel}
-                value={joinList(form.foodPreferences)}
-                onChange={(e) =>
-                  patch({ foodPreferences: splitList(e.target.value) })
-                }
-                placeholder={t("onboarding.foodLikesPlaceholder")}
-                autoComplete="off"
-              />
-            </PreferenceField>
-            <PreferenceField label={t("settings.fieldDislikes")}>
-              <input
-                type="text"
-                className={sel}
-                value={joinList(form.foodDislikes)}
-                onChange={(e) =>
-                  patch({ foodDislikes: splitList(e.target.value) })
-                }
-                placeholder={t("onboarding.foodDislikesPlaceholder")}
-                autoComplete="off"
-              />
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qMealStructure")}>
-              <select
-                className={sel}
-                value={form.mealStructure}
-                onChange={(e) =>
-                  patch({ mealStructure: e.target.value as MealStructurePreference })
-                }
-              >
-                <option value="three_meals">{t("onboarding.structThree")}</option>
-                <option value="lighter_evening">{t("onboarding.structLight")}</option>
-                <option value="snack_forward">{t("onboarding.structSnack")}</option>
-              </select>
-            </PreferenceField>
-          </PreferenceSection>
-
-          <PreferenceSection title={t("preferences.sectionLifestyle")}>
-            <PreferenceField label={t("preferences.qCooking")}>
-              <select
-                className={sel}
-                value={form.cookingTimePreference ?? "auto"}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  patch({
-                    cookingTimePreference:
-                      v === "auto"
-                        ? undefined
-                        : (v as CookingTimePreference),
-                  });
-                }}
-              >
-                <option value="auto">{t("preferences.cookAuto")}</option>
-                <option value="fast">{t("settings.cookFast")}</option>
-                <option value="normal">{t("settings.cookNormal")}</option>
-                <option value="any">{t("settings.cookAny")}</option>
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qFlex")}>
-              <select
-                className={sel}
-                value={form.flexibility}
-                onChange={(e) =>
-                  patch({ flexibility: e.target.value as FlexibilityPreference })
-                }
-              >
-                <option value="structured">{t("onboarding.flexStructured")}</option>
-                <option value="balanced">{t("onboarding.flexBalanced")}</option>
-                <option value="flexible">{t("onboarding.flexFlexible")}</option>
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qSocial")}>
-              <select
-                className={sel}
-                value={form.socialEatingFrequency}
-                onChange={(e) =>
-                  patch({
-                    socialEatingFrequency: e.target.value as SocialEatingFrequency,
-                  })
-                }
-              >
-                <option value="rare">{t("onboarding.socialRare")}</option>
-                <option value="sometimes">{t("onboarding.socialSometimes")}</option>
-                <option value="often">{t("onboarding.socialOften")}</option>
-              </select>
-            </PreferenceField>
-            <PreferenceField label={t("onboarding.qEventDisruption")}>
-              <select
-                className={sel}
-                value={form.eventDisruption ?? "snap_back"}
-                onChange={(e) =>
-                  patch({ eventDisruption: e.target.value as EventDisruptionStyle })
-                }
-              >
-                <option value="snap_back">{t("onboarding.eventSnap")}</option>
-                <option value="reset">{t("onboarding.eventReset")}</option>
-                <option value="loose">{t("onboarding.eventLoose")}</option>
-              </select>
-            </PreferenceField>
-          </PreferenceSection>
-
-          <PreferenceSection title={t("preferences.sectionLanguage")}>
-            <PreferenceField label={t("settings.language")}>
-              <select
-                className={sel}
-                value={form.uiLocale ?? "fi"}
-                onChange={(e) =>
-                  patch({ uiLocale: e.target.value as UiLocale })
-                }
-              >
-                <option value="fi">Suomi</option>
-                <option value="en">English</option>
-              </select>
-            </PreferenceField>
-          </PreferenceSection>
+          </details>
 
           {saved ? (
             <p className="text-center text-[13px] text-muted" role="status">

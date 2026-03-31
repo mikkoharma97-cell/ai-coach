@@ -1377,7 +1377,11 @@ export const fi = {
   "preferences.eyebrow": "Profiili",
   "preferences.title": "Valinnat",
   "preferences.subtitle":
-    "Nämä ohjaavat päivän aterioita ja säätöjä — tallennetaan laitteelle.",
+    "Vain tärkeimmät — laajennat tarvittaessa. Tallennetaan laitteelle.",
+  "preferences.sectionSimple": "Tärkeimmät",
+  "preferences.moreSettings": "Lisää asetuksia",
+  "preferences.moreSettingsHint":
+    "Taso, tavoitepäivä, näkyvyydet ja muut — vain jos tarvitset.",
   "preferences.coachTitle": "Oma valmentaja",
   "preferences.coachSubtitle":
     "Valitse, mitä näytämme — logiikka pysyy, näkymät kevenevät.",
@@ -3440,7 +3444,11 @@ export const en: { [K in MessageKey]: string } = {
   "preferences.eyebrow": "Profile",
   "preferences.title": "Preferences",
   "preferences.subtitle":
-    "These drive daily meals and adjustments — saved on this device.",
+    "Only the essentials — expand when you need more. Saved on this device.",
+  "preferences.sectionSimple": "Essentials",
+  "preferences.moreSettings": "More settings",
+  "preferences.moreSettingsHint":
+    "Level, target date, what we show, and more — only if you need them.",
   "preferences.coachTitle": "Your coach",
   "preferences.coachSubtitle":
     "Choose what we show — logic stays, views get lighter.",
