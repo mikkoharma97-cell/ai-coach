@@ -1613,6 +1613,31 @@ export const fi = {
   "landing.finalOpen": "Avaa Tänään",
   "landing.finalNote": "Ei setuppia. Alle minuutti.",
 
+  "launch.headline": "Yksi ohjaus. Joka päivä.",
+  "launch.promiseLine": "Tämä ei seuraa sinua. Tämä ohjaa sinua.",
+  "launch.bulletTrain": "Treeni",
+  "launch.bulletFood": "Ruoka",
+  "launch.bulletRhythm": "Rytmi",
+  "launch.ctaStart": "Aloita",
+  "launch.linkFullMarketing": "Täysi esittely",
+  "launch.linkDemo": "Esikatselu",
+  "launch.back": "Aloitus",
+
+  "demo.eyebrow": "Esikatselu",
+  "demo.title": "Näe rakenne ennen maksua",
+  "demo.subtitle": "Staattinen näyte — ei tiliä. Voit avata interaktiivisen demon yhdellä napilla.",
+  "demo.sectionToday": "Tänään",
+  "demo.readOnlyHint": "Esikatselu — sama rakenne kuin sovelluksessa.",
+  "demo.workoutEyebrow": "Treeni",
+  "demo.workoutTitle": "Yksi liike kerrallaan",
+  "demo.workoutBody":
+    "Lista etenee sarja kerrallaan — kirjaa tehdyt sarjat, vaihda liike tarvittaessa.",
+  "demo.foodEyebrow": "Ruoka",
+  "demo.foodTitle": "Syö tämän päivän linja",
+  "demo.foodBody":
+    "Ateriat ja energia linjassa tavoitteen ja treenin kanssa — ei erillistä laskurihälytystä.",
+  "demo.ctaInteractive": "Avaa interaktiivinen demo sovelluksessa",
+
   "landing.benefit1Title": "Yksi lista",
   "landing.benefit1Body":
     "Treeni, ruoka, rytmi — sama järjestys joka päivä. Ei feediä.",
@@ -3610,6 +3635,32 @@ export const en: { [K in MessageKey]: string } = {
   "landing.finalCta": "Start",
   "landing.finalOpen": "Open Today",
   "landing.finalNote": "No setup. Takes less than a minute.",
+
+  "launch.headline": "One line of guidance. Every day.",
+  "launch.promiseLine": "This doesn’t track you. It guides you.",
+  "launch.bulletTrain": "Training",
+  "launch.bulletFood": "Food",
+  "launch.bulletRhythm": "Rhythm",
+  "launch.ctaStart": "Start",
+  "launch.linkFullMarketing": "Full overview",
+  "launch.linkDemo": "Preview",
+  "launch.back": "Start",
+
+  "demo.eyebrow": "Preview",
+  "demo.title": "See the structure before you pay",
+  "demo.subtitle":
+    "Static sample — no account. Open the interactive demo with one tap.",
+  "demo.sectionToday": "Today",
+  "demo.readOnlyHint": "Preview — same frame as the app.",
+  "demo.workoutEyebrow": "Workout",
+  "demo.workoutTitle": "One lift at a time",
+  "demo.workoutBody":
+    "The list moves set by set — log what you did, swap a lift if needed.",
+  "demo.foodEyebrow": "Food",
+  "demo.foodTitle": "Eat today’s line",
+  "demo.foodBody":
+    "Meals and energy aligned with your goal and training — no separate calorie panic mode.",
+  "demo.ctaInteractive": "Open interactive demo in the app",
 
   "landing.benefit1Title": "One list",
   "landing.benefit1Body":

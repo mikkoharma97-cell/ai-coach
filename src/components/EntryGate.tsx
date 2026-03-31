@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
- * Juuripolun reititys: profiili tallessa → /app, muuten /start.
- * Ei näytä markkinointisivua — landing on /home.
+ * Juuripolun reititys: profiili tallessa → /app, muuten /launch (HÄRMÄ14).
+ * Pitkä markkinointi: /home.
  */
 export function EntryGate() {
   const router = useRouter();
@@ -43,10 +43,16 @@ export function EntryGate() {
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <a
-            href="/home"
+            href="/launch"
             className="rounded-xl border border-white/15 bg-white/[0.06] px-5 py-3 text-[15px] font-semibold text-foreground"
           >
-            Etusivu
+            Aloitus
+          </a>
+          <a
+            href="/home"
+            className="rounded-xl border border-white/10 px-5 py-3 text-[15px] font-medium text-muted"
+          >
+            Täysi esittely
           </a>
           <a
             href="/start"

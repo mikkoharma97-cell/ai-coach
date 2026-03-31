@@ -4,6 +4,8 @@
 
 export const ANALYTICS_EVENTS = [
   "open_home",
+  "open_launch",
+  "open_demo",
   "open_start",
   "open_app",
   "onboarding_start",
