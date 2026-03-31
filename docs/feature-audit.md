@@ -1,8 +1,37 @@
 # Feature audit — kokonaisuudet
 
-**Näkyvä badge:** `HÄRMÄ4` (`VersionBadge` → `HARMÄ_BUILD`). Numero nousee ison viimeistely-/data-/moottoripassin mukaan (ei joka commit).
+**Näkyvä badge:** `HÄRMÄ5` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ5 · BUILD v5` + semver-aika.
 
 Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osin · **planned** = suunniteltu · **missing** = ei toteutettu.
+
+### Coach Voice System (HÄRMÄ5)
+
+| Asia | Status |
+|------|--------|
+| **Source of truth** | `src/config/coachVoice.ts` — säännöt, kielletyt fraasit, `fragments` |
+| **Versio** | `src/config/version.ts` — `APP_VERSION` v5, `HARMÄ_BUILD` 5 |
+| **Käyttäjälle näkyvä teksti** | **partial** → pääpolku (`src/lib/i18n.messages.ts` FI + EN), komponentit `t()`-avaimilla; ei täyttä literaalien ajoa joka tiedostossa tässä passissa |
+| **Tarkistettu laiteella** | **planned** — tuotantobuild + push; Vercel smoke |
+
+#### 0 — Käyttäjälle näkyvät tekstityypit (inventaario)
+
+| Tyyppi | Päälähde |
+|--------|----------|
+| Today / dashboard | `i18n` `today.*`, `daily.*`, `shift.*`, `engine.*`, `dashboard.*`, `AppDashboard` |
+| Workout | `workout.*`, treeninäkymät |
+| Food | `food.*`, `FoodShoppingListBlock`, ruokasivut |
+| Review | `review.*` |
+| Progress | `progress.*` |
+| Onboarding / start | `onboarding.*`, `StartFlow`, `prestart.*` |
+| Start / pre-start / myynti | `landing.*`, `copy.core.*`, `prestart.*` |
+| Paywall | `paywall.*` |
+| Napit / CTA | `ui.*`, `nav.*`, modaalit `today.complete*` |
+| Tyhjät tilat | `empty.*`, `fallback.*`, `food.noSuggestion` jne. |
+| Virheet | `settings.exportFailed`, `food.sheetSaveFailed`, `workout.voice.error.*` |
+| Lataus / ajattelu | `common.loading`, `today.markingDay`, `onboarding.buildingWait` |
+| Modaalit | `today.completeModal*`, `exception.*`, `programChange.*` |
+| Toggle / asetukset | `preferences.*`, `adjust.*`, `settings.*` |
+| PWA / build | `pwa.*`, `build.*`, `preview.*` |
 
 ### Kirjastot ja moottorit — lyhyt status
 
@@ -112,10 +141,10 @@ Profiili (`OnboardingAnswers`): `goal`, `level` / `trainingLevel`, `daysPerWeek`
 4. **Intensifierit:** eristyksissä / koneissa policy:n mukaan; compound strength ei drop-oletusta.
 5. **Liikevaihto:** `rotationAdviceForExercise` (neuvo); generaattori käyttää `rotationBlockIndex`-siementä.
 6. **Synkka:** profiili → blueprint + policy → sama `generateWorkoutDay` Workoutissa; Today näyttää kirjaston + jakorivin.
-7. **HÄRMÄ4:** kyllä.
-8. **Mobiili:** ei ajettu tästä ympäristöstä (build OK).
-9. **Live URL:** ei kiinnitetty repoon.
-10. **Jatkossa:** analytics progressioon; syvempi Review-kytkennä.
+7. **HÄRMÄ5:** kyllä (`coachVoice.ts` + copy-passi + `version.ts`).
+8. **Mobiili:** tuotantobuildin jälkeen smoke (planned / CI).
+9. **Live URL:** Vercel deploy — tarkista manuaalisesti.
+10. **Jatkossa:** jäljellä olevat literaalit komponenteissa; syvempi Review-EN/FI -parity.
 
 ## Linkit
 

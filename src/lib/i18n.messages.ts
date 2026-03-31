@@ -30,7 +30,7 @@ export const fi = {
 
   "supplement.sectionTitle": "Täsmätuki — valmentajan linja",
   "supplement.sectionSubtitle":
-    "Ei mainosta: tarve syntyy tavoitteesta, päivän ravinnosta ja kuormasta.",
+    "Tarve syntyy tavoitteesta, päivästä ja kuormasta — ei mainoslistaa.",
   "supplement.embeddedEyebrow": "Täsmätukivihjeet",
   "supplement.frame.recommendedForYou": "Sinulle sopiva",
   "supplement.frame.coachSuggestion": "Valmentajan ehdotus",
@@ -65,18 +65,18 @@ export const fi = {
   "nav.scan": "Skannaus",
 
   "today.systemLine.baselineEngaged":
-    "Perusta — eilisestä ei tullut uudelleentasapainotustarvetta.",
+    "Perusta kunnossa. Eilinen ei kaada tätä.",
   "today.systemLine.baselineFresh":
-    "Perusta — merkitse päivä, jotta eilinen voi ohjata säätöjä.",
-  "today.rebalanceActive": "Tasapainotus käynnissä",
+    "Perusta. Merkitse päivä — eilinen alkaa ohjata.",
+  "today.rebalanceActive": "Korjaus päällä",
   "today.rebalanceDetail":
     "−{{kcal}} kcal / päivä muutaman päivän ajan.",
-  "rebalance.leadLine": "Viikko ei hajonnut. Korjataan rauhassa.",
-  "rebalance.noPunishLine": "Ei rankaisua. Vain suunta takaisin.",
+  "rebalance.leadLine": "Ei hajonnut. Korjataan rauhassa.",
+  "rebalance.noPunishLine": "Ei rankaisua. Suunta takaisin.",
 
   "today.proof.goalFocus": "{{goal}} · {{flex}}",
-  "today.proof.synced": "Linjassa tämän päivän kanssa",
-  "today.proof.autoAdjusted": "Säädetty eilisen mukaan",
+  "today.proof.synced": "Sama linja kuin tämä päivä",
+  "today.proof.autoAdjusted": "Eilisen mukaan",
   "today.proof.trainingSchedule": "{{n}}× treeni / viikko — oikea kalenterisi",
   "today.proof.programTrack": "Ohjelmasuunta: {{name}}",
   "today.proof.flexCalendar": "Joustopäivä kalenterissa — viikko tasapainottuu sen ympärille",
@@ -271,9 +271,9 @@ export const fi = {
   "workout.starter.ex3.target": "Taka ketju · neutraali selkä",
 
   "progress.sectionStreak": "Putki",
-  "progress.pageLead": "Rytmi, totuus, suunta — yksi näkymä.",
+  "progress.pageLead": "Rytmi ja suunta — yksi näkymä.",
   "progress.emotionalSubtitle":
-    "Merkitse päiviä. Suunta näkyy toistosta.",
+    "Merkitse päiviä. Suunta tulee toistosta.",
   "progress.coachPresence.works": "Tämä toimii.",
   "progress.coachPresence.uneven": "Tämä ei ole vielä tasainen.",
   "progress.coachPresence.rhythm":
@@ -536,7 +536,7 @@ export const fi = {
   "progress.weightDirDown": "Viiva laskee",
   "progress.weightSyntheticHint":
     "Käyrä on arvioitu profiilin painosta — lisää punnituksia, niin käyrä tarkentuu.",
-  "progress.rebalanceActive": "Tasapainotus käynnissä",
+  "progress.rebalanceActive": "Korjaus päällä",
   "progress.heroEyebrow": "Tilanne",
   "progress.heroDirectionGood": "Suunta on oikea.",
   "progress.heroStrengthUpLockFood": "Voima nousee. Ruoka pitää nyt lukita.",
@@ -650,7 +650,7 @@ export const fi = {
   "today.systemStatus.goodProgress": "Etenet",
   "today.systemStatus.fixInProgress": "Korjaus käynnissä",
   "today.labelFocus": "Pääfokus",
-  "today.doThisToday": "Tämä riittää tänään.",
+  "today.doThisToday": "Tänään mennään tämä.",
   "today.changeProgram": "Vaihda ohjelmaa",
   "today.changeNutrition": "Vaihda ruokarakennetta",
   "today.todayRhythmBlock": "Ruoka & liike tänään",
@@ -717,10 +717,10 @@ export const fi = {
   "today.completeModalCancel": "Peruuta",
   "today.completeModalSubmit": "Valmis",
   "today.completeModalDone": "Selvä",
-  "today.completeFeedback": "Hyvä. Tämä riitti.",
-  "today.completeFeedbackSub": "Putki päivittyy, kun merkitset päiviä — katso Progress.",
+  "today.completeFeedback": "Hyvä. Päivä on kasassa.",
+  "today.completeFeedbackSub": "Putki kasvaa merkinnöistä — Progress näyttää suunnan.",
   "today.thinklessCta": "Valitse puolestani",
-  "today.thinklessBanner": "Tämä riittää tälle päivälle.",
+  "today.thinklessBanner": "Tämä riittää tälle päivälle — pidä linja.",
   "today.thinklessEyebrow": "Päivän valinnat",
   "today.startWorkoutCta": "Aloita treeni",
   "today.liveSignalMorning": "Aamuinen rytmi huomioitu",
@@ -729,7 +729,7 @@ export const fi = {
   "today.statusOne": "Päivitetty · 1 säätö",
   "today.statusMany": "Päivitetty · {{n}} säätöä",
   "today.labelToday": "TÄNÄÄN",
-  "today.trustSystemLine": "Tämä riittää tänään. Pidä rytmi.",
+  "today.trustSystemLine": "Tämä riittää. Pidä linja.",
   "today.secondaryFood": "Ruoka",
   "today.secondaryMove": "Liike",
   "today.extraMoveSection": "Lisäliike",
@@ -750,7 +750,7 @@ export const fi = {
   "activity.ack": "Lisätty liike huomioitu päivän energiassa",
 
   "today.markingDay": "Tallennetaan…",
-  "today.dayDoneSuccess": "Pidä rytmi. Huomenna seuraava.",
+  "today.dayDoneSuccess": "Pidä linja. Huomenna jatketaan.",
   "today.reopenDayLink": "Avaa päivä uudelleen",
   "today.coachHeroEyebrow": "Tänään",
   "today.proStructureNote":
@@ -760,24 +760,24 @@ export const fi = {
     "Tänään ei tarvitse miettiä. Tee tämä.",
   "today.coachVoice.simple":
     "Pidä tämä yksinkertaisena tänään.",
-  "coach.presence.active": "Coach aktiivinen.",
-  "coach.presence.tracking": "Seurataan tätä.",
-  "coach.presence.adjust": "Korjataan tarvittaessa.",
+  "coach.presence.active": "Ohjaus päällä.",
+  "coach.presence.tracking": "Pidän tämän silmällä.",
+  "coach.presence.adjust": "Säädetään kun pitää.",
   "workout.eyebrow": "Treeni",
-  "workout.flow.start": "Aloita — ensimmäinen sarja.",
-  "workout.flow.continue": "Jatka — seuraava sarja.",
-  "workout.flow.done": "Valmis — hyvä treeni.",
+  "workout.flow.start": "Aloita tästä. Ensimmäinen sarja.",
+  "workout.flow.continue": "Seuraava sarja.",
+  "workout.flow.done": "Valmis. Jatketaan.",
   "workout.tapCompleteSetCta": "Merkitse sarja tehdyksi",
   "workout.tapNextExerciseCta": "Seuraava liike",
   "workout.title": "Treeni",
   "workout.description":
-    "Kirjaa vain tehdyt sarjat. Liike ei sovi — vaihda. Runko pysyy.",
-  "workout.restTitle": "Lepopäivä",
-  "workout.restHint": "Ei kuormaa tänään — pidä rytmi ja ruoka linjassa.",
+    "Merkitse tehdyt sarjat. Liike huono — vaihda. Runko pysyy.",
+  "workout.restTitle": "Lepo",
+  "workout.restHint": "Ei kuormaa. Ruoka ja rytmi linjassa.",
   "workout.backToday": "Takaisin tänään",
   "workout.setLabel": "Sarja {{n}}",
   "workout.voice.helperLine":
-    "Voit edetä treenissä myös puhumalla: paino 80, 10 toistoa, valmis.",
+    "Puheella: paino 80, kymmenen toistoa, valmis.",
   "workout.voice.listening": "Kuunnellaan…",
   "workout.voice.pushToTalkHint": "Napauta mikkiä ja puhu komento.",
   "workout.voice.unsupported": "Selaimesi ei tue puheentunnistusta.",
@@ -883,12 +883,12 @@ export const fi = {
   "food.eatThisNowCta": "Syö tämä nyt",
   "food.eyebrow": "Ruoka",
   "food.coachPresence.enoughToday": "Tämä riittää tälle päivälle.",
-  "food.coachPresence.dontOverthink": "Pidä tämä yksinkertaisena.",
-  "food.coachPresence.keepRhythm": "Pidä rytmi, älä täydellisyyttä.",
+  "food.coachPresence.dontOverthink": "Älä monimutkaista.",
+  "food.coachPresence.keepRhythm": "Rytmi ennen täydellisyyttä.",
   "food.coachPresence.rhythmNotPerfect":
     "Tasapainotus päällä — pidä rytmi, älä täydellisyyttä.",
   "food.stripAria": "Tänään — energia ja ostoslista",
-  "food.rhythmLeadLine": "Pidä makrot. Suunta ennen täydellisyyttä.",
+  "food.rhythmLeadLine": "Suunta ennen täydellisyyttä.",
   "food.flowMorning": "AAMU",
   "food.flowMorningSub": "nopea alku",
   "food.flowDay": "PÄIVÄ",
@@ -1257,8 +1257,8 @@ export const fi = {
   "plan.arcFlexFlexible": "tilaa taipua",
 
   "paywall.kicker": "Ohjaus",
-  "paywall.title": "Jatka ilman arvailua.",
-  "paywall.subtitle": "Yksi linja tänään. Tee lista.",
+  "paywall.title": "Saat ohjauksen valmiina.",
+  "paywall.subtitle": "Yksi linja tänään. Lista tehtävänä.",
   "paywall.notForYouIfNoGuidance":
     "Tämä ei ole sinulle, jos et halua ohjausta.",
   "paywall.conversionLock":
@@ -1266,7 +1266,7 @@ export const fi = {
   "paywall.coachPresenceAnchor":
     "Ohjelma ei riitä — tarvitset päivittäisen ohjauksen.",
   "paywall.rhythmGuarantee":
-    "Jos tämä ei auta sinua pysymään rytmissä, et maksa mitään.",
+    "Jos et pysy rytmissä tämän kanssa, et maksa.",
   "paywall.sell1": "Sama linja aloittelijalle ja kokeneelle — eri kuorma.",
   "paywall.sell2": "Kiire ja poikkeuspäivät — linja pysyy.",
   "paywall.sell3":
@@ -1415,7 +1415,7 @@ export const fi = {
   "prestart.eyebrow": "Ennen aloitusta",
   "prestart.heroTitle": "Tämä ei seuraa sinua. Tämä ohjaa sinua.",
   "prestart.heroSubline":
-    "Ei arvailua. Ei hajonnutta viikkoa. Tämä pitää linjan, kun arki iskee — tai korjaa suunnan heti.",
+    "Ei arvailua. Viikko ei hajoa yhteen päivään. Arki iskee — linja pysyy tai korjaantuu heti.",
   "prestart.feat1": "Tiedät mitä tehdä tänään — päivän ohjaus, ei arvailua.",
   "prestart.feat2": "Kotitreeni ei saa saliohjelmaa — treeni vastaa profiiliasi.",
   "prestart.feat3": "Ruokarakenne ja korjaus — yksi huono päivä ei kaada linjaa.",
@@ -1451,11 +1451,11 @@ export const fi = {
   "prestart.cta": "Rakenna oma valmentaja",
 
   "onboarding.introKicker": "Coach",
-  "onboarding.introTitle": "Valmennus alkaa tästä",
+  "onboarding.introTitle": "Aloitetaan",
   "onboarding.introBody":
-    "Valitaan lähtötaso ja suunta — sitten näet tämän viikon ohjauksen. Tämä ei rakenna vain ensimmäistä viikkoa — tämä rakentaa jatkuvuuden.",
+    "Lähtötaso ja suunta ensin. Sitten näet tämän viikon ohjauksen. Tämä on jatkuvaa — ei vain ensimmäistä viikkoa.",
   "onboarding.introProof":
-    "Rakennettu valmennuslogiikan, harjoittelun perusperiaatteiden ja käytännössä toimivien mallien pohjalta — ei arvailua.",
+    "Logiikka ja käytännön mallit — ei arvailua.",
   "onboarding.trialRetention1":
     "Kokeilu kerää viikon merkinnät — sinä et täytä lomakkeita illalla.",
   "onboarding.trialRetention2":
@@ -1466,9 +1466,9 @@ export const fi = {
   "onboarding.headerSetup": "Aloitus",
   "onboarding.headerSystem": "Ohjaus",
   "onboarding.buildingWait": "Hetkinen",
-  "onboarding.buildingTitle": "Rakennetaan sinulle tämän viikon ohjaus",
+  "onboarding.buildingTitle": "Rakennetaan tämän viikon ohjaus",
   "onboarding.buildingPromise":
-    "Et tarvitse uutta ohjelmaa joka viikko — tarvitset ohjauksen joka kehittyy mukana. Tänään-näkymä aukeaa.",
+    "Uutta ohjelmaa joka viikko et tarvitse — ohjaus elää mukana. Tänään aukeaa kohta.",
   "onboarding.qGoal": "Päämäärä",
   "onboarding.qProgramLibrary": "Treeniohjelma",
   "onboarding.programLibraryHint":
@@ -1575,12 +1575,12 @@ export const fi = {
   "landing.heroProof":
     "Vähemmän puhetta. Enemmän tekemistä. Valmis rakenne — ei tyhjää pöytää.",
   "landing.previewTodayStatusGen": "Rakennetaan…",
-  "landing.previewTodayStatusReady": "Päivitetty tälle päivälle",
+  "landing.previewTodayStatusReady": "Valmis tälle päivälle",
   "landing.previewTodayDayCounter": "Päivä 1 / 30",
   "landing.previewTodayPlanActive": "Aktiivinen",
   "landing.previewTodayFocusEyebrow": "Tänään",
   "landing.previewTodayTodayLabel": "Päätehtävä",
-  "landing.previewTodayFocusHeadline": "Yksi lista. Ei arvailua.",
+  "landing.previewTodayFocusHeadline": "Tänään mennään tämä.",
   "landing.previewTodayWorkout": "Treeni",
   "landing.previewTodayWorkoutLine": "Koko keho — 30 min",
   "landing.previewTodayFood": "Ruoka",
@@ -1588,8 +1588,8 @@ export const fi = {
   "landing.previewTodayActivity": "Rytmi",
   "landing.previewTodayActivityLine": "Askeleet linjassa",
   "landing.previewTodayCta": "Tee päivä valmiiksi",
-  "landing.previewTodayFooter1": "Merkitse kun olet tehnyt oleellisen.",
-  "landing.previewTodayFooter2": "Muu järjestyy listan mukaan.",
+  "landing.previewTodayFooter1": "Merkitse kun olennaiset on tehty.",
+  "landing.previewTodayFooter2": "Loput seuraa listaa.",
   "landing.productStripEyebrow": "Mitä näet sovelluksessa",
   "landing.productStripTitle": "Päivä hajoaa → korjataan suunta. Ei paniikkia.",
   "landing.productStripPanelTodayTag": "Tänään",
@@ -2025,7 +2025,7 @@ export const en: { [K in MessageKey]: string } = {
 
   "supplement.sectionTitle": "Targeted support — coach line",
   "supplement.sectionSubtitle":
-    "Not ads: needs come from your goal, today’s intake, and training load.",
+    "Needs come from your goal, today, and load — not a promo list.",
   "supplement.embeddedEyebrow": "Targeted picks",
   "supplement.frame.recommendedForYou": "Recommended for you",
   "supplement.frame.coachSuggestion": "Coach suggestion",
@@ -2060,17 +2060,17 @@ export const en: { [K in MessageKey]: string } = {
   "nav.scan": "Scan",
 
   "today.systemLine.baselineEngaged":
-    "Baseline — no rebalance triggered from yesterday’s signals.",
+    "Baseline set. Yesterday doesn’t wreck this.",
   "today.systemLine.baselineFresh":
-    "Baseline — mark a day to unlock carry-over adjustments.",
-  "today.rebalanceActive": "Rebalancing in progress",
+    "Baseline. Log a day — yesterday starts steering.",
+  "today.rebalanceActive": "Correction on",
   "today.rebalanceDetail": "−{{kcal}} kcal / day for a few days.",
-  "rebalance.leadLine": "The week didn’t fall apart. We fix this calmly.",
-  "rebalance.noPunishLine": "No punishment. Just direction back.",
+  "rebalance.leadLine": "Week didn’t break. Fix it calmly.",
+  "rebalance.noPunishLine": "No punishment. Direction back.",
 
   "today.proof.goalFocus": "{{goal}} · {{flex}}",
-  "today.proof.synced": "Aligned with today",
-  "today.proof.autoAdjusted": "Adjusted from yesterday",
+  "today.proof.synced": "Same line as today",
+  "today.proof.autoAdjusted": "From yesterday",
   "today.proof.trainingSchedule": "{{n}}× training / week — your real schedule",
   "today.proof.programTrack": "Program direction: {{name}}",
   "today.proof.flexCalendar":
@@ -2256,9 +2256,9 @@ export const en: { [K in MessageKey]: string } = {
   "nav.progress": "Progress",
 
   "progress.sectionStreak": "Streaks",
-  "progress.pageLead": "Rhythm, truth, direction — one screen.",
+  "progress.pageLead": "Rhythm and direction — one screen.",
   "progress.emotionalSubtitle":
-    "Log days. Direction comes from repetition.",
+    "Log days. Direction comes from reps.",
   "progress.coachPresence.works": "This is working.",
   "progress.coachPresence.uneven": "This isn’t steady yet.",
   "progress.coachPresence.rhythm":
@@ -2522,7 +2522,7 @@ export const en: { [K in MessageKey]: string } = {
   "progress.weightDirDown": "Line trending down",
   "progress.weightSyntheticHint":
     "Curve estimated from profile weight — add weigh-ins to sharpen it.",
-  "progress.rebalanceActive": "Rebalancing in progress",
+  "progress.rebalanceActive": "Correction on",
   "progress.heroEyebrow": "Situation",
   "progress.heroDirectionGood": "You’re pointed the right way.",
   "progress.heroStrengthUpLockFood": "Strength is climbing. Lock in nutrition.",
@@ -2637,7 +2637,7 @@ export const en: { [K in MessageKey]: string } = {
   "today.systemStatus.goodProgress": "You’re moving",
   "today.systemStatus.fixInProgress": "Correction in motion",
   "today.labelFocus": "Focus",
-  "today.doThisToday": "This is enough for today.",
+  "today.doThisToday": "Today we run this.",
   "today.changeProgram": "Change program",
   "today.changeNutrition": "Change meal structure",
   "today.todayRhythmBlock": "Food & movement today",
@@ -2705,10 +2705,10 @@ export const en: { [K in MessageKey]: string } = {
   "today.completeModalCancel": "Cancel",
   "today.completeModalSubmit": "Done",
   "today.completeModalDone": "OK",
-  "today.completeFeedback": "Good. That was enough.",
-  "today.completeFeedbackSub": "Your streak updates as you log days — see Progress.",
+  "today.completeFeedback": "Good. Day in the bag.",
+  "today.completeFeedbackSub": "Streak grows from logs — Progress shows direction.",
   "today.thinklessCta": "Choose for me",
-  "today.thinklessBanner": "That’s enough for today.",
+  "today.thinklessBanner": "Enough for today — hold the line.",
   "today.thinklessEyebrow": "Today’s picks",
   "today.startWorkoutCta": "Start workout",
   "today.liveSignalMorning": "Morning rhythm accounted for",
@@ -2717,7 +2717,7 @@ export const en: { [K in MessageKey]: string } = {
   "today.statusOne": "Updated · 1 adjustment",
   "today.statusMany": "Updated · {{n}} adjustments",
   "today.labelToday": "TODAY",
-  "today.trustSystemLine": "Enough for today. Keep the rhythm.",
+  "today.trustSystemLine": "This is enough. Hold the line.",
   "today.secondaryFood": "Food",
   "today.secondaryMove": "Movement",
   "today.extraMoveSection": "Extra movement",
@@ -2738,7 +2738,7 @@ export const en: { [K in MessageKey]: string } = {
   "activity.ack": "Logged — counted toward today’s energy target",
 
   "today.markingDay": "Saving…",
-  "today.dayDoneSuccess": "Keep the rhythm. Tomorrow’s next.",
+  "today.dayDoneSuccess": "Hold the line. Tomorrow we continue.",
   "today.reopenDayLink": "Reopen today",
   "today.coachHeroEyebrow": "Today",
   "today.proStructureNote":
@@ -2748,20 +2748,20 @@ export const en: { [K in MessageKey]: string } = {
     "You don’t need to think today. Do this.",
   "today.coachVoice.simple":
     "Keep this simple today.",
-  "coach.presence.active": "Coach is on.",
-  "coach.presence.tracking": "Tracking this.",
-  "coach.presence.adjust": "We adjust if needed.",
+  "coach.presence.active": "Guidance on.",
+  "coach.presence.tracking": "Watching this.",
+  "coach.presence.adjust": "We tweak when needed.",
   "workout.eyebrow": "Workout",
-  "workout.flow.start": "Start — first set.",
-  "workout.flow.continue": "Continue — next set.",
-  "workout.flow.done": "Done — solid session.",
+  "workout.flow.start": "Start here. First set.",
+  "workout.flow.continue": "Next set.",
+  "workout.flow.done": "Done. Moving on.",
   "workout.tapCompleteSetCta": "Log set done",
   "workout.tapNextExerciseCta": "Next exercise",
   "workout.title": "Workout",
   "workout.description":
-    "Log only what you did. Swap if a lift doesn’t fit. The frame holds.",
-  "workout.restTitle": "Rest day",
-  "workout.restHint": "No training load today — keep food and rhythm on track.",
+    "Log what you did. Bad fit — swap. Frame holds.",
+  "workout.restTitle": "Rest",
+  "workout.restHint": "No load. Food and rhythm on track.",
   "workout.backToday": "Back to Today",
   "workout.setLabel": "Set {{n}}",
   "workout.starter.ex1.name": "Front squat",
@@ -2773,7 +2773,7 @@ export const en: { [K in MessageKey]: string } = {
   "workout.starter.reps": "8–10",
   "workout.starter.rpe": "7–8",
   "workout.voice.helperLine":
-    "You can move through the workout by voice: weight 80, 10 reps, done.",
+    "By voice: weight 80, ten reps, done.",
   "workout.voice.listening": "Listening…",
   "workout.voice.pushToTalkHint": "Tap the mic and speak a command.",
   "workout.voice.unsupported": "Your browser does not support speech recognition.",
@@ -2879,13 +2879,12 @@ export const en: { [K in MessageKey]: string } = {
   "food.eatThisNowCta": "Eat this now",
   "food.eyebrow": "Food",
   "food.coachPresence.enoughToday": "This is enough for today.",
-  "food.coachPresence.dontOverthink": "Keep this simple.",
-  "food.coachPresence.keepRhythm": "Keep rhythm, not perfection.",
+  "food.coachPresence.dontOverthink": "Don’t overthink it.",
+  "food.coachPresence.keepRhythm": "Rhythm before perfection.",
   "food.coachPresence.rhythmNotPerfect":
     "Rebalancing on — keep rhythm, not perfection.",
   "food.stripAria": "Today — energy and shopping list",
-  "food.rhythmLeadLine":
-    "Hold macros. Direction before perfection.",
+  "food.rhythmLeadLine": "Direction before perfection.",
   "food.flowMorning": "MORNING",
   "food.flowMorningSub": "a quick start",
   "food.flowDay": "DAY",
@@ -3256,8 +3255,8 @@ export const en: { [K in MessageKey]: string } = {
   "plan.arcFlexFlexible": "room to bend",
 
   "paywall.kicker": "Guidance",
-  "paywall.title": "Keep going without guessing.",
-  "paywall.subtitle": "One line for today. Do the list.",
+  "paywall.title": "Guidance ready for you.",
+  "paywall.subtitle": "One line today. Your list to run.",
   "paywall.notForYouIfNoGuidance":
     "This isn’t for you if you don’t want guidance.",
   "paywall.conversionLock":
@@ -3265,7 +3264,7 @@ export const en: { [K in MessageKey]: string } = {
   "paywall.coachPresenceAnchor":
     "A program isn’t enough — you need daily guidance.",
   "paywall.rhythmGuarantee":
-    "If this doesn’t help you stay in rhythm, you don’t pay.",
+    "If you don’t stay in rhythm with this, you don’t pay.",
   "paywall.sell1": "Same line for beginners and experienced athletes — different load.",
   "paywall.sell2": "Busy days and exceptions — the line holds.",
   "paywall.sell3":
@@ -3414,7 +3413,7 @@ export const en: { [K in MessageKey]: string } = {
   "prestart.eyebrow": "Before you start",
   "prestart.heroTitle": "This doesn’t track you. It guides you.",
   "prestart.heroSubline":
-    "No guesswork. No week falling apart. This holds the line when life hits — or resets direction fast.",
+    "No guesswork. One bad day doesn’t break the week. Life hits — the line holds or fixes fast.",
   "prestart.feat1": "You know what to do today — daily guidance, not guesswork.",
   "prestart.feat2": "Home training isn’t a gym clone — training matches your profile.",
   "prestart.feat3": "Food structure + correction — one bad day doesn’t break the line.",
@@ -3450,11 +3449,11 @@ export const en: { [K in MessageKey]: string } = {
   "prestart.cta": "Build your coach",
 
   "onboarding.introKicker": "Coach",
-  "onboarding.introTitle": "Coaching starts here",
+  "onboarding.introTitle": "Let’s start",
   "onboarding.introBody":
-    "Pick your starting level and direction — then you’ll see this week’s guidance. This isn’t only week one — it’s built for continuity.",
+    "Level and direction first. Then this week’s guidance. Built to keep going — not just week one.",
   "onboarding.introProof":
-    "Built from coaching logic, training fundamentals, and practical patterns — not guesswork.",
+    "Logic and real-world patterns — not guesswork.",
   "onboarding.trialRetention1":
     "The trial logs your week — no evening forms.",
   "onboarding.trialRetention2":
@@ -3465,9 +3464,9 @@ export const en: { [K in MessageKey]: string } = {
   "onboarding.headerSetup": "Setup",
   "onboarding.headerSystem": "Guidance",
   "onboarding.buildingWait": "Please wait",
-  "onboarding.buildingTitle": "Building this week’s guidance for you",
+  "onboarding.buildingTitle": "Building this week’s guidance",
   "onboarding.buildingPromise":
-    "You don’t need a new program every week — you need guidance that evolves with you. Opening Today.",
+    "You don’t need a new program every week — guidance moves with you. Today opens next.",
   "onboarding.qGoal": "Primary goal",
   "onboarding.qProgramLibrary": "Training program",
   "onboarding.programLibraryHint":
@@ -3574,12 +3573,12 @@ export const en: { [K in MessageKey]: string } = {
   "landing.heroProof":
     "Less talk. More doing. A ready structure — no blank page.",
   "landing.previewTodayStatusGen": "Building…",
-  "landing.previewTodayStatusReady": "Updated for today",
+  "landing.previewTodayStatusReady": "Ready for today",
   "landing.previewTodayDayCounter": "Day 1 / 30",
   "landing.previewTodayPlanActive": "Active",
   "landing.previewTodayFocusEyebrow": "Today",
   "landing.previewTodayTodayLabel": "Main task",
-  "landing.previewTodayFocusHeadline": "One list. No guesswork.",
+  "landing.previewTodayFocusHeadline": "Today we run this.",
   "landing.previewTodayWorkout": "Workout",
   "landing.previewTodayWorkoutLine": "Full body — 30 min",
   "landing.previewTodayFood": "Food",
@@ -3587,7 +3586,7 @@ export const en: { [K in MessageKey]: string } = {
   "landing.previewTodayActivity": "Rhythm",
   "landing.previewTodayActivityLine": "Steps on track",
   "landing.previewTodayCta": "Finish the day",
-  "landing.previewTodayFooter1": "Mark when you’ve done what matters.",
+  "landing.previewTodayFooter1": "Mark when the essentials are done.",
   "landing.previewTodayFooter2": "The rest follows the list.",
   "landing.productStripEyebrow": "What you see in the app",
   "landing.productStripTitle": "Day falls apart → we reset the line. No panic.",

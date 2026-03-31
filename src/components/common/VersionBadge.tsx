@@ -1,11 +1,9 @@
 "use client";
 
-// TEMP: version marker for release validation, remove later
-/** Juokseva HÄRMÄ-numero — nousee jokaisen ison viimeistely-/data-passin jälkeen. */
-export const HARMÄ_BUILD = 4;
+import { COACH_RELEASE_LABEL } from "@/config/version";
 
 export function VersionBadge() {
-  const label = `HÄRMÄ${HARMÄ_BUILD}`;
+  const label = COACH_RELEASE_LABEL;
   return (
     <div
       className="pointer-events-none select-none"
