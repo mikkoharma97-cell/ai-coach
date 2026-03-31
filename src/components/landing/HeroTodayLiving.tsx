@@ -103,6 +103,13 @@ export function HeroTodayLiving({ context = "default" }: Props) {
             <p className="mt-1 text-[15px] font-semibold tracking-tight text-[color:var(--foreground)]">
               {t("landing.previewTodayFocusHeadline")}
             </p>
+            <p
+              className={`mt-3 text-[10px] font-medium leading-snug ${
+                dark ? "text-muted" : "text-muted-2"
+              }`}
+            >
+              {t("landing.previewShiftHint")}
+            </p>
           </div>
 
           <div className="px-5 py-4 pl-[1.05rem] pr-[1.3rem]">

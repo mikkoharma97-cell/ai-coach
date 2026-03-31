@@ -1,13 +1,12 @@
 /**
- * Coach release — näkyvä merkki (HÄRMÄ / BUILD).
- * package.json + buildInfo.generated pitävät teknisen semverin; tämä on tuoteversio.
- * MASTER BUILD -kokonaisuus: `docs/MASTER_BUILD_AUDIT.md`.
+ * Tuoteversio — yksi lähde näkyvälle HÄRMÄ-merkille (badge, build-rivi).
+ * Tekninen semver: `src/lib/buildInfo.generated.ts` (buildInfo).
  */
-export const APP_VERSION = "v22";
+export const APP_VERSION = "HÄRMÄ30";
 
-/** Juokseva HÄRMÄ-numero — isompi passi (copy, moottori, data). */
-export const HARMÄ_BUILD = 22;
+/** Juokseva HÄRMÄ-numero — cache-bypass ?ver=30 ym. */
+export const HARMÄ_BUILD = 30;
 
-export const COACH_RELEASE_LABEL = `HÄRMÄ${HARMÄ_BUILD}`;
+export const COACH_RELEASE_LABEL = APP_VERSION;
 
 export const BUILD_V_DISPLAY = `BUILD ${APP_VERSION}`;

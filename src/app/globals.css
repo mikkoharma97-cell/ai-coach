@@ -449,6 +449,19 @@ body {
     @apply pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent sm:inset-x-10;
   }
 
+  /** Brand layer — identity line + subtle electric glow (not generic template) */
+  .brand-identity-lead {
+    color: color-mix(in oklab, var(--foreground) 90%, var(--accent) 10%);
+    text-shadow: 0 0 28px var(--accent-glow-soft);
+  }
+
+  .brand-coach-status-live {
+    box-shadow:
+      0 1px 2px 0 rgb(0 0 0 / 0.2),
+      0 0 0 2px rgba(59, 130, 246, 0.15),
+      0 0 22px -6px var(--accent-glow-soft);
+  }
+
   .coach-page {
     @apply pt-4 pb-8 sm:pb-10;
   }

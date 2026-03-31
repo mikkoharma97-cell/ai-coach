@@ -20,8 +20,8 @@ export function HeroSection() {
       <Container size="default" className="relative z-[1]">
         <div className="grid items-center gap-12 pb-20 pt-12 sm:gap-16 sm:pb-28 sm:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)] lg:gap-12 lg:pb-32 lg:pt-24">
           <div className="mx-auto w-full max-w-[min(100%,26rem)] text-center lg:mx-0 lg:max-w-none lg:text-left">
-            <p className="text-[14px] font-semibold leading-snug text-[color:var(--foreground)] sm:text-[15px]">
-              {t("landing.heroWhyLine")}
+            <p className="brand-identity-lead text-[14px] font-semibold leading-snug sm:text-[15px]">
+              {t("brand.identityLine")}
             </p>
             <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--text-eyebrow)]">
               {t("nav.brand")}

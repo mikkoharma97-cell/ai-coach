@@ -32,6 +32,12 @@ import {
   saveReminderPrefs,
   type ReminderPrefs,
 } from "@/lib/notifications/reminderStorage";
+import {
+  AUTOPILOT_CHANGED,
+  loadAutopilotEnabled,
+  saveAutopilotEnabled,
+} from "@/lib/autopilotStorage";
+import { trackEvent } from "@/lib/analytics";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import type {
   BiggestChallenge,
@@ -104,6 +110,7 @@ export function PreferencesScreen() {
   const [saved, setSaved] = useState(false);
   const [reminderPrefs, setReminderPrefs] =
     useState<ReminderPrefs>(DEFAULT_REMINDER_PREFS);
+  const [autopilotOn, setAutopilotOn] = useState(() => loadAutopilotEnabled());
 
   useEffect(() => {
     if (!profile) {
@@ -117,6 +124,18 @@ export function PreferencesScreen() {
 
   useEffect(() => {
     setReminderPrefs(loadReminderPrefs());
+  }, []);
+
+  useEffect(() => {
+    const sync = () => setAutopilotOn(loadAutopilotEnabled());
+    window.addEventListener(AUTOPILOT_CHANGED, sync);
+    return () => window.removeEventListener(AUTOPILOT_CHANGED, sync);
+  }, []);
+
+  const onAutopilotToggle = useCallback((checked: boolean) => {
+    saveAutopilotEnabled(checked);
+    setAutopilotOn(checked);
+    trackEvent(checked ? "autopilot_enable" : "autopilot_disable");
   }, []);
 
   const onReminderToggle = useCallback(async (checked: boolean) => {
@@ -272,6 +291,23 @@ export function PreferencesScreen() {
                   {t("notifications.permissionDenied")}
                 </p>
               )}
+          </PreferenceSection>
+
+          <PreferenceSection title={t("preferences.autopilotTitle")}>
+            <p className="text-[12px] leading-relaxed text-muted-2">
+              {t("preferences.autopilotHint")}
+            </p>
+            <label className="mt-3 flex cursor-pointer items-center justify-between gap-4 px-1 py-1">
+              <span className="text-[13px] leading-snug text-foreground">
+                {t("preferences.autopilotEnable")}
+              </span>
+              <input
+                type="checkbox"
+                className="h-4 w-4 shrink-0 rounded border-border text-accent accent-accent"
+                checked={autopilotOn}
+                onChange={(e) => onAutopilotToggle(e.target.checked)}
+              />
+            </label>
           </PreferenceSection>
 
           <details className="group rounded-[var(--radius-xl)] border border-border/50 bg-white/[0.02] px-4 py-3">

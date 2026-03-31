@@ -1,10 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
-import {
-  BUILD_V_DISPLAY,
-  COACH_RELEASE_LABEL,
-} from "@/config/version";
+import { BUILD_V_DISPLAY } from "@/config/version";
 import {
   formatBuildTimestampForUi,
   getPublicBuildInfo,
@@ -32,9 +29,7 @@ export function BuildMarkerLine({ className = "", compact = false }: Props) {
       className={`font-mono leading-snug text-muted-2 ${compact ? "text-[9px]" : "text-[10px] text-center sm:text-left"} ${className}`}
       role="status"
     >
-      <span className="block font-semibold text-muted">
-        {COACH_RELEASE_LABEL} · {BUILD_V_DISPLAY}
-      </span>
+      <span className="block font-semibold text-muted">{BUILD_V_DISPLAY}</span>
       <span className="text-muted-2/90 mt-0.5 block">
         v{buildVersion} · {timeLabel}
       </span>

@@ -146,6 +146,9 @@ export function ProgressPage() {
     <main className="coach-page">
       <Container size="phone" className="pb-28 pt-4">
         <div className="pointer-events-none mb-2 h-px w-full bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+        <p className="brand-identity-lead mb-3 max-w-[26rem] text-balance">
+          {t("brand.identityLine")}
+        </p>
         <h1 className="coach-page-headline">{t("nav.progress")}</h1>
         <p className="mt-3 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
           {ft.showCoachLines

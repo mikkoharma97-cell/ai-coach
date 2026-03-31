@@ -435,8 +435,9 @@ export function AdjustmentsScreen() {
         </details>
 
         <section
-          className="mt-8 border-t-2 border-border/50 pt-5"
-          aria-labelledby="work-shifts"
+          id="work-shifts"
+          className="mt-8 scroll-mt-24 border-t-2 border-border/50 pt-5"
+          aria-label={t("shift.plannerTitle")}
         >
           <WorkShiftPlanner profile={profile} />
         </section>

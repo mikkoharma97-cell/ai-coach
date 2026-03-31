@@ -183,6 +183,9 @@ export function WorkoutSession() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2">
             {t("workout.eyebrow")}
           </p>
+          <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
+            {t("brand.identityLine")}
+          </p>
           <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-[-0.035em] text-foreground">
             {t("workout.restTitle")}
           </h1>
@@ -238,6 +241,7 @@ export function WorkoutSession() {
       showHelpVideos={features.showHelpVideos}
       coachFrameLine={coachFrameWithShift}
       exercisePerformanceHints={perfHintsForView}
+      showBrandIdentity
     />
   );
 }

@@ -11,6 +11,7 @@ import {
   normalizeProfileForEngine,
   resolveExceptionGuidance,
 } from "@/lib/coach";
+import { mergeMinimumDayIntoDailyPlan } from "@/lib/coach/minimumDayPlan";
 import { trackEvent } from "@/lib/analytics";
 import { dayKeyFromDate } from "@/lib/dateKey";
 import { generateDailyPlan } from "@/lib/dailyEngine";
@@ -19,6 +20,10 @@ import {
   EXCEPTION_STATE_CHANGED,
   loadActiveExceptionForDay,
 } from "@/lib/exceptionStorage";
+import {
+  MINIMUM_DAY_CHANGED,
+  loadMinimumDayForDay,
+} from "@/lib/minimumDayStorage";
 import { getProgramPackage, packageLabel } from "@/lib/programPackages";
 import { dateLocaleForUi, type MessageKey, type TranslateFn } from "@/lib/i18n";
 import { FoodVoiceQuickBlock } from "@/components/food/FoodVoiceQuickBlock";
@@ -199,6 +204,7 @@ export function FoodScreen() {
   const [offPlanMeals, setOffPlanMeals] = useState<OffPlanMeal[]>([]);
   const [missedMeals, setMissedMeals] = useState(0);
   const [exTick, setExTick] = useState(0);
+  const [minimumTick, setMinimumTick] = useState(0);
   const addFood = useAsyncButtonState({
     name: "FoodScreen.addFood",
     timeoutMs: 3000,
@@ -238,6 +244,12 @@ export function FoodScreen() {
   }, []);
 
   useEffect(() => {
+    const b = () => setMinimumTick((x) => x + 1);
+    window.addEventListener(MINIMUM_DAY_CHANGED, b);
+    return () => window.removeEventListener(MINIMUM_DAY_CHANGED, b);
+  }, []);
+
+  useEffect(() => {
     const b = () => refresh();
     window.addEventListener(WORKOUT_LOG_CHANGED, b);
     return () => window.removeEventListener(WORKOUT_LOG_CHANGED, b);
@@ -249,6 +261,11 @@ export function FoodScreen() {
     [dayKeyFood, exTick],
   );
 
+  const minimumDayActive = useMemo(
+    () => loadMinimumDayForDay(dayKeyFood),
+    [dayKeyFood, minimumTick],
+  );
+
   const normalizedProfile = useMemo(
     () => (profile ? normalizeProfileForEngine(profile) : null),
     [profile],
@@ -258,13 +275,17 @@ export function FoodScreen() {
     if (!normalizedProfile) return null;
     try {
       const base = generateDailyPlan(normalizedProfile, now, locale);
-      return activeException
+      let merged = activeException
         ? mergeExceptionIntoDailyPlan(base, activeException, locale)
         : base;
+      if (minimumDayActive) {
+        merged = mergeMinimumDayIntoDailyPlan(merged, locale);
+      }
+      return merged;
     } catch {
       return null;
     }
-  }, [normalizedProfile, now, locale, activeException]);
+  }, [normalizedProfile, now, locale, activeException, minimumDayActive]);
 
   const coachEngine = useMemo(() => {
     if (!normalizedProfile || !plan) return null;
@@ -548,6 +569,10 @@ export function FoodScreen() {
             </p>
           }
         />
+
+        <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
+          {t("brand.identityLine")}
+        </p>
 
         {foodEngineLine ? (
           <p className="mt-3 max-w-xl text-[12px] font-semibold leading-snug text-muted">

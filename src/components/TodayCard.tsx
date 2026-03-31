@@ -16,6 +16,7 @@ import {
 import type { ExceptionGuidanceStrings } from "@/types/exceptions";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useMemo } from "react";
 
 export type CoachHeroBlock = {
   mainMessage: string;
@@ -110,6 +111,11 @@ type Props = {
   features?: CoachFeatureToggles;
   /** Yksi pääankkuri: treenipäivällä treeni, muuten fokus */
   primaryAnchor?: "focus" | "workout";
+  /** HÄRMÄ25 — kevyt päivä, rytmin säilytys */
+  minimumDayActive?: boolean;
+  onOpenMinimumDay?: () => void;
+  /** HÄRMÄ26 — viikko valmiiksi */
+  autopilotActive?: boolean;
 };
 
 export function TodayCard({
@@ -162,10 +168,52 @@ export function TodayCard({
   streakTone,
   features = DEFAULT_COACH_FEATURE_TOGGLES,
   primaryAnchor = "focus",
+  minimumDayActive = false,
+  onOpenMinimumDay,
+  autopilotActive = false,
 }: Props) {
   const { t, locale } = useTranslation();
   const hl = features.showHardlineTone;
   const anchorWorkout = primaryAnchor === "workout";
+
+  const hasContextFold = useMemo(
+    () =>
+      Boolean(
+        (features.showCoachLines && coachPresenceLine?.trim()) ||
+          (Boolean(librarySelectionLine) &&
+            !libraryProgramLine &&
+            !libraryNutritionLine) ||
+          Boolean(libraryProgramLine) ||
+          Boolean(libraryNutritionLine) ||
+          programPresetLine ||
+          programRationaleLine ||
+          splitRecommendationLine ||
+          engineWeekLine ||
+          quickNoteLine?.trim() ||
+          (features.showNutritionCorrections &&
+            rebalanceDailyKcal != null &&
+            rebalanceDailyKcal > 0),
+      ),
+    [
+      features.showCoachLines,
+      features.showNutritionCorrections,
+      coachPresenceLine,
+      librarySelectionLine,
+      libraryProgramLine,
+      libraryNutritionLine,
+      programPresetLine,
+      programRationaleLine,
+      splitRecommendationLine,
+      engineWeekLine,
+      quickNoteLine,
+      rebalanceDailyKcal,
+    ],
+  );
+
+  const hasProgressSnippet = Boolean(
+    (features.showRealityScore && realityScore) ||
+      (features.showStreaks && streakSummary && streakTone),
+  );
 
   return (
     <section
@@ -185,12 +233,28 @@ export function TodayCard({
       <div className="relative px-5 pb-8 pt-6 sm:px-8 sm:pb-9 sm:pt-8">
         {/* 1. Päivän status */}
         <div className="flex flex-col items-center gap-3 sm:items-start">
+          <p className="brand-identity-lead max-w-[26rem] text-center text-balance sm:text-left">
+            {t("brand.identityLine")}
+          </p>
+          {features.showCoachLines ? (
+            <p
+              className="text-[10px] font-medium text-muted-2 sm:text-left"
+              role="status"
+            >
+              {systemStatusLive
+                ? t("brand.coachActive")
+                : t("brand.coachReady")}
+            </p>
+          ) : null}
           <CoachSystemStatus
             text={t(systemStatusKey)}
             liveSignal={systemStatusLive}
           />
           {shiftBadgeKey ? (
-            <div className="flex w-full max-w-[26rem] flex-col items-center gap-1 sm:items-start">
+            <div className="flex w-full max-w-[26rem] flex-col items-center gap-2 sm:items-start">
+              <p className="text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/95 sm:text-left">
+                {t("shift.modeAcknowledged")}
+              </p>
               <span className="inline-flex rounded-full border border-accent/35 bg-accent/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
                 {t(shiftBadgeKey)}
               </span>
@@ -199,7 +263,24 @@ export function TodayCard({
                   {t(shiftRationaleKey)}
                 </p>
               ) : null}
+              <Link
+                href="/adjustments#work-shifts"
+                prefetch
+                className="text-center text-[11px] font-semibold text-accent underline-offset-2 hover:underline sm:text-left"
+              >
+                {t("shift.editPlannerCta")}
+              </Link>
             </div>
+          ) : null}
+          {minimumDayActive ? (
+            <span className="inline-flex rounded-full border border-emerald-400/35 bg-emerald-400/[0.12] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200/95">
+              {t("today.minimumDayBadge")}
+            </span>
+          ) : null}
+          {autopilotActive ? (
+            <span className="inline-flex rounded-full border border-sky-400/40 bg-sky-400/[0.12] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-200/95">
+              {t("today.autopilotBadge")}
+            </span>
           ) : null}
         </div>
 
@@ -207,15 +288,29 @@ export function TodayCard({
           {t("today.doThisToday")}
         </p>
 
-        {onThinkless && !thinklessActive && !dayDone ? (
-          <div className="mt-3">
-            <button
-              type="button"
-              onClick={onThinkless}
-              className="min-h-[48px] w-full rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.08] px-4 text-[13px] font-semibold text-accent transition hover:border-accent/55 hover:bg-accent/[0.12]"
-            >
-              {t("today.thinklessCta")}
-            </button>
+        {(onThinkless && !thinklessActive && !dayDone) ||
+        (onOpenMinimumDay && !dayDone) ? (
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-stretch">
+            {onThinkless && !thinklessActive && !dayDone ? (
+              <button
+                type="button"
+                onClick={onThinkless}
+                className="min-h-[44px] flex-1 rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.08] px-3 text-[12px] font-semibold text-accent transition hover:border-accent/55 hover:bg-accent/[0.12] sm:min-h-[48px] sm:px-4 sm:text-[13px]"
+              >
+                {t("today.thinklessCta")}
+              </button>
+            ) : null}
+            {onOpenMinimumDay && !dayDone ? (
+              <button
+                type="button"
+                onClick={onOpenMinimumDay}
+                className="min-h-[44px] flex-1 rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] px-3 text-left text-[12px] font-semibold leading-snug text-foreground transition hover:border-emerald-400/35 hover:bg-emerald-400/[0.06] sm:min-h-[48px] sm:px-4 sm:text-[13px]"
+              >
+                {minimumDayActive
+                  ? t("today.minimumDayShowPanel")
+                  : t("today.minimumDayCta")}
+              </button>
+            ) : null}
           </div>
         ) : null}
 
@@ -242,13 +337,6 @@ export function TodayCard({
           </div>
         ) : null}
 
-        <div className="mt-4 space-y-3 opacity-[0.72]">
-        {features.showCoachLines && coachPresenceLine ? (
-          <p className="max-w-[26rem] border-l-2 border-accent/35 pl-3 text-left text-[13px] font-medium leading-snug text-muted sm:mx-0">
-            {coachPresenceLine}
-          </p>
-        ) : null}
-
         {trialBanner ? (
           trialBannerHref ? (
             <Link
@@ -264,132 +352,142 @@ export function TodayCard({
           )
         ) : null}
 
-        {librarySelectionLine &&
-        !libraryProgramLine &&
-        !libraryNutritionLine ? (
-          <p
-            className="mt-3 max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left"
-            role="status"
-          >
-            {librarySelectionLine}
-          </p>
-        ) : null}
-        {libraryProgramLine || libraryNutritionLine ? (
-          <div
-            className="mt-3 max-w-[26rem] space-y-1 text-center sm:text-left"
-            role="status"
-          >
-            {libraryProgramLine ? (
-              <p className="text-[12px] font-medium leading-snug text-muted">
-                {libraryProgramLine}
-              </p>
-            ) : null}
-            {libraryNutritionLine ? (
-              <p className="text-[12px] font-medium leading-snug text-muted">
-                {libraryNutritionLine}
-              </p>
-            ) : null}
-            {showLibraryChangeLinks ? (
-              <p className="pt-1 text-[11px] font-semibold leading-snug">
-                <Link
-                  href="/plans"
-                  className="text-accent underline-offset-2 hover:underline"
-                >
-                  {t("today.changeProgram")}
-                </Link>
-                <span className="mx-2 text-muted-2" aria-hidden>
-                  ·
+        {hasContextFold ? (
+          <details className="group mt-4 rounded-[var(--radius-lg)] border border-white/[0.06] bg-white/[0.02]">
+            <summary className="cursor-pointer list-none px-4 py-3 text-[12px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center justify-between gap-2">
+                <span>{t("today.contextFoldSummary")}</span>
+                <span className="text-[10px] font-normal text-muted-2 group-open:hidden">
+                  {t("common.show")}
                 </span>
-                <Link
-                  href="/nutrition-plans"
-                  className="text-accent underline-offset-2 hover:underline"
+                <span className="hidden text-[10px] font-normal text-muted-2 group-open:inline">
+                  {t("common.hide")}
+                </span>
+              </span>
+            </summary>
+            <div className="space-y-3 border-t border-border/40 px-4 pb-4 pt-2 opacity-[0.92]">
+              {features.showCoachLines && coachPresenceLine ? (
+                <p className="max-w-[26rem] border-l-2 border-accent/35 pl-3 text-left text-[13px] font-medium leading-snug text-muted sm:mx-0">
+                  {coachPresenceLine}
+                </p>
+              ) : null}
+
+              {librarySelectionLine &&
+              !libraryProgramLine &&
+              !libraryNutritionLine ? (
+                <p
+                  className="max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left"
+                  role="status"
                 >
-                  {t("today.changeNutrition")}
-                </Link>
-              </p>
-            ) : null}
-          </div>
-        ) : null}
+                  {librarySelectionLine}
+                </p>
+              ) : null}
+              {libraryProgramLine || libraryNutritionLine ? (
+                <div
+                  className="max-w-[26rem] space-y-1 text-center sm:text-left"
+                  role="status"
+                >
+                  {libraryProgramLine ? (
+                    <p className="text-[12px] font-medium leading-snug text-muted">
+                      {libraryProgramLine}
+                    </p>
+                  ) : null}
+                  {libraryNutritionLine ? (
+                    <p className="text-[12px] font-medium leading-snug text-muted">
+                      {libraryNutritionLine}
+                    </p>
+                  ) : null}
+                  {showLibraryChangeLinks ? (
+                    <p className="pt-1 text-[11px] font-semibold leading-snug">
+                      <Link
+                        href="/plans"
+                        className="text-accent underline-offset-2 hover:underline"
+                      >
+                        {t("today.changeProgram")}
+                      </Link>
+                      <span className="mx-2 text-muted-2" aria-hidden>
+                        ·
+                      </span>
+                      <Link
+                        href="/nutrition-plans"
+                        className="text-accent underline-offset-2 hover:underline"
+                      >
+                        {t("today.changeNutrition")}
+                      </Link>
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
 
-        {programPresetLine ? (
-          <p
-            className={`max-w-[26rem] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-accent/90 sm:text-left ${libraryProgramLine || libraryNutritionLine || librarySelectionLine ? "mt-2" : "mt-3"}`}
-            role="status"
-          >
-            {programPresetLine}
-          </p>
-        ) : null}
+              {programPresetLine ? (
+                <p
+                  className={`max-w-[26rem] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-accent/90 sm:text-left ${libraryProgramLine || libraryNutritionLine || librarySelectionLine ? "mt-0" : ""}`}
+                  role="status"
+                >
+                  {programPresetLine}
+                </p>
+              ) : null}
 
-        {programRationaleLine ? (
-          <p
-            className={`max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left ${programPresetLine || libraryProgramLine || libraryNutritionLine || librarySelectionLine ? "mt-2" : "mt-3"}`}
-            role="status"
-          >
-            {programRationaleLine}
-          </p>
-        ) : null}
+              {programRationaleLine ? (
+                <p
+                  className="max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left"
+                  role="status"
+                >
+                  {programRationaleLine}
+                </p>
+              ) : null}
 
-        {splitRecommendationLine ? (
-          <p
-            className="mt-2 max-w-[26rem] text-center text-[12px] leading-snug text-muted-2 sm:text-left"
-            role="status"
-          >
-            {splitRecommendationLine}
-          </p>
-        ) : null}
+              {splitRecommendationLine ? (
+                <p
+                  className="max-w-[26rem] text-center text-[12px] leading-snug text-muted-2 sm:text-left"
+                  role="status"
+                >
+                  {splitRecommendationLine}
+                </p>
+              ) : null}
 
-        {engineWeekLine ? (
-          <p
-            className="mt-2 max-w-[26rem] text-center text-[11px] font-semibold leading-snug text-accent/90 sm:text-left"
-            role="status"
-          >
-            {engineWeekLine}
-          </p>
-        ) : null}
+              {engineWeekLine ? (
+                <p
+                  className="max-w-[26rem] text-center text-[11px] font-semibold leading-snug text-accent/90 sm:text-left"
+                  role="status"
+                >
+                  {engineWeekLine}
+                </p>
+              ) : null}
 
-        {quickNoteLine ? (
-          <p
-            className="mt-3 max-w-[26rem] rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-center text-[11px] leading-snug text-muted sm:text-left"
-            role="status"
-          >
-            <span className="font-semibold text-foreground/90">
-              {t("today.quickNoteLabel")}
-            </span>{" "}
-            {quickNoteLine}
-          </p>
-        ) : null}
+              {quickNoteLine ? (
+                <p
+                  className="max-w-[26rem] rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-center text-[11px] leading-snug text-muted sm:text-left"
+                  role="status"
+                >
+                  <span className="font-semibold text-foreground/90">
+                    {t("today.quickNoteLabel")}
+                  </span>{" "}
+                  {quickNoteLine}
+                </p>
+              ) : null}
 
-        {features.showRealityScore && realityScore ? (
-          <RealityScoreStrip score={realityScore} locale={locale} />
+              {features.showNutritionCorrections &&
+              rebalanceDailyKcal != null &&
+              rebalanceDailyKcal > 0 ? (
+                <div
+                  className="w-full rounded-[var(--radius-lg)] border border-accent/20 bg-white/[0.03] px-3.5 py-2.5 text-center sm:text-left"
+                  role="status"
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
+                    {t("today.rebalanceActive")}
+                  </p>
+                  <p className="mt-1 text-[11px] font-medium leading-snug text-foreground">
+                    {t("today.rebalanceDetail", { kcal: rebalanceDailyKcal })}
+                  </p>
+                  <p className="mt-1 text-[10px] leading-snug text-muted-2">
+                    {t("rebalance.leadLine")}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </details>
         ) : null}
-
-        {features.showStreaks && streakSummary && streakTone ? (
-          <StreakRhythmBlock
-            summary={streakSummary}
-            tone={streakTone}
-            className="mt-3"
-          />
-        ) : null}
-
-        {features.showNutritionCorrections &&
-        rebalanceDailyKcal != null &&
-        rebalanceDailyKcal > 0 ? (
-          <div
-            className="w-full rounded-[var(--radius-lg)] border border-accent/20 bg-white/[0.03] px-3.5 py-2.5 text-center sm:text-left"
-            role="status"
-          >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
-              {t("today.rebalanceActive")}
-            </p>
-            <p className="mt-1 text-[11px] font-medium leading-snug text-foreground">
-              {t("today.rebalanceDetail", { kcal: rebalanceDailyKcal })}
-            </p>
-            <p className="mt-1 text-[10px] leading-snug text-muted-2">
-              {t("rebalance.leadLine")}
-            </p>
-          </div>
-        ) : null}
-        </div>
 
         <header className="mt-5 text-center sm:mt-6 sm:text-left">
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
@@ -419,8 +517,31 @@ export function TodayCard({
           ) : null}
         </header>
 
+        {hasProgressSnippet ? (
+          <div
+            className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-3"
+            aria-label={t("today.progressSnippetAria")}
+          >
+            {features.showRealityScore && realityScore ? (
+              <div className="min-w-0 flex-1 [&>*]:mt-0">
+                <RealityScoreStrip score={realityScore} locale={locale} />
+              </div>
+            ) : null}
+            {features.showStreaks && streakSummary && streakTone ? (
+              <div className="min-w-0 flex-1 sm:max-w-[14rem]">
+                <StreakRhythmBlock
+                  summary={streakSummary}
+                  tone={streakTone}
+                  className="!mt-0 !py-3"
+                />
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className="today-one-screen mt-5 space-y-6 rounded-[var(--radius-xl)] border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5">
         {/* 2. Pääfokus — visuaalinen paino alas kun ankkuri on treeni */}
-        <div className={`relative mt-8 ${anchorWorkout ? "opacity-80" : ""}`}>
+        <div className={`relative mt-0 ${anchorWorkout ? "opacity-80" : ""}`}>
           <p
             className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${anchorWorkout ? "text-muted-2/90" : "text-muted-2"}`}
           >
@@ -450,30 +571,26 @@ export function TodayCard({
                 {focus.coachNote}
               </p>
             ) : null}
+            {features.showCoachLines && coachHero ? (
+              <div className="mt-4 border-t border-white/[0.1] pt-4 text-left">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-accent">
+                  {t("today.coachIntelEyebrow")}
+                </p>
+                <p
+                  className={`mt-2 font-semibold leading-[1.15] tracking-[-0.03em] text-foreground ${anchorWorkout ? "text-[1.05rem] sm:text-[1.15rem]" : "text-[1.2rem] sm:text-[1.35rem]"}`}
+                >
+                  {coachHero.mainMessage}
+                </p>
+                <p className="mt-2 max-w-[26rem] text-[13px] font-medium leading-snug text-muted sm:text-[14px]">
+                  {coachHero.direction}
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
 
-        {/* 3. Valmentajan päätös */}
-        {features.showCoachLines && coachHero ? (
-          <div
-            className={`relative mt-8 text-center sm:text-left ${anchorWorkout ? "opacity-75" : ""} ${hl ? "rounded-[var(--radius-lg)] border border-accent/35 bg-white/[0.04] px-4 py-4 sm:px-5" : ""}`}
-          >
-            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-accent">
-              {t("today.coachIntelEyebrow")}
-            </p>
-            <p
-              className={`mt-4 font-semibold leading-[1.12] tracking-[-0.045em] text-foreground ${anchorWorkout ? "text-[1.25rem] sm:text-[1.35rem]" : "text-[1.625rem] sm:text-[1.875rem]"}`}
-            >
-              {coachHero.mainMessage}
-            </p>
-            <p className="mt-2.5 max-w-[26rem] text-[14px] font-medium leading-snug text-muted sm:text-[15px]">
-              {coachHero.direction}
-            </p>
-          </div>
-        ) : null}
-
         {proStructureNote && (proExerciseNames?.length ?? 0) > 0 ? (
-          <div className="relative mt-6 rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] px-4 py-4 sm:px-5">
+          <div className="relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] px-4 py-4 sm:px-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-2">
               {proStructureNote}
             </p>
@@ -493,7 +610,7 @@ export function TodayCard({
         {/* 4. Treeni — korostus kun primaryAnchor === workout */}
         {startWorkoutHref ? (
           <div
-            className={`relative mt-8 ${anchorWorkout ? "rounded-[var(--radius-xl)] border border-accent/40 bg-gradient-to-b from-accent/[0.14] to-white/[0.02] p-4 sm:p-5" : ""}`}
+            className={`relative mt-5 ${anchorWorkout ? "rounded-[var(--radius-xl)] border border-accent/40 bg-gradient-to-b from-accent/[0.14] to-white/[0.02] p-4 sm:p-5" : ""}`}
           >
             <p
               className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${anchorWorkout ? "text-accent" : "text-muted-2"}`}
@@ -741,6 +858,7 @@ export function TodayCard({
               </button>
             </div>
           )}
+        </div>
         </div>
       </div>
     </section>

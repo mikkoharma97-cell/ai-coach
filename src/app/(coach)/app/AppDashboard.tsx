@@ -2,6 +2,8 @@
 
 import { DailyActivityInput } from "@/components/coach/DailyActivityInput";
 import { DayCompletionModal } from "@/components/today/DayCompletionModal";
+import { MinimumDayModal } from "@/components/today/MinimumDayModal";
+import { AutopilotWeekStrip } from "@/components/today/AutopilotWeekStrip";
 import { TodayCard } from "@/components/TodayCard";
 import { WeekProgress } from "@/components/WeekProgress";
 import { Container } from "@/components/ui/Container";
@@ -14,6 +16,7 @@ import {
   resolveExceptionGuidance,
   shouldSuppressWorkoutLink,
 } from "@/lib/coach";
+import { mergeMinimumDayIntoDailyPlan } from "@/lib/coach/minimumDayPlan";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { getDailyFocus } from "@/lib/dailyFocus";
 import { generateDailyPlan } from "@/lib/dailyEngine";
@@ -27,7 +30,7 @@ import {
 import { flowLog } from "@/lib/flowLog";
 import { dayKeyFromDate } from "@/lib/dateKey";
 import { DAILY_ACTIVITIES_CHANGED } from "@/lib/activityStorage";
-import { getMondayBasedIndex } from "@/lib/plan";
+import { countTrainingDays, getMondayBasedIndex } from "@/lib/plan";
 import { streakRhythmTone } from "@/components/streak/StreakRhythmBlock";
 import { buildRealityScore } from "@/lib/realityScore";
 import { gatherRealityScoreContext } from "@/lib/realityScoreContext";
@@ -52,6 +55,15 @@ import {
   clearActiveException,
   loadActiveExceptionForDay,
 } from "@/lib/exceptionStorage";
+import {
+  MINIMUM_DAY_CHANGED,
+  loadMinimumDayForDay,
+} from "@/lib/minimumDayStorage";
+import {
+  AUTOPILOT_CHANGED,
+  loadAutopilotEnabled,
+  saveAutopilotEnabled,
+} from "@/lib/autopilotStorage";
 import { getSubscriptionSnapshot } from "@/lib/subscription";
 import {
   hasEverMarkedDayDone,
@@ -105,6 +117,9 @@ export function AppDashboard() {
   const [exTick, setExTick] = useState(0);
   const [shiftTick, setShiftTick] = useState(0);
   const [completeModalOpen, setCompleteModalOpen] = useState(false);
+  const [minimumModalOpen, setMinimumModalOpen] = useState(false);
+  const [minimumTick, setMinimumTick] = useState(0);
+  const [autopilotTick, setAutopilotTick] = useState(0);
   const [streakRefresh, setStreakRefresh] = useState(0);
   const [thinklessTick, setThinklessTick] = useState(0);
   const [workoutLogTick, setWorkoutLogTick] = useState(0);
@@ -126,6 +141,18 @@ export function AppDashboard() {
     const bump = () => setExTick((x) => x + 1);
     window.addEventListener(EXCEPTION_STATE_CHANGED, bump);
     return () => window.removeEventListener(EXCEPTION_STATE_CHANGED, bump);
+  }, []);
+
+  useEffect(() => {
+    const bump = () => setMinimumTick((x) => x + 1);
+    window.addEventListener(MINIMUM_DAY_CHANGED, bump);
+    return () => window.removeEventListener(MINIMUM_DAY_CHANGED, bump);
+  }, []);
+
+  useEffect(() => {
+    const bump = () => setAutopilotTick((x) => x + 1);
+    window.addEventListener(AUTOPILOT_CHANGED, bump);
+    return () => window.removeEventListener(AUTOPILOT_CHANGED, bump);
   }, []);
 
   useEffect(() => {
@@ -158,6 +185,16 @@ export function AppDashboard() {
     [dayKeyToday, exTick],
   );
 
+  const minimumDayActive = useMemo(
+    () => loadMinimumDayForDay(dayKeyToday),
+    [dayKeyToday, minimumTick],
+  );
+
+  const autopilotEnabled = useMemo(
+    () => loadAutopilotEnabled(),
+    [autopilotTick],
+  );
+
   const normalizedProfile = useMemo(
     () => (profile ? normalizeProfileForEngine(profile) : null),
     [profile],
@@ -167,9 +204,13 @@ export function AppDashboard() {
     if (!normalizedProfile) return null;
     try {
       const base = generateDailyPlan(normalizedProfile, now, locale);
-      return activeException
+      let merged = activeException
         ? mergeExceptionIntoDailyPlan(base, activeException, locale)
         : base;
+      if (minimumDayActive) {
+        merged = mergeMinimumDayIntoDailyPlan(merged, locale);
+      }
+      return merged;
     } catch {
       return null;
     }
@@ -181,6 +222,7 @@ export function AppDashboard() {
     signalTick,
     shiftTick,
     activeException,
+    minimumDayActive,
   ]);
 
   const coachAi = useMemo(() => {
@@ -301,6 +343,14 @@ export function AppDashboard() {
       programPresetLine: `${t(r.presetFrameLabelKey)} · ${t(r.presetNameKey)}`,
     };
   }, [normalizedProfile, t]);
+
+  const mealStructureLabel = useMemo(() => {
+    if (!profile) return "";
+    const m = profile.mealStructure;
+    if (m === "three_meals") return t("onboarding.structThree");
+    if (m === "lighter_evening") return t("onboarding.structLight");
+    return t("onboarding.structSnack");
+  }, [profile, t]);
 
   const { libraryProgramLine, libraryNutritionLine } = useMemo(() => {
     if (!normalizedProfile) {
@@ -428,6 +478,16 @@ export function AppDashboard() {
     });
   }, [now, plan]);
 
+  const enableAutopilot = useCallback(() => {
+    saveAutopilotEnabled(true);
+    trackEvent("autopilot_enable");
+  }, []);
+
+  const disableAutopilot = useCallback(() => {
+    saveAutopilotEnabled(false);
+    trackEvent("autopilot_disable");
+  }, []);
+
   const todaySystemStatusKey = useMemo((): MessageKey => {
     if (!normalizedProfile || !plan) return "today.systemStatus.balanced";
     return computeTodaySystemStatusKey({
@@ -494,6 +554,13 @@ export function AppDashboard() {
         onClose={() => setCompleteModalOpen(false)}
         onCommit={onCompleteCommit}
       />
+      <MinimumDayModal
+        open={minimumModalOpen}
+        onClose={() => setMinimumModalOpen(false)}
+        dayKey={dayKeyToday}
+        active={minimumDayActive}
+        onActivated={() => setMinimumTick((x) => x + 1)}
+      />
       <Container size="phone" className="px-5">
         <h1 className="sr-only">
           Today — {dateParts.weekday}, {dateParts.calendarDate}
@@ -504,6 +571,35 @@ export function AppDashboard() {
           enabled={features.showHelpVideos}
           className="mt-2 opacity-95"
         />
+
+        <details className="group mt-2 rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.02]">
+          <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center justify-between gap-3">
+              <span>{t("today.weekPlanFold")}</span>
+              <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
+                {t("common.show")}
+              </span>
+              <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
+                {t("common.hide")}
+              </span>
+            </span>
+          </summary>
+          <div className="border-t border-border/40 px-1 pb-3 pt-1">
+            <AutopilotWeekStrip
+              enabled={autopilotEnabled}
+              onEnable={enableAutopilot}
+              onDisable={disableAutopilot}
+              days={plan.weeklyPlan.days}
+              referenceDate={now}
+              trainingDaysCount={countTrainingDays({
+                days: plan.weeklyPlan.days,
+              })}
+              mealStructureLabel={mealStructureLabel}
+              programFrameLine={programPresetLine}
+              className="!mt-0"
+            />
+          </div>
+        </details>
 
         <div className="relative">
           <div
@@ -541,8 +637,14 @@ export function AppDashboard() {
             activity={plan.todayActivityTask}
             systemStatusKey={todaySystemStatusKey}
             systemStatusLive={
-              Boolean(plan.systemLine?.trim()) || Boolean(activeException)
+              Boolean(plan.systemLine?.trim()) ||
+              Boolean(activeException) ||
+              minimumDayActive ||
+              autopilotEnabled
             }
+            minimumDayActive={minimumDayActive}
+            onOpenMinimumDay={() => setMinimumModalOpen(true)}
+            autopilotActive={autopilotEnabled}
             startWorkoutHref={
               generatedWorkout &&
               !generatedWorkout.isRestDay &&
@@ -598,13 +700,6 @@ export function AppDashboard() {
           />
         </div>
 
-        <CoachingInsightsSection
-          profile={profile}
-          referenceDate={now}
-          locale={locale}
-          refreshKey={workoutLogTick}
-        />
-
         <details className="coach-panel-subtle mt-8 group">
           <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
             <span className="flex items-center justify-between gap-3">
@@ -620,6 +715,12 @@ export function AppDashboard() {
           <div className="border-t border-border/50 px-4 pb-5 pt-4">
             <div className="space-y-6">
               <WeekProgress days={plan.weeklyPlan.days} referenceDate={now} />
+              <CoachingInsightsSection
+                profile={profile}
+                referenceDate={now}
+                locale={locale}
+                refreshKey={workoutLogTick}
+              />
             </div>
             {goalProgressRealism ? (
               <p

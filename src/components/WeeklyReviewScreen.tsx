@@ -247,6 +247,10 @@ export function WeeklyReviewScreen() {
           className="max-w-none"
         />
 
+        <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
+          {t("brand.identityLine")}
+        </p>
+
         {weekProgramLine ? (
           <p className="mt-3 max-w-xl text-[13px] font-medium leading-snug text-muted">
             {weekProgramLine}

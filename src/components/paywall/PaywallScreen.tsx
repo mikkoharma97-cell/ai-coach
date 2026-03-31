@@ -129,6 +129,10 @@ export function PaywallScreen() {
           {t("paywall.kicker")}
         </p>
 
+        <p className="brand-identity-lead mx-auto mt-5 max-w-[min(100%,24rem)] text-balance text-center text-[13px] font-semibold leading-snug sm:text-[14px]">
+          {t("brand.identityLine")}
+        </p>
+
         <h1 className="mx-auto mt-8 max-w-[22ch] text-balance text-center text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[2rem]">
           {t("paywall.title")}
         </h1>

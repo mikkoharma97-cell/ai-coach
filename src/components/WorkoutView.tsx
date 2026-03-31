@@ -66,6 +66,8 @@ type Props = {
   coachFrameLine?: string | null;
   /** Lokidatasta: viimeisin volyymi / trendi per liike (locale jo valittu) */
   exercisePerformanceHints?: { exerciseId: string; line: string }[];
+  /** Brändi: yhtenäinen identity-linja näkymän alussa */
+  showBrandIdentity?: boolean;
 };
 
 function exerciseRowsToSerializable(rows: ExerciseRow[]) {
@@ -149,6 +151,7 @@ export function WorkoutView({
   showHelpVideos = true,
   coachFrameLine,
   exercisePerformanceHints,
+  showBrandIdentity = false,
 }: Props) {
   const { t, locale } = useTranslation();
   const router = useRouter();
@@ -387,6 +390,12 @@ export function WorkoutView({
             </button>
           }
         />
+
+        {showBrandIdentity ? (
+          <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
+            {t("brand.identityLine")}
+          </p>
+        ) : null}
 
         {coachFrameLine ? (
           <p className="mt-3 max-w-[26rem] text-[12px] font-semibold leading-snug text-muted">

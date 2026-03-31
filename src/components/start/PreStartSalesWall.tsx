@@ -44,7 +44,7 @@ export function PreStartSalesWall({
           {t("prestart.eyebrow")}
         </p>
         <h1 className="coach-page-headline mt-4 text-balance">
-          {t("prestart.heroTitle")}
+          {t("brand.identityLine")}
         </h1>
         <p className="coach-page-body-soft mx-auto mt-5 max-w-md font-medium sm:mx-0">
           {t("prestart.heroSubline")}

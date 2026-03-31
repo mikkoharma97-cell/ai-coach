@@ -11,6 +11,14 @@ export const fi = {
   "common.hide": "Piilota",
   "common.none": "—",
 
+  "brand.identityLine": "Tämä ei seuraa sinua. Tämä ohjaa sinua.",
+  "brand.coachActive": "Coach aktiivinen",
+  "brand.coachReady": "Coach valmis",
+  "brand.hook.enough": "Tämä riittää.",
+  "brand.hook.keepLine": "Pidä linja.",
+  "brand.hook.noGuess": "Ei arvailua.",
+  "brand.hook.goodContinue": "Hyvä. Jatka.",
+
   "swipe.panelWorkout": "Treeni",
   "swipe.panelFood": "Ruoka",
   "swipe.panelRhythm": "Rytmi",
@@ -55,9 +63,9 @@ export const fi = {
   "notifications.permissionDenied":
     "Ilmoitukset on estetty selaimessa — salli asetuksista, jos haluat muistutuksia.",
 
-  "fallback.sharpensWithUse": "Tarkentuu kun merkitset päiviä.",
-  "fallback.firstWeeksBuildView": "Ensimmäiset viikot täyttävät tämän.",
-  "fallback.trendClearerWithData": "Kun merkintöjä kertyy, suunta selkenee.",
+  "fallback.sharpensWithUse": "Tarkentuu, kun merkitset päiviä — ilman merkintöjä tämä on arvausta.",
+  "fallback.firstWeeksBuildView": "Ensimmäiset viikot täyttävät näkymän.",
+  "fallback.trendClearerWithData": "Kun merkintöjä kertyy, suunta näkyy — ei ennen.",
   "fallback.profileMissingTitle": "Aloitetaan tästä.",
   "fallback.profileLoadFailed":
     "Tietoja ei löytynyt tai lataus keskeytyi.",
@@ -179,6 +187,8 @@ export const fi = {
   "daily.food.overLose":
     "Laadukas proteiini tänään — pidä tutut ateria-ajat",
 
+  "shift.modeAcknowledged": "Vuoro huomioitu.",
+  "shift.editPlannerCta": "Muokkaa vuoroja",
   "shift.badge.morning": "Aamuvuoro",
   "shift.badge.evening": "Iltavuoro",
   "shift.badge.night": "Yövuoro",
@@ -239,7 +249,7 @@ export const fi = {
     "Vuoro huomioitu: vapaa — käytä päivä tarkoituksella.",
   "shift.plannerTitle": "Seuraavat 7 päivää — työvuorot",
   "shift.plannerHint":
-    "Napauta vuoro / vapaa. Ohjelma, ruoka ja treenin sävy mukautuvat.",
+    "Napauta aamu / ilta / yö / vapaa kullekin päivälle. Viikon rakenne ja päivän ohjaus päivittyvät — treenin ajoitus, kuorman sävy ja ruokarytmi.",
   "shift.save": "Tallenna vuorot",
   "shift.saved": "Tallennettu — Today päivittyy.",
   "shift.type.morning": "Aamu",
@@ -247,6 +257,8 @@ export const fi = {
   "shift.type.night": "Yö",
   "shift.type.off": "Vapaa",
 
+  "landing.previewShiftHint":
+    "Vuorotyö: päivän rakenne tehdään vuoron mukaan — ei oletusta ‘normaalista päivästä’.",
   "landing.shiftSell1":
     "Syötä työvuorot — ohjelma mukautuu niiden mukaan.",
   "landing.shiftSell2":
@@ -287,11 +299,11 @@ export const fi = {
   "progress.sectionStreak": "Putki",
   "progress.pageLead": "Rytmi ja suunta — yksi näkymä.",
   "progress.emotionalSubtitle":
-    "Merkitse päiviä. Suunta tulee toistosta.",
-  "progress.coachPresence.works": "Tämä toimii.",
-  "progress.coachPresence.uneven": "Tämä ei ole vielä tasainen.",
+    "Merkinnät ensin. Suunta tulee toistosta — ei päinvastoin.",
+  "progress.coachPresence.works": "Suunta on oikea.",
+  "progress.coachPresence.uneven": "Tämä ei vie eteenpäin vielä — tasoitus tulee rytmistä.",
   "progress.coachPresence.rhythm":
-    "Tämä paranee, kun pidät rytmin.",
+    "Pidä linja. Rytmi korjaa lopun.",
 
   "program.rationale.shift":
     "Vuororytmi huomioitu — ohjelma ei oleta tasaista arkea.",
@@ -661,10 +673,10 @@ export const fi = {
   "today.systemStatus.balanced": "Tasapainossa",
   "today.systemStatus.loadHigh": "Kuorma korkea",
   "today.systemStatus.rhythmBroken": "Rytmi rikki",
-  "today.systemStatus.goodProgress": "Etenet",
+  "today.systemStatus.goodProgress": "Suunta kantaa",
   "today.systemStatus.fixInProgress": "Korjaus käynnissä",
   "today.labelFocus": "Pääfokus",
-  "today.doThisToday": "Tänään mennään tämä.",
+  "today.doThisToday": "Tänään tämä.",
   "today.changeProgram": "Vaihda ohjelmaa",
   "today.changeNutrition": "Vaihda ruokarakennetta",
   "today.todayRhythmBlock": "Ruoka & liike tänään",
@@ -674,18 +686,18 @@ export const fi = {
   "today.quickSkip": "Skipattu",
   "today.quickChange": "Muuta",
   "today.dayCloseEyebrow": "Päivä valmis",
-  "today.dayClose.lineA": "Hyvä. Rytmi pysyi.",
-  "today.dayClose.lineB": "Päivä hajosi osin, mutta runko jäi eloon.",
+  "today.dayClose.lineA": "Pidä linja. Rytmi pysyi.",
+  "today.dayClose.lineB": "Päivä hajosi osin — runko ei katkennut.",
   "today.dayClose.lineC": "Huomenna korjataan.",
-  "today.dayClose.headlineA": "Hyvä. Tämä päivä laskettiin.",
+  "today.dayClose.headlineA": "Tämä riittää. Päivä laskettiin.",
   "today.dayClose.headlineB":
-    "Päivä ei mennyt täydellisesti — rakenne ei silti katkennut.",
-  "today.dayClose.headlineC": "Kova päivä. Se on kirjattu.",
-  "today.dayClose.feelingA": "Rauha. Tämä riittää tänään.",
-  "today.dayClose.feelingB": "Hyväksyntä. Ei selitystä — vain suunta.",
+    "Ei täydellinen päivä — rakenne ei silti katkennut.",
+  "today.dayClose.headlineC": "Kova päivä. Kirjattu.",
+  "today.dayClose.feelingA": "Tämä riittää tänään.",
+  "today.dayClose.feelingB": "Ei selitystä — vain suunta.",
   "today.dayClose.feelingC": "Tarkkuus. Huomenna on uusi ote.",
   "today.dayClose.tomorrowA":
-    "Viikko ei hajonnut. Huomenna jatketaan tästä.",
+    "Viikko ei hajonnut. Ei haittaa — jatketaan tästä. Hyvä. Jatka.",
   "today.dayClose.tomorrowB": "Huomenna kevennät kuormaa ja ankkuroidut uudelleen.",
   "today.dayClose.tomorrowC":
     "Huomenna teet yhden asian oikein — se riittää aloittamaan.",
@@ -731,11 +743,34 @@ export const fi = {
   "today.completeModalCancel": "Peruuta",
   "today.completeModalSubmit": "Valmis",
   "today.completeModalDone": "Selvä",
-  "today.completeFeedback": "Hyvä. Päivä on kasassa.",
-  "today.completeFeedbackSub": "Putki kasvaa merkinnöistä — Progress näyttää suunnan.",
+  "today.completeFeedback": "Tämä riittää. Merkintä tallessa.",
+  "today.completeFeedbackSub":
+    "Yksi merkintä kerrallaan. Progress näyttää, mihin tämä johtaa.",
   "today.thinklessCta": "Valitse puolestani",
   "today.thinklessBanner": "Tämä riittää tälle päivälle — pidä linja.",
   "today.thinklessEyebrow": "Päivän valinnat",
+  "today.minimumDayBadge": "Minimi päivä",
+  "today.minimumDayCta": "Huono päivä? Minimi päivä — säilytä rytmi",
+  "today.minimumDayShowPanel": "Näytä minimi",
+  "today.minimumDayModalTitle": "Minimi päivä",
+  "today.minimumDayModalIntro":
+    "Kun väsymys, kiire tai huono palautuminen iskee, yksi kevyt kerros riittää. Ei syyllistämistä — päivän voi sulkea normaalisti.",
+  "today.minimumDayModalActivate": "Käytä minimiä tänään",
+  "today.minimumDayHeadline10": "Tee tämä 10 min. Se riittää.",
+  "today.minimumDayEnoughToday": "Tämä riittää.",
+  "today.minimumDayNoGuilt":
+    "Rytmi säilyy, vaikka teet vain tämän. Merkitse päivä valmiiksi kun olet tehnyt minimin tai vastaavan.",
+  "today.minimumDayMove1": "Kevyt kävely tai paikallaan polvi-nosto noin 5 min",
+  "today.minimumDayMove2": "Hartija- ja rintakehän avaus: 10–15 toistoa ilman kiirettä",
+  "today.minimumDayMove3": "Lantion kierrot ja muutama syvä hengitys noin 2 min",
+  "today.minimumDayAlt":
+    "Vaihtoehto: pelkkä venyttely ja kävely — laske se riittäväksi suoritukseksi.",
+  "today.minimumDayFoodLabel": "Nopea ruoka",
+  "today.minimumDayFoodBody":
+    "Yksi ateria: proteiinin lähde + hedelmä tai täysjyväleipä — ei monivaiheista prepii.",
+  "today.minimumDayClose": "Selvä",
+  "today.minimumDayClear": "Poista minimi päivä",
+  "today.autopilotBadge": "Autopilot päällä",
   "today.startWorkoutCta": "Aloita treeni",
   "today.liveSignalMorning": "Aamuinen rytmi huomioitu",
   "today.liveSignalRecent": "Viime päivien mukaan",
@@ -743,11 +778,36 @@ export const fi = {
   "today.statusOne": "Päivitetty · 1 säätö",
   "today.statusMany": "Päivitetty · {{n}} säätöä",
   "today.labelToday": "TÄNÄÄN",
+  "today.weekPlanFold": "Viikko & autopilot",
+  "today.contextFoldSummary": "Tausta & ohjelmarivit",
+  "today.progressSnippetAria": "Päivän tilannekuva",
   "today.trustSystemLine": "Tämä riittää. Pidä linja.",
   "today.secondaryFood": "Ruoka",
   "today.secondaryMove": "Liike",
   "today.extraMoveSection": "Lisäliike",
   "today.activityBonusAck": "Päivän liike: +{{kcal}} kcal huomioitu tavoitteessa",
+
+  "autopilot.badgeOn": "Autopilot päällä",
+  "autopilot.headlineReady": "Tämä viikko on tehty sinulle.",
+  "autopilot.subCopy":
+    "Viikko on kasassa: treenirunko ja ruokarakenne. Päivittäinen ohjaus päivittyy Today-, Food- ja Workout -datalle — kevyesti, ilman että viikko hajoaa.",
+  "autopilot.stripEyebrowOff": "Viikko",
+  "autopilot.stripTitleOff": "Rakenna viikko valmiiksi",
+  "autopilot.stripHintOff":
+    "Yksi kytkin: vähemmän päätöksiä, sama rytmi. Voit poistaa autopilotin milloin tahansa.",
+  "autopilot.enableCta": "Ota autopilot käyttöön",
+  "autopilot.disableCta": "Poista autopilot",
+  "autopilot.weekAria": "Tämä viikko",
+  "autopilot.weekTrainShort": "T",
+  "autopilot.weekRestShort": "R",
+  "autopilot.weekLegend": "T · treeni · R · lepo",
+  "autopilot.labelTraining": "Treeni:",
+  "autopilot.lineTraining":
+    "{{n}} treenipäivää viikossa — päivittäinen lista seuraa tätä runkoa.",
+  "autopilot.labelFood": "Ruoka:",
+  "autopilot.labelProgram": "Ohjelma:",
+  "autopilot.exceptionNote":
+    "Poikkeamat (esim. minimi päivä tai elämä tilanne) ohittavat yksittäisen päivän ohjeen — viikon linja pysyy.",
 
   "activity.inputTitle": "Lisää päivän liike",
   "activity.type.walk": "Kävely",
@@ -780,7 +840,7 @@ export const fi = {
   "workout.eyebrow": "Treeni",
   "workout.flow.start": "Aloita tästä. Ensimmäinen sarja.",
   "workout.flow.continue": "Seuraava sarja.",
-  "workout.flow.done": "Valmis. Jatketaan.",
+  "workout.flow.done": "Valmis. Ei haittaa — jatketaan tästä.",
   "workout.tapCompleteSetCta": "Merkitse sarja tehdyksi",
   "workout.tapNextExerciseCta": "Seuraava liike",
   "workout.title": "Treeni",
@@ -811,7 +871,7 @@ export const fi = {
   "workout.voice.error.unknown": "Puheentunnistus epäonnistui.",
   "workout.exercise.activeEyebrow": "Liike {{current}} / {{total}}",
   "workout.exercise.watchCue": "Katso liike ennen sarjaa.",
-  "workout.coachNudge.nextSet": "Hyvä. Seuraava sarja.",
+  "workout.coachNudge.nextSet": "Seuraava sarja.",
   "workout.coachNudge.control": "Pidä tämä kontrollissa.",
   "workout.coachNudge.slow": "Älä kiirehdi tätä liikettä.",
   "workout.exercise.videoFallbackTitle": "Video lisätään tähän liikkeeseen",
@@ -879,7 +939,7 @@ export const fi = {
     "Vaatii hieman tiukempaa rytmiä — pienet valinnat merkitsevät.",
   "dashboard.goalPaceGentle":
     "Tavoite on kunnianhimoinen — rakenna viikkoja, älä spurtteja.",
-  "dashboard.goalPaceNeutral": "Etenet kohti päivää — yksi viikko kerrallaan.",
+  "dashboard.goalPaceNeutral": "Päivämäärää kohti — yksi viikko kerrallaan.",
   "dashboard.beyondToday": "Tänään eteenpäin",
   "dashboard.weekRhythm": "Viikkorytmi ja valmentajan viesti",
   "dashboard.weekFold": "Viikko",
@@ -1396,6 +1456,10 @@ export const fi = {
   "preferences.toggle.voiceWorkout": "Puheohjaus treenissä",
   "preferences.toggle.weeklyCoachReview": "Viikkovalmentajan palaute",
   "preferences.toggle.dailyActivityInput": "Päivän lisäliike",
+  "preferences.autopilotTitle": "Autopilot-viikko",
+  "preferences.autopilotHint":
+    "Kun päällä: viikkonäkymässä näkyy, että rytmi on kasassa — vähemmän päätöksiä. Sama kytkin kuin Tänään-näkymässä.",
+  "preferences.autopilotEnable": "Autopilot käytössä",
   "preferences.save": "Tallenna",
   "preferences.saved": "Tallennettu.",
   "preferences.sectionBasics": "Perus",
@@ -1431,7 +1495,6 @@ export const fi = {
   "nav.preferences": "Valinnat",
 
   "prestart.eyebrow": "Ennen aloitusta",
-  "prestart.heroTitle": "Tämä ei seuraa sinua. Tämä ohjaa sinua.",
   "prestart.heroSubline":
     "Ei arvailua. Viikko ei hajoa yhteen päivään. Arki iskee — linja pysyy tai korjaantuu heti.",
   "prestart.feat1": "Tiedät mitä tehdä tänään — päivän ohjaus, ei arvailua.",
@@ -1572,8 +1635,6 @@ export const fi = {
   "goalTimeline.paceSteep":
     "Aikajänne on tiukka suhteessa tavoitteeseen — keskitytään rutiiniin, ei yksittäiseen lukemaan.",
 
-  "landing.heroWhyLine":
-    "Jos ohjelmasi hajoaa arkeen, tämä on syy.",
   "landing.heroLine1": "Ei passiivista seurantaa — ohjaus, jota noudatat.",
   "landing.heroLine2":
     "Treeni, ruoka, rytmi — yksi lista tänään.",
@@ -1595,7 +1656,7 @@ export const fi = {
   "landing.previewTodayStatusGen": "Rakennetaan…",
   "landing.previewTodayStatusReady": "Valmis tälle päivälle",
   "landing.previewTodayDayCounter": "Päivä 1 / 30",
-  "landing.previewTodayPlanActive": "Aktiivinen",
+  "landing.previewTodayPlanActive": "Coach aktiivinen",
   "landing.previewTodayFocusEyebrow": "Tänään",
   "landing.previewTodayTodayLabel": "Päätehtävä",
   "landing.previewTodayFocusHeadline": "Tänään mennään tämä.",
@@ -1953,7 +2014,7 @@ export const fi = {
     " Pidetään alku kevyempänä ja lukitaan {{n}} treeniä viikon alkuun.",
 
   "review.rebalanceHandled":
-    "Viikolla tuli ylitys, mutta se otettiin hallintaan. Hyvä: et yrittänyt korjata kaikkea yhdessä päivässä.",
+    "Viikolla tuli ylitys — pidit sen hallittuna. Et yrittänyt korjata kaikkea yhdessä päivässä. Pidä linja.",
   "review.rebalanceTooMuch":
     "Ongelma ei ollut yksittäinen päivä vaan rytmin katkeaminen — rakennetaan ankkurit takaisin.",
 
@@ -1961,8 +2022,8 @@ export const fi = {
   "review.description": "Mikä kantoi. Mikä vei.",
   "review.mainPattern": "Viikon kuva",
   "review.weekSignals": "Viikko lyhyesti",
-  "review.whatWorked": "Tämä toimi",
-  "review.whatBroke": "Tämä söi kehitystä",
+  "review.whatWorked": "Tämä kantoi",
+  "review.whatBroke": "Tämä söi viikkoa",
   "review.nextWeek": "Tämä tehdään ensi viikolla",
   "review.nextMove": "Seuraava liike",
   "review.coachEyebrow": "Viikko lyhyesti",
@@ -2075,6 +2136,14 @@ export const en: { [K in MessageKey]: string } = {
   "common.hide": "Hide",
   "common.none": "—",
 
+  "brand.identityLine": "This doesn’t track you. It guides you.",
+  "brand.coachActive": "Coach active",
+  "brand.coachReady": "Coach ready",
+  "brand.hook.enough": "This is enough.",
+  "brand.hook.keepLine": "Hold the line.",
+  "brand.hook.noGuess": "No guessing.",
+  "brand.hook.goodContinue": "Good. Continue.",
+
   "swipe.panelWorkout": "Training",
   "swipe.panelFood": "Food",
   "swipe.panelRhythm": "Rhythm",
@@ -2119,9 +2188,10 @@ export const en: { [K in MessageKey]: string } = {
   "notifications.permissionDenied":
     "Notifications are blocked in the browser — enable them in settings if you want reminders.",
 
-  "fallback.sharpensWithUse": "Sharpens when you log days.",
-  "fallback.firstWeeksBuildView": "The first weeks fill this in.",
-  "fallback.trendClearerWithData": "More logs — clearer direction.",
+  "fallback.sharpensWithUse":
+    "Sharpens when you log days — without logs, this is guesswork.",
+  "fallback.firstWeeksBuildView": "The first weeks fill this view.",
+  "fallback.trendClearerWithData": "More logs — direction shows. Not before.",
   "fallback.profileMissingTitle": "Start here.",
   "fallback.profileLoadFailed":
     "Profile data was missing or loading was interrupted.",
@@ -2242,6 +2312,8 @@ export const en: { [K in MessageKey]: string } = {
   "daily.food.missedElse": "Steady meals today — protein at each sitting",
   "daily.food.overLose": "Lean protein focus today — keep usual meal times",
 
+  "shift.modeAcknowledged": "Shift accounted for.",
+  "shift.editPlannerCta": "Edit shifts",
   "shift.badge.morning": "Morning shift",
   "shift.badge.evening": "Evening shift",
   "shift.badge.night": "Night shift",
@@ -2302,7 +2374,7 @@ export const en: { [K in MessageKey]: string } = {
     "Shift noted: off — use the day with intent.",
   "shift.plannerTitle": "Next 7 days — work shifts",
   "shift.plannerHint":
-    "Tap shift / off. Training, food, and tone adapt.",
+    "Tap morning / evening / night / off for each day. The week’s frame and daily guidance update — training timing, load tone, and meal rhythm.",
   "shift.save": "Save shifts",
   "shift.saved": "Saved — Today updates.",
   "shift.type.morning": "Morning",
@@ -2310,6 +2382,8 @@ export const en: { [K in MessageKey]: string } = {
   "shift.type.night": "Night",
   "shift.type.off": "Off",
 
+  "landing.previewShiftHint":
+    "Shift work: today’s structure follows your shift — not a default weekday rhythm.",
   "landing.shiftSell1":
     "Enter your shifts — the program adapts to them.",
   "landing.shiftSell2":
@@ -2341,11 +2415,12 @@ export const en: { [K in MessageKey]: string } = {
   "progress.sectionStreak": "Streaks",
   "progress.pageLead": "Rhythm and direction — one screen.",
   "progress.emotionalSubtitle":
-    "Log days. Direction comes from reps.",
-  "progress.coachPresence.works": "This is working.",
-  "progress.coachPresence.uneven": "This isn’t steady yet.",
+    "Logs first. Direction comes from reps — not the other way around.",
+  "progress.coachPresence.works": "Direction is right.",
+  "progress.coachPresence.uneven":
+    "This isn’t moving you forward yet — rhythm fixes the gap.",
   "progress.coachPresence.rhythm":
-    "This improves when you keep the rhythm.",
+    "Hold the line. Rhythm fixes the rest.",
 
   "program.rationale.shift":
     "Shift rhythm accounted for — the plan doesn’t assume a steady 9–5 week.",
@@ -2607,7 +2682,7 @@ export const en: { [K in MessageKey]: string } = {
     "Curve estimated from profile weight — add weigh-ins to sharpen it.",
   "progress.rebalanceActive": "Correction on",
   "progress.heroEyebrow": "Situation",
-  "progress.heroDirectionGood": "You’re pointed the right way.",
+  "progress.heroDirectionGood": "Direction is right.",
   "progress.heroStrengthUpLockFood": "Strength is climbing. Lock in nutrition.",
   "progress.heroRhythmRecoveryGap":
     "Rhythm holds, but recovery is lagging.",
@@ -2717,10 +2792,10 @@ export const en: { [K in MessageKey]: string } = {
   "today.systemStatus.balanced": "In balance",
   "today.systemStatus.loadHigh": "Load is high",
   "today.systemStatus.rhythmBroken": "Rhythm off",
-  "today.systemStatus.goodProgress": "You’re moving",
+  "today.systemStatus.goodProgress": "Direction holds",
   "today.systemStatus.fixInProgress": "Correction in motion",
   "today.labelFocus": "Focus",
-  "today.doThisToday": "Today we run this.",
+  "today.doThisToday": "Today: this.",
   "today.changeProgram": "Change program",
   "today.changeNutrition": "Change meal structure",
   "today.todayRhythmBlock": "Food & movement today",
@@ -2730,18 +2805,18 @@ export const en: { [K in MessageKey]: string } = {
   "today.quickSkip": "Skipped",
   "today.quickChange": "Adjust",
   "today.dayCloseEyebrow": "Day complete",
-  "today.dayClose.lineA": "Good. The rhythm held.",
-  "today.dayClose.lineB": "Part of the day broke — the frame still survived.",
+  "today.dayClose.lineA": "Hold the line. The rhythm held.",
+  "today.dayClose.lineB": "Part of the day broke — the frame didn’t snap.",
   "today.dayClose.lineC": "We’ll fix it tomorrow.",
-  "today.dayClose.headlineA": "Good. This day counts.",
+  "today.dayClose.headlineA": "This is enough. This day counts.",
   "today.dayClose.headlineB":
-    "The day wasn’t perfect — the frame still held.",
-  "today.dayClose.headlineC": "Rough day. It’s logged.",
-  "today.dayClose.feelingA": "Ease. Enough for today.",
-  "today.dayClose.feelingB": "Acceptance. No story — just direction.",
+    "Not a perfect day — the frame still held.",
+  "today.dayClose.headlineC": "Rough day. Logged.",
+  "today.dayClose.feelingA": "This is enough for today.",
+  "today.dayClose.feelingB": "No story — just direction.",
   "today.dayClose.feelingC": "Precision. Tomorrow is a fresh grip.",
   "today.dayClose.tomorrowA":
-    "The week didn’t fall apart. Tomorrow continues from here.",
+    "The week didn’t fall apart. No problem — we continue from here. Good. Continue.",
   "today.dayClose.tomorrowB":
     "Tomorrow you lighten the load and re-anchor.",
   "today.dayClose.tomorrowC":
@@ -2788,11 +2863,34 @@ export const en: { [K in MessageKey]: string } = {
   "today.completeModalCancel": "Cancel",
   "today.completeModalSubmit": "Done",
   "today.completeModalDone": "OK",
-  "today.completeFeedback": "Good. Day in the bag.",
-  "today.completeFeedbackSub": "Streak grows from logs — Progress shows direction.",
+  "today.completeFeedback": "This is enough. Log saved.",
+  "today.completeFeedbackSub":
+    "One log at a time. Progress shows where this leads.",
   "today.thinklessCta": "Choose for me",
   "today.thinklessBanner": "Enough for today — hold the line.",
   "today.thinklessEyebrow": "Today’s picks",
+  "today.minimumDayBadge": "Minimum day",
+  "today.minimumDayCta": "Rough day? Minimum day — keep the rhythm",
+  "today.minimumDayShowPanel": "Show minimum",
+  "today.minimumDayModalTitle": "Minimum day",
+  "today.minimumDayModalIntro":
+    "When fatigue, time pressure, or poor recovery hits, one light layer is enough. No guilt — you can still close the day as usual.",
+  "today.minimumDayModalActivate": "Use minimum for today",
+  "today.minimumDayHeadline10": "Do this 10 minutes. That’s enough.",
+  "today.minimumDayEnoughToday": "This is enough.",
+  "today.minimumDayNoGuilt":
+    "Your rhythm stays even if you only do this. Close the day when you’ve done the minimum or the equivalent.",
+  "today.minimumDayMove1": "Easy walk or in-place march ~5 min",
+  "today.minimumDayMove2": "Shoulder and chest openers: 10–15 reps, unrushed",
+  "today.minimumDayMove3": "Hip circles and a few deep breaths ~2 min",
+  "today.minimumDayAlt":
+    "Alternative: stretching and walking only — count that as enough.",
+  "today.minimumDayFoodLabel": "Quick food",
+  "today.minimumDayFoodBody":
+    "One meal: a protein source plus fruit or whole grain — skip the long prep.",
+  "today.minimumDayClose": "Got it",
+  "today.minimumDayClear": "Turn off minimum day",
+  "today.autopilotBadge": "Autopilot on",
   "today.startWorkoutCta": "Start workout",
   "today.liveSignalMorning": "Morning rhythm accounted for",
   "today.liveSignalRecent": "Matched to recent days",
@@ -2800,11 +2898,36 @@ export const en: { [K in MessageKey]: string } = {
   "today.statusOne": "Updated · 1 adjustment",
   "today.statusMany": "Updated · {{n}} adjustments",
   "today.labelToday": "TODAY",
+  "today.weekPlanFold": "Week & autopilot",
+  "today.contextFoldSummary": "Context & program lines",
+  "today.progressSnippetAria": "Today at a glance",
   "today.trustSystemLine": "This is enough. Hold the line.",
   "today.secondaryFood": "Food",
   "today.secondaryMove": "Movement",
   "today.extraMoveSection": "Extra movement",
   "today.activityBonusAck": "Today’s movement: +{{kcal}} kcal reflected in your targets",
+
+  "autopilot.badgeOn": "Autopilot on",
+  "autopilot.headlineReady": "This week is built for you.",
+  "autopilot.subCopy":
+    "Your week is set: training rhythm and food structure. Daily guidance updates from Today, Food, and Workout data — lightly, without breaking the week.",
+  "autopilot.stripEyebrowOff": "Week",
+  "autopilot.stripTitleOff": "Lock the week in",
+  "autopilot.stripHintOff":
+    "One switch: fewer decisions, same rhythm. You can turn autopilot off anytime.",
+  "autopilot.enableCta": "Turn on autopilot",
+  "autopilot.disableCta": "Turn off autopilot",
+  "autopilot.weekAria": "This week",
+  "autopilot.weekTrainShort": "T",
+  "autopilot.weekRestShort": "R",
+  "autopilot.weekLegend": "T · training · R · rest",
+  "autopilot.labelTraining": "Training:",
+  "autopilot.lineTraining":
+    "{{n}} training days this week — your daily list follows this frame.",
+  "autopilot.labelFood": "Food:",
+  "autopilot.labelProgram": "Program:",
+  "autopilot.exceptionNote":
+    "Exceptions (e.g. minimum day or life mode) override a single day’s guidance — the week line holds.",
 
   "activity.inputTitle": "Add today’s movement",
   "activity.type.walk": "Walk",
@@ -2837,7 +2960,7 @@ export const en: { [K in MessageKey]: string } = {
   "workout.eyebrow": "Workout",
   "workout.flow.start": "Start here. First set.",
   "workout.flow.continue": "Next set.",
-  "workout.flow.done": "Done. Moving on.",
+  "workout.flow.done": "Done. No problem — continue from here.",
   "workout.tapCompleteSetCta": "Log set done",
   "workout.tapNextExerciseCta": "Next exercise",
   "workout.title": "Workout",
@@ -2876,7 +2999,7 @@ export const en: { [K in MessageKey]: string } = {
   "workout.voice.error.unknown": "Speech recognition failed.",
   "workout.exercise.activeEyebrow": "Exercise {{current}} / {{total}}",
   "workout.exercise.watchCue": "Watch the movement before your set.",
-  "workout.coachNudge.nextSet": "Good. Next set.",
+  "workout.coachNudge.nextSet": "Next set.",
   "workout.coachNudge.control": "Keep this under control.",
   "workout.coachNudge.slow": "Don’t rush this lift.",
   "workout.exercise.videoFallbackTitle": "Video will be added for this exercise",
@@ -2944,7 +3067,7 @@ export const en: { [K in MessageKey]: string } = {
     "Needs a slightly tighter rhythm — small choices add up.",
   "dashboard.goalPaceGentle":
     "Ambitious goal — build weeks, not sprints.",
-  "dashboard.goalPaceNeutral": "Moving toward your date — one week at a time.",
+  "dashboard.goalPaceNeutral": "Toward your date — one week at a time.",
   "dashboard.beyondToday": "Beyond today",
   "dashboard.weekRhythm": "Week rhythm & coach note",
   "dashboard.weekFold": "Week",
@@ -3463,6 +3586,10 @@ export const en: { [K in MessageKey]: string } = {
   "preferences.toggle.voiceWorkout": "Voice guidance in workouts",
   "preferences.toggle.weeklyCoachReview": "Weekly coach review",
   "preferences.toggle.dailyActivityInput": "Daily extra movement",
+  "preferences.autopilotTitle": "Autopilot week",
+  "preferences.autopilotHint":
+    "When on, Today shows your week as handled — fewer decisions. Same toggle as on the Today screen.",
+  "preferences.autopilotEnable": "Autopilot enabled",
   "preferences.save": "Save",
   "preferences.saved": "Saved.",
   "preferences.sectionBasics": "Basics",
@@ -3498,7 +3625,6 @@ export const en: { [K in MessageKey]: string } = {
   "nav.preferences": "Preferences",
 
   "prestart.eyebrow": "Before you start",
-  "prestart.heroTitle": "This doesn’t track you. It guides you.",
   "prestart.heroSubline":
     "No guesswork. One bad day doesn’t break the week. Life hits — the line holds or fixes fast.",
   "prestart.feat1": "You know what to do today — daily guidance, not guesswork.",
@@ -3639,8 +3765,6 @@ export const en: { [K in MessageKey]: string } = {
   "goalTimeline.paceSteep":
     "The timeline is tight relative to the goal — focus on the routine, not a single number.",
 
-  "landing.heroWhyLine":
-    "If your program falls apart in real life, this is why.",
   "landing.heroLine1": "Not passive tracking — guidance you follow.",
   "landing.heroLine2":
     "Training, food, rhythm — one list for today.",
@@ -3662,7 +3786,7 @@ export const en: { [K in MessageKey]: string } = {
   "landing.previewTodayStatusGen": "Building…",
   "landing.previewTodayStatusReady": "Ready for today",
   "landing.previewTodayDayCounter": "Day 1 / 30",
-  "landing.previewTodayPlanActive": "Active",
+  "landing.previewTodayPlanActive": "Coach active",
   "landing.previewTodayFocusEyebrow": "Today",
   "landing.previewTodayTodayLabel": "Main task",
   "landing.previewTodayFocusHeadline": "Today we run this.",
@@ -4025,7 +4149,7 @@ export const en: { [K in MessageKey]: string } = {
     " Keep the start lighter and lock in {{n}} sessions early in the week.",
 
   "review.rebalanceHandled":
-    "Intake went high this week — and you kept it manageable. Good: you didn’t try to fix everything in one day.",
+    "Intake went high this week — you kept it contained. You didn’t try to fix everything in one day. Hold the line.",
   "review.rebalanceTooMuch":
     "The issue wasn’t a single day — it was rhythm breaking. Let’s anchor the week again.",
 
@@ -4033,8 +4157,8 @@ export const en: { [K in MessageKey]: string } = {
   "review.description": "What carried you. What drained you.",
   "review.mainPattern": "Week snapshot",
   "review.weekSignals": "The week in short",
-  "review.whatWorked": "This worked",
-  "review.whatBroke": "This hurt progress",
+  "review.whatWorked": "This carried the week",
+  "review.whatBroke": "This ate the week",
   "review.nextWeek": "Do this next week",
   "review.nextMove": "Next move",
   "review.coachEyebrow": "Week in short",
