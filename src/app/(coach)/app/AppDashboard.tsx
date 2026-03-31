@@ -1,6 +1,7 @@
 "use client";
 
 import { DailyActivityInput } from "@/components/coach/DailyActivityInput";
+import { DayCompletionModal } from "@/components/today/DayCompletionModal";
 import { TodayCard } from "@/components/TodayCard";
 import { WeekProgress } from "@/components/WeekProgress";
 import { Container } from "@/components/ui/Container";
@@ -58,10 +59,21 @@ import {
   OUTCOME_HINT_CHANGED,
   setDayMarkedDone,
 } from "@/lib/storage";
+import {
+  clearDayExecution,
+  saveDayExecution,
+  type DayExecutionChecklist,
+} from "@/lib/dayExecutionStorage";
+import {
+  clearThinklessPick,
+  loadThinklessPick,
+  saveThinklessPick,
+  THINKLESS_CHANGED,
+} from "@/lib/thinklessDayStorage";
 import { WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function formatDateParts(
   d: Date,
@@ -84,12 +96,13 @@ export function AppDashboard() {
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
   const [dayDone, setDayDone] = useState(() => isDayMarkedDone(new Date()));
-  const [isMarkingDone, setIsMarkingDone] = useState(false);
-  const markDayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activityPlanTick, setActivityPlanTick] = useState(0);
   const [signalTick, setSignalTick] = useState(0);
   const [exTick, setExTick] = useState(0);
   const [shiftTick, setShiftTick] = useState(0);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
+  const [streakRefresh, setStreakRefresh] = useState(0);
+  const [thinklessTick, setThinklessTick] = useState(0);
 
   useEffect(() => {
     if (profile === undefined) return;
@@ -120,6 +133,12 @@ export function AppDashboard() {
     const bump = () => setShiftTick((x) => x + 1);
     window.addEventListener(WORK_SHIFTS_CHANGED, bump);
     return () => window.removeEventListener(WORK_SHIFTS_CHANGED, bump);
+  }, []);
+
+  useEffect(() => {
+    const bump = () => setThinklessTick((x) => x + 1);
+    window.addEventListener(THINKLESS_CHANGED, bump);
+    return () => window.removeEventListener(THINKLESS_CHANGED, bump);
   }, []);
 
   const dayKeyToday = useMemo(() => dayKeyFromDate(now), [now]);
@@ -172,8 +191,26 @@ export function AppDashboard() {
 
   const streaks = useMemo(
     () => (normalizedProfile ? computeStreakSummary(normalizedProfile, now) : null),
-    [normalizedProfile, now],
+    [normalizedProfile, now, streakRefresh],
   );
+
+  const thinklessPick = useMemo(
+    () => loadThinklessPick(now),
+    [now, thinklessTick],
+  );
+
+  const thinklessLines = useMemo((): {
+    food: string;
+    workout: string;
+    activity: string;
+  } | null => {
+    if (!thinklessPick) return null;
+    return {
+      food: thinklessPick.foodLine,
+      workout: thinklessPick.workoutLine,
+      activity: thinklessPick.activityLine,
+    };
+  }, [thinklessPick]);
 
   const realityScore = useMemo(() => {
     if (!normalizedProfile) return null;
@@ -318,39 +355,40 @@ export function AppDashboard() {
     });
   }, [normalizedProfile, todayIdx, locale]);
 
-  useEffect(
-    () => () => {
-      if (markDayTimerRef.current) clearTimeout(markDayTimerRef.current);
-    },
-    [],
-  );
-
-  const toggleDay = useCallback(() => {
-    if (dayDone) {
-      try {
-        setDayMarkedDone(false, now);
-      } catch (e) {
-        console.error("[toggleDay] reopen", e);
-      }
-      setDayDone(false);
-      setIsMarkingDone(false);
-      return;
+  const reopenDay = useCallback(() => {
+    clearDayExecution(now);
+    clearThinklessPick(now);
+    try {
+      setDayMarkedDone(false, now);
+    } catch (e) {
+      console.error("[reopenDay]", e);
     }
-    if (markDayTimerRef.current) clearTimeout(markDayTimerRef.current);
-    setIsMarkingDone(true);
-    markDayTimerRef.current = setTimeout(() => {
-      markDayTimerRef.current = null;
+    setDayDone(false);
+  }, [now]);
+
+  const onCompleteCommit = useCallback(
+    (checks: Omit<DayExecutionChecklist, "savedAt">) => {
+      saveDayExecution(now, checks);
       try {
         setDayMarkedDone(true, now);
         setDayDone(true);
         trackEvent("complete_day");
       } catch (e) {
-        console.error("[toggleDay] mark done", e);
-      } finally {
-        setIsMarkingDone(false);
+        console.error("[onCompleteCommit]", e);
       }
-    }, 400);
-  }, [dayDone, now]);
+      setStreakRefresh((x) => x + 1);
+    },
+    [now],
+  );
+
+  const activateThinkless = useCallback(() => {
+    if (!plan) return;
+    saveThinklessPick(now, {
+      foodLine: plan.todayFoodTask,
+      workoutLine: plan.todayWorkout,
+      activityLine: plan.todayActivityTask,
+    });
+  }, [now, plan]);
 
   const todaySystemStatusKey = useMemo((): MessageKey => {
     if (!normalizedProfile || !plan) return "today.systemStatus.balanced";
@@ -413,6 +451,11 @@ export function AppDashboard() {
 
   return (
     <main className="coach-page">
+      <DayCompletionModal
+        open={completeModalOpen}
+        onClose={() => setCompleteModalOpen(false)}
+        onCommit={onCompleteCommit}
+      />
       <Container size="phone" className="px-5">
         <h1 className="sr-only">
           Today — {dateParts.weekday}, {dateParts.calendarDate}
@@ -483,8 +526,13 @@ export function AppDashboard() {
             features={features}
             activityEnergyBonusKcal={plan.activityEnergyBonusKcal}
             dayDone={dayDone}
-            isMarkingDone={isMarkingDone}
-            onToggleDay={toggleDay}
+            isMarkingDone={false}
+            onToggleDay={reopenDay}
+            onRequestCompleteDay={() => setCompleteModalOpen(true)}
+            onReopenDay={reopenDay}
+            onThinkless={activateThinkless}
+            thinklessActive={Boolean(thinklessPick)}
+            thinklessLines={thinklessLines}
             dayCloseRetention={dayCloseRetention}
             onQuickDone={onQuickDone}
             onQuickSkip={onQuickSkip}

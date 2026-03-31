@@ -48,7 +48,20 @@ type Props = {
   dayDone: boolean;
   /** True while “close day” is in flight */
   isMarkingDone: boolean;
+  /** Legacy: suora sulkeminen; jos `onRequestCompleteDay` on annettu, käytetään modaalia */
   onToggleDay: () => void;
+  /** Avaa päivän valmiiksi -modaali (HÄRMÄ2) */
+  onRequestCompleteDay?: () => void;
+  /** Avaa päivä uudelleen (tyhjentää execution-tallenne) */
+  onReopenDay?: () => void;
+  /** Thinkless — valitse puolestani */
+  onThinkless?: () => void;
+  thinklessActive?: boolean;
+  thinklessLines?: {
+    food: string;
+    workout: string;
+    activity: string;
+  } | null;
   /** Sulun kolme kerrosta + huomisen tease (kun päivä merkitty valmiiksi). */
   dayCloseRetention: {
     headlineKey: MessageKey;
@@ -109,6 +122,11 @@ export function TodayCard({
   dayDone,
   isMarkingDone,
   onToggleDay,
+  onRequestCompleteDay,
+  onReopenDay,
+  onThinkless,
+  thinklessActive = false,
+  thinklessLines = null,
   dayCloseRetention,
   onQuickDone,
   onQuickSkip,
@@ -175,6 +193,41 @@ export function TodayCard({
         <p className="mt-4 text-center text-[13px] font-semibold leading-snug text-accent sm:text-left">
           {t("today.doThisToday")}
         </p>
+
+        {onThinkless && !thinklessActive && !dayDone ? (
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={onThinkless}
+              className="min-h-[48px] w-full rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.08] px-4 text-[13px] font-semibold text-accent transition hover:border-accent/55 hover:bg-accent/[0.12]"
+            >
+              {t("today.thinklessCta")}
+            </button>
+          </div>
+        ) : null}
+
+        {thinklessActive && thinklessLines ? (
+          <div
+            className="mt-3 rounded-[var(--radius-lg)] border border-accent/28 bg-white/[0.04] px-4 py-3 text-left"
+            role="status"
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
+              {t("today.thinklessEyebrow")}
+            </p>
+            <p className="mt-2 text-[14px] font-semibold leading-snug text-foreground">
+              {t("today.thinklessBanner")}
+            </p>
+            <p className="mt-2 text-[12px] leading-snug text-muted">
+              {thinklessLines.workout}
+            </p>
+            <p className="mt-1.5 text-[12px] leading-snug text-muted">
+              {thinklessLines.food}
+            </p>
+            <p className="mt-1.5 text-[12px] leading-snug text-muted-2">
+              {thinklessLines.activity}
+            </p>
+          </div>
+        ) : null}
 
         <div className="mt-4 space-y-3 opacity-[0.72]">
         {features.showCoachLines && coachPresenceLine ? (
@@ -558,15 +611,17 @@ export function TodayCard({
               </p>
               <button
                 type="button"
-                disabled={isMarkingDone}
-                onClick={onToggleDay}
+                disabled={onRequestCompleteDay ? false : isMarkingDone}
+                onClick={onRequestCompleteDay ?? onToggleDay}
                 className={`group min-h-[52px] w-full disabled:pointer-events-none disabled:opacity-70 ${
                   startWorkoutHref
                     ? "coach-today-cta-done"
                     : "coach-today-cta-primary"
                 }`}
               >
-                {isMarkingDone ? (
+                {onRequestCompleteDay ? (
+                  <span className="relative z-[1]">{t("today.completeDayCta")}</span>
+                ) : isMarkingDone ? (
                   <span className="relative z-[1]">{t("today.markingDay")}</span>
                 ) : startWorkoutHref ? (
                   <span className="relative z-[1]">{t("ui.closeDay")}</span>
@@ -610,7 +665,7 @@ export function TodayCard({
               )}
               <button
                 type="button"
-                onClick={onToggleDay}
+                onClick={onReopenDay ?? onToggleDay}
                 className="mt-4 min-h-[44px] text-[12px] font-medium text-muted underline-offset-[3px] transition hover:text-foreground hover:underline"
               >
                 {t("today.reopenDayLink")}
