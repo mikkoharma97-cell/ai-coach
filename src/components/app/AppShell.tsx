@@ -6,6 +6,8 @@
  * Parannus: kielivalitsin voisi olla asetuksissa vain → vähemmän melua headerissa.
  * Parannus: max-w-lg bottom navissa — jos tabletti landscape, keskitys tai full-width harkintaa.
  */
+// Temporary version marker — remove import + usage when no longer needed (see HarmavVersionBadge.tsx)
+import { HarmavVersionBadge } from "@/components/app/HarmavVersionBadge";
 import { PreviewBuildStrip } from "@/components/PreviewBuildStrip";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { Locale } from "@/lib/i18n";
@@ -82,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="max-w-[min(100%,9rem)] min-[400px]:max-w-[10rem] text-center text-[9px] font-semibold uppercase tracking-[0.16em] text-muted truncate min-[480px]:text-[10px] min-[480px]:tracking-[0.18em] sm:max-w-none">
             {t(titleKey)}
           </span>
-          <div className="justify-self-end flex max-w-[min(100%,10rem)] min-[400px]:max-w-[11rem] flex-wrap items-center justify-end gap-x-1 gap-y-1 min-[480px]:gap-x-2 sm:max-w-none">
+          <div className="justify-self-end flex max-w-[min(100%,15rem)] min-[400px]:max-w-[18rem] flex-wrap items-center justify-end gap-x-1 gap-y-1 min-[480px]:gap-x-2 sm:max-w-none">
             <Link
               href="/preferences"
               className="min-h-[36px] rounded-md px-1.5 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-2 transition hover:text-foreground"
@@ -112,6 +114,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <option value="fi">FI</option>
               <option value="en">EN</option>
             </select>
+            <HarmavVersionBadge />
           </div>
         </div>
       </header>
