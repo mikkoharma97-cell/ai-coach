@@ -1,6 +1,6 @@
 {
   "name": "ai-coach",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,7 @@
     "preview:full": "npm run preview:clean && npm run preview:start",
     "lint": "eslint",
     "verify:engine": "npx tsx scripts/verify-engine.ts",
+    "audit:system": "npx tsx scripts/audit-system-v1.ts",
     "screenshots": "node scripts/capture-screenshots.mjs"
   },
   "dependencies": {
