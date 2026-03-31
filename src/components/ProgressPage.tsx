@@ -31,7 +31,6 @@ import {
   WEIGHT_LOG_CHANGED,
 } from "@/lib/progress";
 import { DevelopmentTrajectoryCard } from "@/components/progress/DevelopmentTrajectoryCard";
-import { ProgressSwipeStrip } from "@/components/progress/ProgressSwipeStrip";
 import { WeightQuickLog } from "@/components/progress/WeightQuickLog";
 import { progressDataFallbackKey } from "@/lib/dataConfidence";
 import { progressContinueReasonKey } from "@/lib/progressContinueReason";
@@ -121,44 +120,6 @@ export function ProgressPage() {
     [profile],
   );
 
-  const progressSwipeLines = useMemo(() => {
-    if (!streaks || !consistency) return null;
-    const ft = features;
-    const weekLine =
-      locale === "en"
-        ? `${streaks.combined} day streak · ${consistency.pct}% (14d)`
-        : `${streaks.combined} pv putkeen · ${consistency.pct}% (14 pv)`;
-    const growthLine =
-      heroInsight && ft.showCoachLines
-        ? t(heroInsight.headlineKey, heroInsight.proofParams)
-        : continueReasonKey
-          ? t(continueReasonKey)
-          : t("progress.pageLead");
-    const truthLine =
-      realityScore && ft.showRealityScore
-        ? locale === "en"
-          ? realityScore.labelEn
-          : realityScore.labelFi
-        : ft.showCoachLines
-          ? t(
-              progressInterpretationKey({
-                combinedStreakDays: streaks.combined,
-                consistencyPct: consistency.pct,
-              }),
-            )
-          : t("progress.pageLead");
-    return { weekLine, growthLine, truthLine };
-  }, [
-    streaks,
-    consistency,
-    features,
-    locale,
-    heroInsight,
-    continueReasonKey,
-    realityScore,
-    t,
-  ]);
-
   if (profile === undefined) {
     return (
       <Container className="py-6">
@@ -185,33 +146,25 @@ export function ProgressPage() {
     <main className="coach-page">
       <Container size="phone" className="pb-28 pt-4">
         <div className="pointer-events-none mb-2 h-px w-full bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-        <h1 className="text-[1.2rem] font-semibold tracking-[-0.035em] text-foreground">
+        <h1 className="text-[1.35rem] font-semibold tracking-[-0.04em] text-foreground">
           {t("nav.progress")}
         </h1>
-        <p className="mt-3 text-[1.125rem] font-semibold leading-snug tracking-[-0.02em] text-foreground">
-          {consistency.pct >= 50
-            ? t("progress.coachPresence.works")
-            : t("progress.coachPresence.uneven")}
-        </p>
-        <p className="mt-2 text-[12px] leading-snug text-muted">
-          {t("progress.pageLead")}
+        <p className="mt-3 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
+          {ft.showCoachLines
+            ? t(
+                progressInterpretationKey({
+                  combinedStreakDays: streaks.combined,
+                  consistencyPct: consistency.pct,
+                }),
+              )
+            : t("progress.pageLead")}
         </p>
         <Link
           href="/app"
-          className="mt-5 flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-lg)] border border-accent/40 bg-accent/[0.12] px-4 text-[14px] font-semibold text-accent transition hover:bg-accent/[0.2]"
+          className="mt-5 inline-flex min-h-[44px] items-center text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
         >
           {t("nav.backToToday")}
         </Link>
-        {ft.showCoachLines ? (
-          <p className="mt-3 max-w-[26rem] text-[13px] font-medium leading-snug text-muted">
-            {t(
-              progressInterpretationKey({
-                combinedStreakDays: streaks.combined,
-                consistencyPct: consistency.pct,
-              }),
-            )}
-          </p>
-        ) : null}
         {progressFallbackKey ? (
           <p
             className="mb-3 text-[11px] leading-relaxed text-muted-2"
@@ -223,16 +176,9 @@ export function ProgressPage() {
         <HelpVideoCard
           pageId="progress"
           enabled={ft.showHelpVideos}
-          className="mb-4"
+          className="mt-6 opacity-95"
         />
-        {progressSwipeLines ? (
-          <ProgressSwipeStrip
-            weekLine={progressSwipeLines.weekLine}
-            growthLine={progressSwipeLines.growthLine}
-            truthLine={progressSwipeLines.truthLine}
-          />
-        ) : null}
-        <div className="mt-5">
+        <div className="mt-6">
           <DevelopmentTrajectoryCard
             profile={profile}
             consistencyPct={consistency.pct}
@@ -240,74 +186,74 @@ export function ProgressPage() {
             version={weightTick}
           />
         </div>
-        <WeightQuickLog onLogged={bumpWeight} />
         {ft.showProgressCharts ? (
-          <div className="mt-6 space-y-6">
+          <div className="mt-8">
             <WeightTrendCard profile={profile} version={weightTick} />
-            <ConsistencyCard snap={consistency} />
           </div>
         ) : null}
-        <div className="space-y-7">
-          <ProgressHeroInsightCard
-            insight={ft.showCoachLines ? heroInsight : null}
-            realityScore={ft.showRealityScore ? realityScore : null}
-          />
-          {ft.showCoachLines && continueReasonKey ? (
-            <section
-              className="rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.03] px-4 py-4"
-              aria-labelledby="progress-continue"
-            >
-              <p
-                id="progress-continue"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-2"
-              >
-                {t("progress.continueEyebrow")}
-              </p>
-              <p className="mt-2 text-[14px] font-medium leading-snug text-foreground/95">
-                {t(continueReasonKey)}
-              </p>
-            </section>
-          ) : null}
-          {ft.showStreaks ? <StreakSummaryCard summary={streaks} /> : null}
-          <div className="mt-4 text-center sm:text-left">
-            <Link
-              href="/review"
-              className="text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("progress.seeWeeklyReview")}
-            </Link>
-          </div>
-          <details className="coach-panel-subtle group">
-            <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
-              <span className="flex items-center justify-between gap-3">
-                <span>{t("progress.moreMetrics")}</span>
-                <span className="text-[11px] font-normal tabular-nums text-muted-2 group-open:hidden">
-                  {t("common.show")}
-                </span>
-                <span className="hidden text-[11px] font-normal tabular-nums text-muted-2 group-open:inline">
-                  {t("common.hide")}
-                </span>
-              </span>
-            </summary>
-            <div className="space-y-7 border-t border-border/50 px-2 pb-5 pt-5">
-              {ft.showProgressCharts ? (
-                <>
-                  <StrengthProgressCard rows={strengthRows} />
-                  <MacroTrendCard
-                    answers={profile}
-                    referenceDate={ref}
-                    rebalanceActive={rebalanceActive}
-                  />
-                  <RecoveryTrendCard referenceDate={ref} streaks={streaks} />
-                </>
-              ) : (
-                <p className="px-2 text-[12px] leading-relaxed text-muted-2">
-                  {t("progress.chartsHiddenHint")}
-                </p>
-              )}
-            </div>
-          </details>
+        <WeightQuickLog onLogged={bumpWeight} />
+        <div className="mt-6 text-center sm:text-left">
+          <Link
+            href="/review"
+            className="text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
+          >
+            {t("progress.seeWeeklyReview")}
+          </Link>
         </div>
+        <details className="coach-panel-subtle group mt-8">
+          <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center justify-between gap-3">
+              <span>{t("progress.moreMetrics")}</span>
+              <span className="text-[11px] font-normal tabular-nums text-muted-2 group-open:hidden">
+                {t("common.show")}
+              </span>
+              <span className="hidden text-[11px] font-normal tabular-nums text-muted-2 group-open:inline">
+                {t("common.hide")}
+              </span>
+            </span>
+          </summary>
+          <div className="space-y-6 border-t border-border/50 px-2 pb-5 pt-5">
+            {ft.showCoachLines ? (
+              <ProgressHeroInsightCard
+                insight={heroInsight}
+                realityScore={ft.showRealityScore ? realityScore : null}
+              />
+            ) : null}
+            {ft.showCoachLines && continueReasonKey ? (
+              <section
+                className="rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.03] px-4 py-4"
+                aria-labelledby="progress-continue"
+              >
+                <p
+                  id="progress-continue"
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-2"
+                >
+                  {t("progress.continueEyebrow")}
+                </p>
+                <p className="mt-2 text-[14px] font-medium leading-snug text-foreground/95">
+                  {t(continueReasonKey)}
+                </p>
+              </section>
+            ) : null}
+            {ft.showStreaks ? <StreakSummaryCard summary={streaks} /> : null}
+            {ft.showProgressCharts ? (
+              <>
+                <ConsistencyCard snap={consistency} />
+                <StrengthProgressCard rows={strengthRows} />
+                <MacroTrendCard
+                  answers={profile}
+                  referenceDate={ref}
+                  rebalanceActive={rebalanceActive}
+                />
+                <RecoveryTrendCard referenceDate={ref} streaks={streaks} />
+              </>
+            ) : (
+              <p className="px-2 text-[12px] leading-relaxed text-muted-2">
+                {t("progress.chartsHiddenHint")}
+              </p>
+            )}
+          </div>
+        </details>
 
         <CoachAppShortcuts
           compact

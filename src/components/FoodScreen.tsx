@@ -27,7 +27,7 @@ import { FoodOffPlanQuickBlock } from "@/components/food/FoodOffPlanQuickBlock";
 import { FoodIntelligenceBlock } from "@/components/food/FoodIntelligenceBlock";
 import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
-import { FoodSwipePanels } from "@/components/food/FoodSwipePanels";
+import { FoodTodayStrip } from "@/components/food/FoodTodayStrip";
 import { foodDataFallbackKey } from "@/lib/dataConfidence";
 import { generateWeeklyShoppingListForProfile } from "@/lib/food/shoppingList";
 import {
@@ -561,7 +561,7 @@ export function FoodScreen() {
           className="mt-4"
         />
 
-        <FoodSwipePanels
+        <FoodTodayStrip
           todaySummary={plan.todayFoodTask}
           consumedKcal={consumed}
           targetKcal={target}
@@ -963,13 +963,13 @@ export function FoodScreen() {
           <button
             type="button"
             onClick={() => openAdd("lunch")}
-            className="flex min-h-[48px] w-full items-center justify-center rounded-2xl border-2 border-border/90 bg-background px-4 text-[15px] font-semibold text-foreground shadow-sm transition hover:border-accent/35 hover:bg-surface-subtle/80 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border/55 bg-transparent px-4 text-[14px] font-semibold text-muted transition hover:border-accent/35 hover:text-foreground active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("food.addYourOwn")}
           </button>
           <Link
             href="/adjustments"
-            className="flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border/55 bg-surface-subtle/40 px-4 text-[14px] font-semibold text-accent transition hover:border-accent/35 hover:bg-accent-soft/30"
+            className="flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border/40 bg-surface-subtle/30 px-4 text-[13px] font-medium text-muted-2 transition hover:border-accent/35 hover:text-foreground"
           >
             {t("food.addEventShort")}
           </Link>

@@ -3,7 +3,7 @@
 import { logButtonClick } from "@/lib/uiInteractionDebug";
 import { useCallback, useRef, useState } from "react";
 
-const DEFAULT_TIMEOUT_MS = 4000;
+const DEFAULT_TIMEOUT_MS = 3000;
 
 type Options = {
   /** Analytics-style name for logs */

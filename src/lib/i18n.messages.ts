@@ -557,6 +557,8 @@ export const fi = {
   "today.systemStatus.fixInProgress": "Korjaus käynnissä",
   "today.labelFocus": "Pääfokus",
   "today.doThisToday": "Tee tämä tänään.",
+  "today.todayRhythmBlock": "Ruoka & liike tänään",
+  "today.quickAdjustFold": "Lisää valintoja",
   "today.quickActionsEyebrow": "Yksi napilla",
   "today.quickDone": "Tehty",
   "today.quickSkip": "Skipattu",
@@ -697,6 +699,7 @@ export const fi = {
   "food.libraryEyebrow": "Valmislista — yksi napin painallus",
   "food.libraryHint":
     "Helppo = sama rutiini. Kiire = nopeasti käteen. Muut = täydennä viikkoa.",
+  "food.libraryHintShort": "Enintään viisi pikavalintaa — yksi napin painallus.",
   "food.librarySectionEasy": "Helppo vaihtoehto",
   "food.librarySectionBusy": "Jos kiire",
   "food.librarySectionMore": "Muut ateriat",
@@ -766,6 +769,7 @@ export const fi = {
   "food.coachPresence.keepRhythm": "Pidä rytmi, älä täydellisyyttä.",
   "food.coachPresence.rhythmNotPerfect":
     "Tasapainotus päällä — pidä rytmi, älä täydellisyyttä.",
+  "food.stripAria": "Tänään — energia ja ostoslista",
   "food.rhythmLeadLine": "Pidä makrot. Suunta ratkaisee — ei täydellinen päivä.",
   "food.flowMorning": "AAMU",
   "food.flowMorningSub": "nopea alku",
@@ -2403,6 +2407,8 @@ export const en: { [K in MessageKey]: string } = {
   "today.systemStatus.fixInProgress": "Correction in motion",
   "today.labelFocus": "Focus",
   "today.doThisToday": "Do this today.",
+  "today.todayRhythmBlock": "Food & movement today",
+  "today.quickAdjustFold": "More options",
   "today.quickActionsEyebrow": "One tap",
   "today.quickDone": "Done",
   "today.quickSkip": "Skipped",
@@ -2552,6 +2558,7 @@ export const en: { [K in MessageKey]: string } = {
   "food.libraryEyebrow": "Quick picks — one tap",
   "food.libraryHint":
     "Easy = repeat the habit. Rush = grab-and-go. More = round out your week.",
+  "food.libraryHintShort": "Up to five quick picks — one tap.",
   "food.librarySectionEasy": "Easy option",
   "food.librarySectionBusy": "If you’re in a rush",
   "food.librarySectionMore": "More meals",
@@ -2621,6 +2628,7 @@ export const en: { [K in MessageKey]: string } = {
   "food.coachPresence.keepRhythm": "Keep rhythm, not perfection.",
   "food.coachPresence.rhythmNotPerfect":
     "Rebalancing on — keep rhythm, not perfection.",
+  "food.stripAria": "Today — energy and shopping list",
   "food.rhythmLeadLine":
     "Keep macros in range. Direction beats a perfect day.",
   "food.flowMorning": "MORNING",

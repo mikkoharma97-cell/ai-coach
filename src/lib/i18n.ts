@@ -24,18 +24,18 @@ export function translate(
   vars?: Record<string, string | number>,
 ): string {
   try {
-    const table = locale === "fi" ? fi : en;
-    let out = table[key];
+  const table = locale === "fi" ? fi : en;
+  let out = table[key];
     if (typeof out !== "string") {
       console.error("[i18n] missing or invalid key", key);
       return String(key);
     }
-    if (vars) {
-      for (const [k, v] of Object.entries(vars)) {
-        out = out.replaceAll(`{{${k}}}`, String(v));
-      }
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      out = out.replaceAll(`{{${k}}}`, String(v));
     }
-    return out;
+  }
+  return out;
   } catch (e) {
     console.error("[i18n] translate failed", key, e);
     return String(key);

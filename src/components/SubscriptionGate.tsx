@@ -3,6 +3,7 @@
 import { useTranslation } from "@/hooks/useTranslation";
 import { ensureTrialStarted, hasSubscriptionAccess } from "@/lib/subscription";
 import { loadProfile } from "@/lib/storage";
+import { flowLog } from "@/lib/flowLog";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
@@ -49,9 +50,11 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
         }
       }
       setReady(true);
+      flowLog("gate.ready", path);
     } catch (e) {
       console.error(e);
       setReady(true);
+      flowLog("gate.ready", path);
     }
 
     return () => clearTimeout(failsafe);

@@ -385,31 +385,24 @@ export function TodayCard({
           </div>
         ) : null}
 
-        {/* 5. Ruoka */}
-        <div className="relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.06] bg-white/[0.02] px-4 py-3 opacity-[0.92]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2">
-            {t("today.secondaryFood")}
+        {/* 5–6. Ruoka + liike — yksi toissijainen lohko */}
+        <div className="relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.07] bg-white/[0.03] px-4 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-2">
+            {t("today.todayRhythmBlock")}
           </p>
-          <p className="mt-2 text-[13px] font-medium leading-snug text-foreground/95">
+          <p className="mt-3 text-[13px] font-medium leading-snug text-foreground/95">
             {food}
-          </p>
-          <Link
-            href="/food"
-            prefetch
-            className="mt-3 inline-flex min-h-[44px] items-center text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
-          >
-            {t("today.openFoodCta")}
-          </Link>
-        </div>
-
-        {/* 6. Päivän liike (suunnitelma) */}
-        <div className="relative mt-4 rounded-[var(--radius-lg)] border border-white/[0.06] bg-white/[0.02] px-4 py-3 opacity-[0.88]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2">
-            {t("today.secondaryMove")}
           </p>
           <p className="mt-2 text-[13px] font-medium leading-snug text-muted">
             {activity}
           </p>
+          <Link
+            href="/food"
+            prefetch
+            className="mt-4 inline-flex min-h-[44px] items-center text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
+          >
+            {t("today.openFoodCta")}
+          </Link>
         </div>
 
         {features.showExceptionGuidance && exceptionGuidance ? (
@@ -477,35 +470,47 @@ export function TodayCard({
           </div>
         ) : null}
 
-        {/* Nopeat toiminnot */}
-        <div className="relative mt-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2">
-            {t("today.quickActionsEyebrow")}
-          </p>
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={onQuickDone}
-              className="min-h-[48px] rounded-[var(--radius-md)] border border-accent/35 bg-accent/10 px-2 text-[12px] font-semibold tracking-[0.06em] text-foreground transition hover:border-accent/55 hover:bg-accent/15"
-            >
-              {t("today.quickDone")}
-            </button>
-            <button
-              type="button"
-              onClick={onQuickSkip}
-              className="min-h-[48px] rounded-[var(--radius-md)] border border-white/[0.12] bg-white/[0.06] px-2 text-[12px] font-semibold tracking-[0.06em] text-foreground transition hover:border-accent/40 hover:bg-white/[0.09]"
-            >
-              {t("today.quickSkip")}
-            </button>
-            <Link
-              href={quickChangeHref}
-              prefetch
-              className="flex min-h-[48px] items-center justify-center rounded-[var(--radius-md)] border border-white/[0.12] bg-white/[0.06] px-2 text-center text-[12px] font-semibold tracking-[0.06em] text-foreground no-underline transition hover:border-accent/40 hover:bg-white/[0.09]"
-            >
-              {t("today.quickChange")}
-            </Link>
+        <details className="group relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.06] bg-white/[0.02]">
+          <summary className="cursor-pointer list-none px-4 py-3.5 text-[12px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center justify-between gap-2">
+              <span>{t("today.quickAdjustFold")}</span>
+              <span className="text-[10px] font-normal text-muted-2 group-open:hidden">
+                {t("common.show")}
+              </span>
+              <span className="hidden text-[10px] font-normal text-muted-2 group-open:inline">
+                {t("common.hide")}
+              </span>
+            </span>
+          </summary>
+          <div className="border-t border-border/40 px-4 pb-4 pt-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-2">
+              {t("today.quickActionsEyebrow")}
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <button
+                type="button"
+                onClick={onQuickDone}
+                className="min-h-[48px] rounded-[var(--radius-md)] border border-accent/35 bg-accent/10 px-2 text-[12px] font-semibold tracking-[0.06em] text-foreground transition hover:border-accent/55 hover:bg-accent/15"
+              >
+                {t("today.quickDone")}
+              </button>
+              <button
+                type="button"
+                onClick={onQuickSkip}
+                className="min-h-[48px] rounded-[var(--radius-md)] border border-white/[0.12] bg-white/[0.06] px-2 text-[12px] font-semibold tracking-[0.06em] text-foreground transition hover:border-accent/40 hover:bg-white/[0.09]"
+              >
+                {t("today.quickSkip")}
+              </button>
+              <Link
+                href={quickChangeHref}
+                prefetch
+                className="flex min-h-[48px] items-center justify-center rounded-[var(--radius-md)] border border-white/[0.12] bg-white/[0.06] px-2 text-center text-[12px] font-semibold tracking-[0.06em] text-foreground no-underline transition hover:border-accent/40 hover:bg-white/[0.09]"
+              >
+                {t("today.quickChange")}
+              </Link>
+            </div>
           </div>
-        </div>
+        </details>
 
         {/* 7. Lisäliike */}
         {features.showDailyActivityInput && extraMoveSlot ? (

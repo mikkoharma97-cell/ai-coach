@@ -5,7 +5,6 @@ import {
   ExerciseCoachTipsPanel,
   ExerciseMediaVideoSlot,
 } from "@/components/workout/ExerciseMediaPanel";
-import { SwipePanels } from "@/components/ui/SwipePanels";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
 import { Container } from "@/components/ui/Container";
@@ -344,6 +343,92 @@ export function WorkoutView({
           </p>
         ) : null}
 
+        {list.length > 0 && rows[activeExerciseIndex] ? (
+          <section
+            className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.1] bg-white/[0.03] px-4 py-4 sm:px-5"
+            aria-labelledby="active-ex-heading"
+          >
+            <p
+              id="active-ex-heading"
+              className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2"
+            >
+              {t("workout.exercise.activeEyebrow", {
+                current: activeExerciseIndex + 1,
+                total: rows.length,
+              })}
+            </p>
+            <h3 className="mt-1 text-[1.15rem] font-semibold leading-tight tracking-[-0.03em] text-foreground">
+              {rows[activeExerciseIndex].name}
+            </h3>
+            <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
+              {rows[activeExerciseIndex].target}
+            </p>
+            <ul className="mt-4 divide-y divide-white/[0.06]">
+              {rows[activeExerciseIndex].sets.map((row, i) => {
+                const isActive = i === activeSetIndex;
+                return (
+                  <li
+                    key={`active-set-${i}`}
+                    className={`flex min-h-[52px] items-center justify-between gap-3 py-3.5 transition ${
+                      isActive
+                        ? "rounded-lg bg-accent/[0.14] ring-2 ring-accent/55 shadow-[0_0_0_1px_rgba(59,130,246,0.25)] -mx-1 px-2"
+                        : ""
+                    } ${row.completed ? "opacity-55" : ""}`}
+                  >
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-2">
+                        {t("workout.setLabel", { n: i + 1 })}
+                      </span>
+                      {row.completed ? (
+                        <span
+                          className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent"
+                          aria-hidden
+                        >
+                          ✓
+                        </span>
+                      ) : null}
+                    </span>
+                    <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:gap-4">
+                      {row.weight ? (
+                        <span className="shrink-0 text-[12px] font-semibold tabular-nums text-muted">
+                          {row.weight}
+                          <span className="ml-0.5 text-[10px] font-medium text-muted-2">
+                            kg
+                          </span>
+                        </span>
+                      ) : null}
+                      <span className="text-[1.05rem] font-semibold tabular-nums tracking-[-0.02em] text-foreground">
+                        {row.reps}
+                      </span>
+                      {row.rpe ? (
+                        <span className="shrink-0 rounded-md border border-white/[0.1] bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium tabular-nums text-muted">
+                          RPE {row.rpe}
+                        </span>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <details className="mt-4 border-t border-white/[0.08] pt-3">
+              <summary className="cursor-pointer list-none text-[12px] font-semibold text-accent marker:content-none [&::-webkit-details-marker]:hidden">
+                {t("swipe.panelCoach")}
+              </summary>
+              <div className="mt-2">
+                <ExerciseCoachTipsPanel exercise={rows[activeExerciseIndex]} />
+              </div>
+            </details>
+            <details className="mt-2">
+              <summary className="cursor-pointer list-none text-[12px] font-semibold text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+                {t("swipe.panelMedia")}
+              </summary>
+              <div className="mt-2">
+                <ExerciseMediaVideoSlot exercise={rows[activeExerciseIndex]} />
+              </div>
+            </details>
+          </section>
+        ) : null}
+
         {list.length > 0 && setsTotal > 0 ? (
           <p
             className="mt-4 rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.1] px-4 py-3 text-center text-[13px] font-semibold leading-snug text-foreground"
@@ -397,65 +482,8 @@ export function WorkoutView({
         <HelpVideoCard
           pageId="workout"
           enabled={showHelpVideos}
-          className="mt-4"
+          className="mt-4 opacity-90"
         />
-
-        {list.length > 0 && rows[activeExerciseIndex] ? (
-          <SwipePanels
-            className="mt-4"
-            ariaLabel={t("workout.title")}
-            showLabels
-            showDots
-            panelMinHeightClassName="min-h-[12rem]"
-            items={[
-              {
-                key: "move",
-                label: t("swipe.panelMove"),
-                children: (
-                  <div className="text-left">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2">
-                      {t("workout.exercise.activeEyebrow", {
-                        current: activeExerciseIndex + 1,
-                        total: rows.length,
-                      })}
-                    </p>
-                    <h3 className="mt-1 text-[1.08rem] font-semibold leading-tight text-foreground">
-                      {rows[activeExerciseIndex].name}
-                    </h3>
-                    <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
-                      {rows[activeExerciseIndex].target}
-                    </p>
-                    <p className="mt-4 text-[13px] text-muted">
-                      {t("workout.setLabel", { n: activeSetIndex + 1 })} ·{" "}
-                      {rows[activeExerciseIndex].sets[activeSetIndex]?.reps}
-                      {rows[activeExerciseIndex].sets[activeSetIndex]?.weight
-                        ? ` · ${rows[activeExerciseIndex].sets[activeSetIndex]?.weight} kg`
-                        : ""}
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                key: "coach",
-                label: t("swipe.panelCoach"),
-                children: (
-                  <ExerciseCoachTipsPanel
-                    exercise={rows[activeExerciseIndex]}
-                  />
-                ),
-              },
-              {
-                key: "media",
-                label: t("swipe.panelMedia"),
-                children: (
-                  <ExerciseMediaVideoSlot
-                    exercise={rows[activeExerciseIndex]}
-                  />
-                ),
-              },
-            ]}
-          />
-        ) : null}
 
         {list.length > 0 ? (
           <>
@@ -529,72 +557,6 @@ export function WorkoutView({
             {t("fallback.trendClearerWithData")}
           </p>
         )}
-
-        <div className="mt-8 space-y-4">
-          {rows.map((ex, exIdx) => (
-            <section
-              key={ex.id}
-              className="coach-panel-subtle overflow-hidden rounded-[var(--radius-xl)] px-4 py-4 sm:px-5 sm:py-5"
-            >
-              <div className="border-b border-white/[0.08] pb-3">
-                <h2 className="text-[1.05rem] font-semibold leading-tight tracking-[-0.03em] text-foreground sm:text-[1.1rem]">
-                  {ex.name}
-                </h2>
-                <p className="mt-1.5 text-[12px] font-medium uppercase tracking-[0.14em] text-muted-2">
-                  {ex.target}
-                </p>
-              </div>
-              <ul className="mt-1 divide-y divide-white/[0.06]">
-                {ex.sets.map((row, i) => {
-                  const isActive =
-                    exIdx === activeExerciseIndex && i === activeSetIndex;
-                  return (
-                    <li
-                      key={`${ex.id}-set-${i}`}
-                      className={`flex min-h-[52px] items-center justify-between gap-3 py-3.5 transition ${
-                        isActive
-                          ? "rounded-lg bg-accent/[0.14] ring-2 ring-accent/55 shadow-[0_0_0_1px_rgba(59,130,246,0.25)] -mx-1 px-2"
-                          : ""
-                      } ${row.completed ? "opacity-55" : ""}`}
-                    >
-                      <span className="flex shrink-0 items-center gap-2">
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-2">
-                          {t("workout.setLabel", { n: i + 1 })}
-                        </span>
-                        {row.completed ? (
-                          <span
-                            className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent"
-                            aria-hidden
-                          >
-                            ✓
-                          </span>
-                        ) : null}
-                      </span>
-                      <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:gap-4">
-                        {row.weight ? (
-                          <span className="shrink-0 text-[12px] font-semibold tabular-nums text-muted">
-                            {row.weight}
-                            <span className="ml-0.5 text-[10px] font-medium text-muted-2">
-                              kg
-                            </span>
-                          </span>
-                        ) : null}
-                        <span className="text-[1.05rem] font-semibold tabular-nums tracking-[-0.02em] text-foreground">
-                          {row.reps}
-                        </span>
-                        {row.rpe ? (
-                          <span className="shrink-0 rounded-md border border-white/[0.1] bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium tabular-nums text-muted">
-                            RPE {row.rpe}
-                          </span>
-                        ) : null}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))}
-        </div>
 
         {dataFallbackKey ? (
           <p

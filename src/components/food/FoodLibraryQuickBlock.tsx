@@ -47,9 +47,7 @@ export function FoodLibraryQuickBlock({
 }) {
   const easy = FOOD_LIBRARY.filter((i) => i.tags.includes("easy"));
   const busy = FOOD_LIBRARY.filter((i) => i.tags.includes("busy"));
-  const more = FOOD_LIBRARY.filter(
-    (i) => !i.tags.includes("easy") && !i.tags.includes("busy"),
-  );
+  const picks = [...easy.slice(0, 3), ...busy.slice(0, 2)].slice(0, 5);
 
   return (
     <section
@@ -63,44 +61,13 @@ export function FoodLibraryQuickBlock({
         {t("food.libraryEyebrow")}
       </p>
       <p className="mt-1 text-[12px] leading-snug text-muted-2">
-        {t("food.libraryHint")}
+        {t("food.libraryHintShort")}
       </p>
 
-      <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-        {t("food.librarySectionEasy")}
-      </p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {easy.map((item) => (
+      <div className="mt-3 flex flex-wrap gap-2">
+        {picks.map((item) => (
           <ItemChip
             key={item.id}
-            item={item}
-            locale={locale}
-            onPick={onPick}
-          />
-        ))}
-      </div>
-
-      <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-        {t("food.librarySectionBusy")}
-      </p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {busy.map((item) => (
-          <ItemChip
-            key={`busy-${item.id}`}
-            item={item}
-            locale={locale}
-            onPick={onPick}
-          />
-        ))}
-      </div>
-
-      <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-        {t("food.librarySectionMore")}
-      </p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {more.map((item) => (
-          <ItemChip
-            key={`more-${item.id}`}
             item={item}
             locale={locale}
             onPick={onPick}

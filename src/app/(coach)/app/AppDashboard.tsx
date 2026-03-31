@@ -43,7 +43,6 @@ import {
   computeTodaySystemStatusKey,
 } from "@/lib/todaySystemStatus";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
-import { TodaySwipeStrip } from "@/components/today/TodaySwipeStrip";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import {
   EXCEPTION_STATE_CHANGED,
@@ -254,13 +253,6 @@ export function AppDashboard() {
     return t(todayCoachVoiceKey(dayKeyToday));
   }, [features.showCoachLines, dayKeyToday, t]);
 
-  const rhythmExtra = useMemo(() => {
-    if (!streaks) return null;
-    return locale === "en"
-      ? `${streaks.combined} day streak`
-      : `${streaks.combined} pv putkeen`;
-  }, [streaks, locale]);
-
   const goalProgressRealism = useMemo(() => {
     if (!normalizedProfile) return null;
     if (normalizedProfile.targetWeight == null || !normalizedProfile.targetDate?.trim()) {
@@ -419,21 +411,6 @@ export function AppDashboard() {
         <p className="mt-3 text-center text-[11px] leading-snug text-muted-2 sm:text-left">
           {t("app.productPromiseLine")}
         </p>
-
-        <TodaySwipeStrip
-          focus={focus!}
-          foodLine={plan.todayFoodTask}
-          workoutHref={
-            generatedWorkout &&
-            !generatedWorkout.isRestDay &&
-            generatedWorkout.exercises.length > 0 &&
-            !suppressWorkout
-              ? "/workout"
-              : undefined
-          }
-          coachPresenceLine={coachPresenceLine}
-          rhythmExtra={rhythmExtra}
-        />
 
         <div className="relative">
           <div
