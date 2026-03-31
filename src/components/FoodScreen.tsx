@@ -211,6 +211,15 @@ export function FoodScreen() {
   }, []);
 
   useEffect(() => {
+    if (!sheetOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sheetOpen]);
+
+  useEffect(() => {
     if (profile === undefined) return;
     if (!profile) {
       console.debug("[coach] FoodScreen: no profile → /start");

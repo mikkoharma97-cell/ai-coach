@@ -9,6 +9,10 @@ import {
   resolveProgramPresetId,
   type ProgramPresetId,
 } from "@/lib/programPresets";
+import {
+  applyNutritionLibraryEntry,
+  recommendNutritionForProfile,
+} from "@/lib/nutritionLibrary";
 import type { ProgramLibraryEntry } from "@/types/programLibrary";
 import type { OnboardingAnswers, LifeSchedule } from "@/types/coach";
 import type { IntensifierPolicyId } from "@/types/intensifierRules";
@@ -520,18 +524,22 @@ export function alternativeProgramsForProfile(
 
 export function applyProgramLibraryEntry(
   entryId: string,
-  _base: OnboardingAnswers,
+  base: OnboardingAnswers,
 ): Partial<OnboardingAnswers> {
   const entry = getProgramLibraryEntry(entryId);
   if (!entry) return {};
   const life: Partial<{ lifeSchedule: LifeSchedule }> = entry.suggestShiftLife
     ? { lifeSchedule: "shift_work" }
     : {};
-  return {
+  const programPatch: Partial<OnboardingAnswers> = {
     forcedPresetId: entry.presetId,
     selectedProgramLibraryId: entry.id,
     selectedPackageId: entry.linkedPackageId,
     programTrackId: entry.programTrackId,
     ...life,
   };
+  const merged = { ...base, ...programPatch } as OnboardingAnswers;
+  const nut = recommendNutritionForProfile(merged);
+  const nutritionPatch = applyNutritionLibraryEntry(nut.id);
+  return { ...programPatch, ...nutritionPatch };
 }

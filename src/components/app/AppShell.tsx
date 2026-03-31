@@ -45,6 +45,7 @@ function headerTitleKey(path: string): MessageKey {
   if (path === "/settings") return "nav.settings";
   if (path === "/preferences" || path === "/profile") return "ui.preferences";
   if (path === "/plans") return "plans.title";
+  if (path === "/packages") return "packages.title";
   if (path === "/nutrition-plans") return "nutritionPlans.title";
   if (path === "/food-library") return "foodLibrary.pageTitle";
   if (path === "/scan") return "nav.scan";
@@ -57,7 +58,12 @@ function headerTitleKey(path: string): MessageKey {
 
 function isNavActive(path: string, href: string): boolean {
   if (path === href) return true;
-  if (href === "/food" && path === "/scan") return true;
+  if (
+    href === "/food" &&
+    (path === "/scan" || path === "/food-library" || path === "/nutrition-plans")
+  ) {
+    return true;
+  }
   if (href === "/app" && path === "/workout") return true;
   return false;
 }
