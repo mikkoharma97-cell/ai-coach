@@ -8,7 +8,7 @@ const DEFAULT_TIMEOUT_MS = 3000;
 type Options = {
   /** Analytics-style name for logs */
   name: string;
-  /** Reset loading if action hangs (default 4000ms) */
+  /** Reset loading if action hangs (default 3000ms) */
   timeoutMs?: number;
   /** Set true to emit BUTTON CLICK in development */
   debugClick?: boolean;

@@ -83,9 +83,10 @@ export function PwaInstallPrompt() {
 
   if (dismissed || !deferred) return null;
 
+  /** Yläpuolelle bottom navista (AppShell ~4.5rem + safe area) — ei blokkaa tabeja */
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[100] flex justify-center p-3 pb-[max(12px,env(safe-area-inset-bottom))] pointer-events-none"
+      className="fixed left-0 right-0 z-[100] flex justify-center p-3 pb-[max(12px,env(safe-area-inset-bottom))] pointer-events-none bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))]"
       role="status"
     >
       <div className="pointer-events-auto flex max-w-md flex-col gap-2 rounded-[var(--radius-xl)] border border-white/[0.12] bg-[rgba(5,6,10,0.94)] px-4 py-3 shadow-[var(--shadow-float)] backdrop-blur-md">
