@@ -1,6 +1,6 @@
 # Feature audit — kokonaisuudet
 
-**Näkyvä badge:** `HÄRMÄ14` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ14 · BUILD v14` + semver-aika.
+**Näkyvä badge:** `HÄRMÄ15` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ15 · BUILD v15` + semver-aika.
 
 **HÄRMÄ6 progress-pilarit:** `docs/harma6_progress.md` (consistency / weekly summary / coach insight / daily completion sync → koodiviitteet).
 
@@ -11,6 +11,8 @@
 **HÄRMÄ9 growth:** `docs/harma9_growth.md` (referral/share = planned).
 
 **HÄRMÄ14 launch:** `docs/harma14_launch.md` — `/launch`, `/demo`, EntryGate → `/launch`.
+
+**HÄRMÄ15 sales:** `docs/harma15_sales.md` — kiire, kipu→ratkaisu, luottamus, lyhyt copy.
 
 Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osin · **planned** = suunniteltu · **missing** = ei toteutettu.
 
@@ -151,7 +153,7 @@ Profiili (`OnboardingAnswers`): `goal`, `level` / `trainingLevel`, `daysPerWeek`
 4. **Intensifierit:** eristyksissä / koneissa policy:n mukaan; compound strength ei drop-oletusta.
 5. **Liikevaihto:** `rotationAdviceForExercise` (neuvo); generaattori käyttää `rotationBlockIndex`-siementä.
 6. **Synkka:** profiili → blueprint + policy → sama `generateWorkoutDay` Workoutissa; Today näyttää kirjaston + jakorivin.
-7. **HÄRMÄ14:** launch — `docs/harma14_launch.md` + `/launch` + `/demo` + `version.ts`.
+7. **HÄRMÄ15:** sales copy — `docs/harma15_sales.md` + `/launch` + `version.ts`.
 8. **Mobiili:** tuotantobuildin jälkeen smoke (planned / CI).
 9. **Live URL:** Vercel deploy — tarkista manuaalisesti.
 10. **Jatkossa:** jäljellä olevat literaalit komponenteissa; syvempi Review-EN/FI -parity.

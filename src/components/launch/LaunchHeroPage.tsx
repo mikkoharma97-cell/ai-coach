@@ -6,7 +6,7 @@ import { appendBuildQuery } from "@/lib/buildInfo";
 import Link from "next/link";
 
 /**
- * Launch — yksi lupaus, ei pitkää scrollia (HÄRMÄ14).
+ * Launch — myyntipsykologia, lyhyet rivit (HÄRMÄ15).
  */
 export function LaunchHeroPage() {
   const { t } = useTranslation();
@@ -33,18 +33,24 @@ export function LaunchHeroPage() {
       </div>
 
       <div className="relative z-[1] flex flex-1 flex-col items-center justify-center px-6 pb-16 pt-20">
-        <h1 className="max-w-[20rem] text-balance text-center text-[clamp(1.85rem,5.5vw,2.65rem)] font-semibold leading-[1.12] tracking-[-0.04em] sm:max-w-lg">
-          {t("launch.headline")}
-        </h1>
-        <p className="mt-6 max-w-md text-center text-[15px] font-medium leading-relaxed text-[color:var(--text-body)]">
-          {t("launch.promiseLine")}
+        <p className="text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">
+          {t("launch.urgencyLine")}
         </p>
-        <ul className="mt-10 flex flex-col gap-3 text-center text-[16px] font-semibold tracking-[-0.02em] text-foreground/95">
+        <h1 className="mt-5 max-w-[18rem] text-balance text-center text-[clamp(1.65rem,5vw,2.35rem)] font-semibold leading-[1.15] tracking-[-0.04em] sm:max-w-md">
+          {t("launch.painLine")}
+        </h1>
+        <p className="mt-4 text-center text-[1.125rem] font-semibold text-foreground sm:text-[1.2rem]">
+          {t("launch.solutionLine")}
+        </p>
+        <p className="mt-6 max-w-[17rem] text-center text-[13px] font-medium leading-snug text-muted-2">
+          {t("launch.trustLine")}
+        </p>
+        <ul className="mt-8 flex flex-col gap-2.5 text-center text-[15px] font-semibold tracking-[-0.02em] text-foreground/95">
           <li>{t("launch.bulletTrain")}</li>
           <li>{t("launch.bulletFood")}</li>
           <li>{t("launch.bulletRhythm")}</li>
         </ul>
-        <div className="mt-12 flex w-full max-w-sm flex-col items-stretch gap-3">
+        <div className="mt-10 flex w-full max-w-sm flex-col items-stretch gap-3">
           <CTAButton
             href={appendBuildQuery("/start")}
             className="!min-h-[54px] w-full !rounded-[15px] !py-4 !text-[16px] !font-semibold !shadow-[var(--shadow-primary-cta)]"

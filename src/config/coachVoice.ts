@@ -13,6 +13,7 @@ export const coachVoice = {
     "Ei tekoälyn small talkia.",
     "Ei corporate wellness -sävyä.",
     "Suora, rauhallinen, varma — ei gym-bro -karikatyyriä.",
+    "Myynti: kipu → ratkaisu, kiire ilman huutoa, luottamus ilman hypeä (HÄRMÄ15).",
   ],
   bannedPhrasesFi: [
     "optimoi",

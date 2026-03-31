@@ -4,12 +4,12 @@ import { LaunchHeroPage } from "@/components/launch/LaunchHeroPage";
 import { LocaleProvider } from "@/hooks/useTranslation";
 
 export const metadata: Metadata = {
-  title: "Coach — Aloita",
+  title: "Coach — Aloita tänään",
   description:
-    "Tämä ei seuraa sinua. Tämä ohjaa sinua. Treeni, ruoka, rytmi — yksi ohjaus.",
+    "Et tiedä mitä tehdä — tämä kertoo. Päivä ei odota. Treeni, ruoka, rytmi.",
   openGraph: {
-    title: "Coach — Aloita",
-    description: "Treeni · ruoka · rytmi. Yksi ohjaus joka päivä.",
+    title: "Coach — Aloita tänään",
+    description: "Et tiedä mitä tehdä. Tämä kertoo. Aloita tänään.",
   },
 };
 
