@@ -1,3 +1,4 @@
+import type { ProgressionStyle } from "@/lib/training/progression";
 import type {
   Goal,
   ProgramBlueprintId,
@@ -5,6 +6,7 @@ import type {
   ProgramTrackId,
   TrainingVenue,
 } from "@/types/coach";
+import type { IntensifierPolicyId } from "@/types/intensifierRules";
 
 export type ProgramLibraryVenueFilter = TrainingVenue | "any";
 
@@ -59,10 +61,16 @@ export type ProgramLibraryEntry = {
     shiftWork?: boolean;
     lowFlexibility?: boolean;
   };
+  /** Jakorunko (teksti UI / audit) — täyttyy presetistä jos puuttuu */
+  splitType?: string;
+  progressionStyle?: ProgressionStyle;
+  intensifierPolicyId?: IntensifierPolicyId;
   /** Vastaa `ProgramPresetId` */
   presetId: string;
   linkedPackageId: ProgramPackageId;
   programTrackId: ProgramTrackId;
   programBlueprintId?: ProgramBlueprintId;
   requiresProMode?: boolean;
+  /** Kirjastoasetus: vihjaa vuorotyöprofiilia (applyProgramLibraryEntry) */
+  suggestShiftLife?: boolean;
 };

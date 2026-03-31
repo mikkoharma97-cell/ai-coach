@@ -1,9 +1,9 @@
 /**
  * Yhtenäinen pipeline — kaikki ohjelmat:
  * profiili → `resolveProgramBlueprint` → kategoriat → `pickExercisesUnique`
- * → `exerciseToProExercise` → `trainingIntelligence.buildExercisePrescription`.
+ * → `exerciseToProExercise` → `trainingPrescriptionEngine` (luokitus + intensifierit).
  *
- * Toteutus: `lib/training/generator.ts`.
+ * Toteutus: `lib/training/generator.ts` + `lib/coach/trainingPrescriptionEngine.ts`.
  */
 export {
   generateWorkoutDay,

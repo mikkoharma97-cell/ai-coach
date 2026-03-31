@@ -26,6 +26,7 @@ import type {
   ProgramTrackId,
 } from "@/types/coach";
 import { coachTipsForExercise } from "@/lib/exerciseCoachTips";
+import { getProgramLibraryEntry } from "@/lib/coachProgramCatalog";
 import { getLibraryCategoriesOrFallback } from "@/lib/trainingCategoryLibrary";
 import {
   exerciseDisplayName,
@@ -42,6 +43,12 @@ import type {
   ProTrainingDay,
   ProTrainingProgram,
 } from "@/types/pro";
+
+const PRO_MODE_TO_PROGRESSION: Record<ProProgressionMode, ProgressionStyle> = {
+  linear: "linear",
+  double_progression: "double_progression",
+  adaptive: "adaptive",
+};
 import {
   pickExercisesUnique,
   type ResolveExerciseResult,
@@ -53,7 +60,8 @@ import {
 import {
   buildExercisePrescription,
   rotationBlockIndex,
-} from "@/lib/training/trainingIntelligence";
+} from "@/lib/coach/trainingPrescriptionEngine";
+import type { IntensifierPolicyId } from "@/types/intensifierRules";
 
 export type GenerateWorkoutDayGoal = Goal | "muscle";
 export type GenerateWorkoutDayLevel = Level | "medium";
@@ -76,6 +84,18 @@ export type GenerateWorkoutDayParams = {
   /** Täysi profiili — blueprint/track/runko ratkaistaan oikeasti elämäntilan mukaan */
   sourceProfile?: OnboardingAnswers;
 };
+
+function intensifierPolicyFromProfile(
+  answers: OnboardingAnswers,
+): IntensifierPolicyId {
+  const e = answers.selectedProgramLibraryId
+    ? getProgramLibraryEntry(answers.selectedProgramLibraryId)
+    : undefined;
+  if (e?.intensifierPolicyId) return e.intensifierPolicyId;
+  if (answers.lifeSchedule === "shift_work") return "shift_friendly";
+  if (effectiveTrainingLevel(answers) === "beginner") return "conservative";
+  return "balanced";
+}
 
 export type GeneratedWorkoutDay = {
   packageId: ProgramPackageId;
@@ -229,6 +249,8 @@ export function exerciseToProExercise(
     trainingLevel?: Level;
     exerciseIndex?: number;
     exerciseCount?: number;
+    progressionStyle?: ProgressionStyle;
+    intensifierPolicyId?: IntensifierPolicyId;
   },
 ): ProExercise {
   const alts: ProExerciseAlternative[] = ex.alternatives.map((a) => ({
@@ -262,6 +284,8 @@ export function exerciseToProExercise(
     exerciseIndex,
     exerciseCount,
     baseProgression: prog,
+    progressionStyle: opts?.progressionStyle ?? "linear",
+    intensifierPolicyId: opts?.intensifierPolicyId ?? "balanced",
   });
   const locFi = locale === "fi";
   const repsStr = locFi ? rx.repsLabelFi : rx.repsLabelEn;
@@ -303,6 +327,9 @@ function buildExercisesForCategories(
     exerciseEditable?: boolean;
     goal?: Goal;
     week?: number;
+    sourceProfile?: OnboardingAnswers;
+    progressionStyle?: ProgressionStyle;
+    intensifierPolicyId?: IntensifierPolicyId;
   },
 ): { exercises: ProExercise[]; debug: ExerciseSelectionDebug } {
   const week = opts?.week ?? 1;
@@ -319,6 +346,12 @@ function buildExercisesForCategories(
   const editable = opts?.exerciseEditable ?? false;
   const goal = opts?.goal ?? "improve_fitness";
   const n = picks.length;
+  const policy =
+    opts?.intensifierPolicyId ??
+    (opts?.sourceProfile
+      ? intensifierPolicyFromProfile(opts.sourceProfile)
+      : "balanced");
+  const progStyle = opts?.progressionStyle ?? "linear";
   return {
     exercises: picks.map((p, i) =>
       exerciseToProExercise(p.resolved.exercise, prog, locale, {
@@ -329,6 +362,8 @@ function buildExercisesForCategories(
         trainingLevel,
         exerciseIndex: i,
         exerciseCount: n,
+        progressionStyle: progStyle,
+        intensifierPolicyId: policy,
       }),
     ),
     debug,
@@ -427,7 +462,13 @@ export function generateWorkoutDay(
     effLevel,
     params.limitations,
     trackId,
-    { exerciseEditable, goal, week },
+    {
+      exerciseEditable,
+      goal,
+      week,
+      sourceProfile: answers,
+      progressionStyle: bp.progressionStyle as ProgressionStyle,
+    },
   );
 
   return {
@@ -499,6 +540,8 @@ export type GenerateTrainingProgramParams = {
   programTrackId?: ProgramTrackId;
   /** Oletus pro — koko ohjelman liikkeet muokattavissa */
   coachMode?: CoachMode;
+  /** Intensifier-politiikka (oletus: balanced) */
+  intensifierPolicyId?: IntensifierPolicyId;
 };
 
 /**
@@ -512,11 +555,16 @@ export function generateTrainingProgram(
   const locale = params.locale ?? "fi";
   const trainingLevel = params.trainingLevel ?? "intermediate";
   const meta = SPLIT_META[params.preset];
-  const prog = generateProgression(week, { level: trainingLevel });
+  const progressionStyle = PRO_MODE_TO_PROGRESSION[meta.mode];
+  const prog = generateProgression(week, {
+    level: trainingLevel,
+    progressionStyle,
+  });
   const saltBase = params.salt ?? `${params.preset}-w${week}-${goal}`;
   const programTrackId = params.programTrackId;
   const coachMode = params.coachMode ?? "pro";
   const exerciseEditable = coachMode === "pro";
+  const intensifierPolicy = params.intensifierPolicyId ?? "balanced";
 
   const days: ProTrainingDay[] = meta.days.map((spec) => {
     if (spec.categories.length === 0) {
@@ -539,7 +587,13 @@ export function generateTrainingProgram(
       trainingLevel,
       params.limitations,
       programTrackId,
-      { exerciseEditable, goal, week },
+      {
+        exerciseEditable,
+        goal,
+        week,
+        progressionStyle,
+        intensifierPolicyId: intensifierPolicy,
+      },
     );
     return {
       id: spec.key,

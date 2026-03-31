@@ -41,6 +41,11 @@ export function ProgramRecommendationCard({
       <p className="mt-2 text-[13px] leading-snug text-muted">
         {fi ? entry.shortDescriptionFi : entry.shortDescriptionEn}
       </p>
+      {entry.splitType ? (
+        <p className="mt-1.5 text-[11px] leading-snug text-muted-2">
+          {fi ? "Jako" : "Split"}: {entry.splitType}
+        </p>
+      ) : null}
       <p className="mt-2 text-[11px] tabular-nums text-muted-2">
         {entry.weeklyDays.min === entry.weeklyDays.max
           ? `${entry.weeklyDays.min} ${fi ? "pv/vko" : "d/wk"}`

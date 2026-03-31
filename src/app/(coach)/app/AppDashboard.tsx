@@ -37,6 +37,7 @@ import { trackEvent } from "@/lib/analytics";
 import { todayCoachVoiceKey } from "@/lib/coachPresenceCopy";
 import { resolveProgramFromProfile } from "@/lib/profileProgramResolver";
 import { getProgramLibraryEntry } from "@/lib/coachProgramCatalog";
+import { recommendSplitForProfile } from "@/lib/coach/splitRecommendationEngine";
 import { getNutritionLibraryEntry } from "@/lib/nutritionLibrary";
 import { getProgramPackage, normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
@@ -328,6 +329,14 @@ export function AppDashboard() {
     };
   }, [normalizedProfile, locale]);
 
+  const splitRecommendationLine = useMemo(() => {
+    if (!normalizedProfile) return null;
+    const r = recommendSplitForProfile(normalizedProfile);
+    return locale === "fi"
+      ? `Jako: ${r.splitLabelFi} — ${r.rationaleFi}`
+      : `Split: ${r.splitLabelEn} — ${r.rationaleEn}`;
+  }, [normalizedProfile, locale]);
+
   const engineWeekLine = useMemo(() => {
     if (!features.showCoachLines || !coachEngine) return null;
     return t(coachEngine.adaptation.headlineKey);
@@ -584,6 +593,7 @@ export function AppDashboard() {
             showLibraryChangeLinks
             programPresetLine={programPresetLine}
             programRationaleLine={programRationaleLine}
+            splitRecommendationLine={splitRecommendationLine}
             engineWeekLine={engineWeekLine}
             quickNoteLine={quickNoteLine}
             coachPresenceLine={coachPresenceLine}

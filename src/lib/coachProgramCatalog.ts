@@ -1,11 +1,53 @@
 /**
- * Käyttäjän ohjelmakirjasto V1 — katalogi + suositus; moottori: forcedPresetId.
+ * Käyttäjän ohjelmakirjasto — katalogi + suositus; moottori: forcedPresetId.
+ * Rivit rikastetaan: splitType, progressionStyle, intensifierPolicyId, blueprint.
  */
-import { resolveProgramPresetId } from "@/lib/programPresets";
+import { getProgramBlueprint } from "@/lib/programBlueprints";
+import type { WeeklyStructureType } from "@/lib/programPlanTypes";
+import {
+  getProgramPresetDefinition,
+  resolveProgramPresetId,
+  type ProgramPresetId,
+} from "@/lib/programPresets";
 import type { ProgramLibraryEntry } from "@/types/programLibrary";
-import type { OnboardingAnswers } from "@/types/coach";
+import type { OnboardingAnswers, LifeSchedule } from "@/types/coach";
+import type { IntensifierPolicyId } from "@/types/intensifierRules";
 
-export const PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
+const SPLIT_FI: Record<WeeklyStructureType, string> = {
+  foundation: "Koko keho / kevyt jako",
+  rhythm: "Rytmi + koko keho",
+  upper_lower: "Ylä / ala",
+  split: "Salijako (volyymi)",
+  performance: "Suoritusblokki",
+  shift: "Vuorolle sopiva jako",
+};
+
+function defaultIntensifierPolicy(
+  e: ProgramLibraryEntry,
+): IntensifierPolicyId {
+  if (e.styleTags?.includes("shift_friendly")) return "shift_friendly";
+  if (e.level === "beginner") return "conservative";
+  if (e.presetId === "performance_block" || e.presetId === "pro_control") {
+    return "performance";
+  }
+  if (e.recommendedFor?.shiftWork) return "shift_friendly";
+  return "balanced";
+}
+
+function enrichProgramLibraryEntry(e: ProgramLibraryEntry): ProgramLibraryEntry {
+  const def = getProgramPresetDefinition(e.presetId as ProgramPresetId);
+  const bp = getProgramBlueprint(def.programBlueprintId);
+  const splitType = e.splitType ?? SPLIT_FI[def.weeklyStructureType] ?? "Jako";
+  return {
+    ...e,
+    splitType,
+    progressionStyle: e.progressionStyle ?? bp.progressionStyle,
+    intensifierPolicyId: e.intensifierPolicyId ?? defaultIntensifierPolicy(e),
+    programBlueprintId: e.programBlueprintId ?? def.programBlueprintId,
+  };
+}
+
+const RAW_PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
   {
     id: "fat_loss_rhythm_light",
     nameFi: "Painonhallinnan kevyt rytmi",
@@ -365,7 +407,76 @@ export const PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
     linkedPackageId: "performance_block",
     programTrackId: "performance",
   },
+  {
+    id: "shift_friendly_foundation",
+    nameFi: "Vuorolle — kevyt perusta",
+    nameEn: "Shift-friendly foundation",
+    goal: "improve_fitness",
+    trainingVenue: "any",
+    weeklyDays: { min: 2, max: 4 },
+    shortDescriptionFi: "Lyhyet sessiot, selkeä rakenne kun vuoro elää.",
+    shortDescriptionEn: "Short sessions, clear structure when shifts move.",
+    whyItFitsFi: "Kun vuorotyö sekoittaa vuorokauden rytmiä.",
+    whyItFitsEn: "When shift work scrambles your day rhythm.",
+    styleTag: "vuoro",
+    styleTags: ["shift_friendly", "foundation", "minimal"],
+    level: "beginner",
+    venueUi: "mixed",
+    recommendedFor: { shiftWork: true, lowFlexibility: true },
+    suggestShiftLife: true,
+    presetId: "beginner_foundation",
+    linkedPackageId: "steady_start",
+    programTrackId: "daily_rhythm",
+    intensifierPolicyId: "shift_friendly",
+  },
+  {
+    id: "shift_friendly_strength",
+    nameFi: "Vuorolle — voimapainotus",
+    nameEn: "Shift-friendly strength bias",
+    goal: "improve_fitness",
+    trainingVenue: "gym",
+    weeklyDays: { min: 3, max: 4 },
+    shortDescriptionFi: "Vähän mutta tarkkaa — perusliikkeet ensin.",
+    shortDescriptionEn: "Less but precise — basics first.",
+    whyItFitsFi: "Kun haluat voimaa ilman jatkuvaa salipäivää.",
+    whyItFitsEn: "When you want strength without daily gym trips.",
+    styleTag: "vuoro",
+    styleTags: ["shift_friendly", "foundation"],
+    level: "intermediate",
+    venueUi: "gym",
+    recommendedFor: { shiftWork: true },
+    suggestShiftLife: true,
+    presetId: "performance_block",
+    linkedPackageId: "performance_block",
+    programTrackId: "performance",
+    intensifierPolicyId: "shift_friendly",
+  },
+  {
+    id: "shift_friendly_hypertrophy_light",
+    nameFi: "Vuorolle — kevyt hypertrofia",
+    nameEn: "Shift-friendly light hypertrophy",
+    goal: "build_muscle",
+    trainingVenue: "any",
+    weeklyDays: { min: 3, max: 4 },
+    shortDescriptionFi: "Kohtuullinen volyymi, palautuminen huomioitu.",
+    shortDescriptionEn: "Moderate volume with recovery in mind.",
+    whyItFitsFi: "Kun kasvutavoite kohtaa epäsäännöllisen viikon.",
+    whyItFitsEn: "When growth goals meet an irregular week.",
+    styleTag: "vuoro",
+    styleTags: ["shift_friendly", "hypertrophy"],
+    level: "intermediate",
+    venueUi: "mixed",
+    recommendedFor: { shiftWork: true },
+    suggestShiftLife: true,
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "muscle_rhythm",
+    programTrackId: "muscle_growth",
+    intensifierPolicyId: "shift_friendly",
+  },
 ];
+
+export const PROGRAM_LIBRARY: ProgramLibraryEntry[] =
+  RAW_PROGRAM_LIBRARY.map(enrichProgramLibraryEntry);
 
 export function getProgramLibraryEntry(id: string): ProgramLibraryEntry | undefined {
   return PROGRAM_LIBRARY.find((e) => e.id === id);
@@ -413,10 +524,14 @@ export function applyProgramLibraryEntry(
 ): Partial<OnboardingAnswers> {
   const entry = getProgramLibraryEntry(entryId);
   if (!entry) return {};
+  const life: Partial<{ lifeSchedule: LifeSchedule }> = entry.suggestShiftLife
+    ? { lifeSchedule: "shift_work" }
+    : {};
   return {
     forcedPresetId: entry.presetId,
     selectedProgramLibraryId: entry.id,
     selectedPackageId: entry.linkedPackageId,
     programTrackId: entry.programTrackId,
+    ...life,
   };
 }

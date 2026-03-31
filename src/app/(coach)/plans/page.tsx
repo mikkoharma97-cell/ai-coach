@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 
 type VenueFilter = "all" | "gym" | "home" | "mixed";
 type LevelFilter = "all" | "beginner" | "intermediate" | "advanced";
+type LifestyleFilter = "all" | "busy" | "shift" | "comeback";
 
 export default function PlansPage() {
   const { t, locale } = useTranslation();
@@ -25,6 +26,7 @@ export default function PlansPage() {
   const [goalFilter, setGoalFilter] = useState<Goal | "all">("all");
   const [venueFilter, setVenueFilter] = useState<VenueFilter>("all");
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
+  const [lifestyleFilter, setLifestyleFilter] = useState<LifestyleFilter>("all");
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const recommended = useMemo(
@@ -53,8 +55,30 @@ export default function PlansPage() {
       });
     }
 
+    if (lifestyleFilter === "busy") {
+      list = list.filter(
+        (e) =>
+          e.recommendedFor?.busy ||
+          e.styleTags?.includes("busy") ||
+          e.styleTag === "kiire",
+      );
+    } else if (lifestyleFilter === "shift") {
+      list = list.filter(
+        (e) =>
+          e.recommendedFor?.shiftWork ||
+          e.styleTags?.includes("shift_friendly"),
+      );
+    } else if (lifestyleFilter === "comeback") {
+      list = list.filter(
+        (e) =>
+          e.recommendedFor?.comeback ||
+          e.styleTags?.includes("comeback") ||
+          e.id.includes("comeback"),
+      );
+    }
+
     return list;
-  }, [profile, goalFilter, venueFilter, levelFilter]);
+  }, [profile, goalFilter, venueFilter, levelFilter, lifestyleFilter]);
 
   const restOfPool = useMemo(() => {
     if (!recommended) return pool;
@@ -169,6 +193,33 @@ export default function PlansPage() {
                     : fi
                       ? "Kova"
                       : "Advanced"}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+            {fi ? "Arki" : "Life"}
+          </span>
+          {(
+            [
+              ["all", fi ? "Kaikki" : "All"],
+              ["busy", fi ? "Kiire" : "Busy"],
+              ["shift", fi ? "Vuoro" : "Shift"],
+              ["comeback", fi ? "Paluu" : "Comeback"],
+            ] as const
+          ).map(([v, label]) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setLifestyleFilter(v)}
+              className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
+                lifestyleFilter === v
+                  ? "border-accent bg-accent-soft text-accent"
+                  : "border-border/80 text-muted"
+              }`}
+            >
+              {label}
             </button>
           ))}
         </div>

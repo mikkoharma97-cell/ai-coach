@@ -89,6 +89,8 @@ type Props = {
   programPresetLine?: string | null;
   /** Yksi lause: miksi tämä viikko vastaa profiilia */
   programRationaleLine?: string | null;
+  /** Jakosuositus (splitRecommendationEngine) */
+  splitRecommendationLine?: string | null;
   /** Viikkoadaptaation otsikko (moottori) */
   engineWeekLine?: string | null;
   /** Pikamuistiinpano (esim. äänellä) */
@@ -148,6 +150,7 @@ export function TodayCard({
   showLibraryChangeLinks = false,
   programPresetLine,
   programRationaleLine,
+  splitRecommendationLine,
   engineWeekLine,
   quickNoteLine,
   shiftBadgeKey,
@@ -323,6 +326,15 @@ export function TodayCard({
             role="status"
           >
             {programRationaleLine}
+          </p>
+        ) : null}
+
+        {splitRecommendationLine ? (
+          <p
+            className="mt-2 max-w-[26rem] text-center text-[12px] leading-snug text-muted-2 sm:text-left"
+            role="status"
+          >
+            {splitRecommendationLine}
           </p>
         ) : null}
 
