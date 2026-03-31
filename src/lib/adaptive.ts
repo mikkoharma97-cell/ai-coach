@@ -23,6 +23,7 @@ import {
   resolveNutritionBlueprint,
 } from "@/lib/nutritionBlueprints";
 import { totalActivityEnergyBonusKcal } from "@/lib/activityEnergy";
+import { totalSupplementProteinG } from "@/lib/supplementStack";
 import { loadDailyActivitiesForDate } from "@/lib/activityStorage";
 import {
   normalizeProgramPackageId,
@@ -453,6 +454,12 @@ export function composeCoachDailyPlan(
     locale,
   );
 
+  const supplementProteinG = totalSupplementProteinG(answers);
+  const foodProteinTargetG = Math.max(
+    0,
+    finalMacros.proteinG - supplementProteinG,
+  );
+
   const sep = locale === "en" ? " — " : " — ";
   let foodAdjustmentNote: string | null = adjusted.systemLine;
   if (rebalancePlan) {
@@ -468,6 +475,8 @@ export function composeCoachDailyPlan(
     shiftToday,
     todayCalories: finalCalories,
     todayMacros: finalMacros,
+    supplementProteinG,
+    foodProteinTargetG,
     activityEnergyBonusKcal,
     personalizationProof,
     foodAdjustmentNote,

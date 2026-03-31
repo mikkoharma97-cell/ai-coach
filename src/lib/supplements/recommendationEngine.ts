@@ -7,6 +7,7 @@ import { buildUserPerformanceState } from "@/lib/coach/performanceAnalysis";
 import { estimateConsumedFromKcalLog } from "@/lib/food/dayMacros";
 import { loadFoodLog } from "@/lib/foodStorage";
 import { loadSupplementPreferences } from "@/lib/supplementPreferencesStorage";
+import { totalSupplementProteinG } from "@/lib/supplementStack";
 import { loadWorkoutSessions } from "@/lib/workoutLogStorage";
 import type {
   ProgressionTrend,
@@ -61,6 +62,7 @@ export function buildSupplementRecommendationInput(
     nut.macros.proteinG > 0 ? consumed.protein / nut.macros.proteinG : 1;
   const kcalRatio = nut.targetKcal > 0 ? kcalSum / nut.targetKcal : 1;
   const prefs = loadSupplementPreferences();
+  const stackProt = totalSupplementProteinG(profile);
   return {
     goal: p.goal,
     proteinRatio,
@@ -68,7 +70,8 @@ export function buildSupplementRecommendationInput(
     fatigueLevel: performance.fatigueLevel,
     progressionTrend: performance.progressionTrend,
     usesCreatine: prefs.usesCreatine,
-    usesProteinPowder: prefs.usesProteinPowder,
+    usesProteinPowder:
+      prefs.usesProteinPowder || stackProt > 0,
   };
 }
 

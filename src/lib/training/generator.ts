@@ -48,9 +48,12 @@ import {
 } from "@/lib/training/exercises";
 import {
   generateProgression,
-  repsRangeLabel,
   type ProgressionStyle,
 } from "@/lib/training/progression";
+import {
+  buildExercisePrescription,
+  rotationBlockIndex,
+} from "@/lib/training/trainingIntelligence";
 
 export type GenerateWorkoutDayGoal = Goal | "muscle";
 export type GenerateWorkoutDayLevel = Level | "medium";
@@ -221,6 +224,11 @@ export function exerciseToProExercise(
   opts?: {
     editable?: boolean;
     resolved?: ResolveExerciseResult;
+    goal?: Goal;
+    week?: number;
+    trainingLevel?: Level;
+    exerciseIndex?: number;
+    exerciseCount?: number;
   },
 ): ProExercise {
   const alts: ProExerciseAlternative[] = ex.alternatives.map((a) => ({
@@ -241,15 +249,33 @@ export function exerciseToProExercise(
       : undefined;
 
   const tips = coachTipsForExercise(ex);
+  const goal = opts?.goal ?? "improve_fitness";
+  const week = opts?.week ?? 1;
+  const level = opts?.trainingLevel ?? "intermediate";
+  const exerciseIndex = opts?.exerciseIndex ?? 0;
+  const exerciseCount = Math.max(1, opts?.exerciseCount ?? 1);
+
+  const rx = buildExercisePrescription(ex, {
+    goal,
+    week,
+    level,
+    exerciseIndex,
+    exerciseCount,
+    baseProgression: prog,
+  });
+  const locFi = locale === "fi";
+  const repsStr = locFi ? rx.repsLabelFi : rx.repsLabelEn;
+  const prescFi = rx.prescriptionLineFi;
+  const prescEn = rx.prescriptionLineEn;
 
   return {
     id: ex.id,
     name: exerciseDisplayName(ex, locale === "en" ? "en" : "fi"),
     target: ex.primaryMuscles.join(" + "),
-    sets: ex.defaultSets ?? prog.sets,
-    reps: ex.defaultReps ?? repsRangeLabel(prog),
-    effort: `RPE ${prog.intensity}`,
-    rest: "2–3 min",
+    sets: rx.sets,
+    reps: repsStr,
+    effort: rx.effort,
+    rest: rx.rest,
     alternatives: alts,
     editable: opts?.editable,
     substitutionReasonFi: subFi,
@@ -260,6 +286,8 @@ export function exerciseToProExercise(
     coachMistakeEn: tips.mistakeEn,
     coachFocusFi: tips.focusFi,
     coachFocusEn: tips.focusEn,
+    prescriptionLineFi: prescFi ?? undefined,
+    prescriptionLineEn: prescEn ?? undefined,
   };
 }
 
@@ -271,22 +299,36 @@ function buildExercisesForCategories(
   trainingLevel: Level,
   limitations: LimitationTag[] | undefined,
   programTrackId: ProgramTrackId | undefined,
-  opts?: { exerciseEditable?: boolean },
+  opts?: {
+    exerciseEditable?: boolean;
+    goal?: Goal;
+    week?: number;
+  },
 ): { exercises: ProExercise[]; debug: ExerciseSelectionDebug } {
+  const week = opts?.week ?? 1;
+  const rot = rotationBlockIndex(week);
+  const seedRot = `${seed}-meso${rot}`;
   const { picks, debug } = pickExercisesUnique(
     categories,
-    seed,
+    seedRot,
     trainingLevel,
     limitations,
     programTrackId,
     locale === "en" ? "en" : "fi",
   );
   const editable = opts?.exerciseEditable ?? false;
+  const goal = opts?.goal ?? "improve_fitness";
+  const n = picks.length;
   return {
-    exercises: picks.map((p) =>
+    exercises: picks.map((p, i) =>
       exerciseToProExercise(p.resolved.exercise, prog, locale, {
         editable,
         resolved: p.resolved,
+        goal,
+        week,
+        trainingLevel,
+        exerciseIndex: i,
+        exerciseCount: n,
       }),
     ),
     debug,
@@ -385,7 +427,7 @@ export function generateWorkoutDay(
     effLevel,
     params.limitations,
     trackId,
-    { exerciseEditable },
+    { exerciseEditable, goal, week },
   );
 
   return {
@@ -497,7 +539,7 @@ export function generateTrainingProgram(
       trainingLevel,
       params.limitations,
       programTrackId,
-      { exerciseEditable },
+      { exerciseEditable, goal, week },
     );
     return {
       id: spec.key,

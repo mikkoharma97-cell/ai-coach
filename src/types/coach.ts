@@ -2,6 +2,7 @@ import type { MessageKey } from "@/lib/i18n";
 import type { CoachFeatureToggles } from "@/types/coachPreferences";
 import type { LimitationTag } from "@/types/exercise";
 import type { RebalancePlan } from "@/types/rebalance";
+import type { UserSupplementEntry } from "@/types/supplements";
 import type { WorkShiftEntry, WorkShiftType } from "@/types/workShifts";
 
 export type Goal = "lose_weight" | "build_muscle" | "improve_fitness";
@@ -182,6 +183,8 @@ export interface OnboardingAnswers {
   shiftMode?: boolean;
   /** Valinnainen peilaus / export; lähde: `workShiftStorage` */
   workShifts?: WorkShiftEntry[];
+  /** Lisäravinteet — proteiinilisät vähentävät ruoasta tarvittavaa proteiinia */
+  supplementStack?: UserSupplementEntry[];
 }
 
 export interface WeekDayEntry {
@@ -241,6 +244,10 @@ export interface DailyMacros {
 export interface CoachDailyPlan extends CoachPlan, TodayWithAdjustments {
   todayCalories: number;
   todayMacros: DailyMacros;
+  /** g — proteiinijauheet yms.; ruoka-engine käyttää `foodProteinTargetG` */
+  supplementProteinG?: number;
+  /** g — proteiinitavoite aterioista kun lisäravinteet vähentävät tarvetta */
+  foodProteinTargetG?: number;
   /** Extra kcal nudge from logged daily movement (client localStorage); 0 on server. */
   activityEnergyBonusKcal: number;
   /** Short proof lines — personalization visible in-app */

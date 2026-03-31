@@ -116,5 +116,6 @@ export function emptyAnswers(): OnboardingAnswers {
     lastBestShape: "not_sure",
     trainingVenue: "mixed",
     recentTrainingFreq: "weekly_few",
+    supplementStack: [],
   };
 }

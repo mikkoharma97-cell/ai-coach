@@ -8,6 +8,9 @@ export type ExerciseMediaExercise = {
   target: string;
   videoUrl?: string;
   videoPoster?: string;
+  restLine?: string;
+  prescriptionLineFi?: string;
+  prescriptionLineEn?: string;
   coachTipFi?: string;
   coachTipEn?: string;
   coachMistakeFi?: string;
@@ -112,8 +115,12 @@ export function ExerciseCoachTipsPanel({
     locale === "en"
       ? exercise.coachFocusEn ?? exercise.coachFocusFi
       : exercise.coachFocusFi ?? exercise.coachFocusEn;
+  const prescription =
+    locale === "en"
+      ? exercise.prescriptionLineEn ?? exercise.prescriptionLineFi
+      : exercise.prescriptionLineFi ?? exercise.prescriptionLineEn;
 
-  if (!tip && !mistake && !focus) {
+  if (!tip && !mistake && !focus && !prescription) {
     return (
       <p className="text-[13px] leading-relaxed text-muted-2">
         {t("workout.exercise.coachTipPlaceholder")}
@@ -123,6 +130,16 @@ export function ExerciseCoachTipsPanel({
 
   return (
     <div className="space-y-4">
+      {prescription ? (
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/90">
+            {t("workout.exercise.prescriptionLabel")}
+          </p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-accent/95">
+            {prescription}
+          </p>
+        </div>
+      ) : null}
       {tip ? (
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/90">

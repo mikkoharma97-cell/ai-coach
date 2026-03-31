@@ -52,6 +52,9 @@ export type ProExercise = {
   coachMistakeEn?: string;
   coachFocusFi?: string;
   coachFocusEn?: string;
+  /** HÄRMÄ4 — valmennussäännöt (drop, deload, RPE) */
+  prescriptionLineFi?: string;
+  prescriptionLineEn?: string;
 };
 
 export type ProExerciseAlternative = {

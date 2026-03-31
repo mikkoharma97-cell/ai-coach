@@ -808,6 +808,12 @@ export const fi = {
     "Kun liikkeelle lisätään vihje, se näkyy tässä aina — myös ilman videota.",
   "workout.exercise.coachMistakeLabel": "Yleinen virhe",
   "workout.exercise.coachFocusLabel": "Fokus",
+  "workout.exercise.prescriptionLabel": "Valmennuslinja",
+  "food.supplementStackTitle": "Lisäravinteet — päivän proteiini",
+  "food.supplementProteinFromStack":
+    "Proteiinilisät huomioitu: ruoasta haetaan loput päivän proteiinitavoitteeseen.",
+  "marketplace.featuredTitle": "Kumppanit & varusteet",
+  "marketplace.openPartner": "Avaa kumppanisivu →",
   "food.libraryEyebrow": "Valmislista — yksi napin painallus",
   "food.libraryHint":
     "Helppo = sama rutiini. Kiire = nopeasti käteen. Muut = täydennä viikkoa.",
@@ -2798,6 +2804,12 @@ export const en: { [K in MessageKey]: string } = {
     "When a tip is added for this lift, it shows here — even without a video.",
   "workout.exercise.coachMistakeLabel": "Common mistake",
   "workout.exercise.coachFocusLabel": "Focus",
+  "workout.exercise.prescriptionLabel": "Coaching line",
+  "food.supplementStackTitle": "Supplements — daily protein",
+  "food.supplementProteinFromStack":
+    "Powders counted: get the rest of today’s protein from meals.",
+  "marketplace.featuredTitle": "Partners & gear",
+  "marketplace.openPartner": "Open partner site →",
   "food.libraryEyebrow": "Quick picks — one tap",
   "food.libraryHint":
     "Easy = repeat the habit. Rush = grab-and-go. More = round out your week.",

@@ -40,6 +40,9 @@ export type WorkoutViewExercise = {
   sets: WorkoutViewSet[];
   videoUrl?: string;
   videoPoster?: string;
+  restLine?: string;
+  prescriptionLineFi?: string;
+  prescriptionLineEn?: string;
   coachTipFi?: string;
   coachTipEn?: string;
   coachMistakeFi?: string;
@@ -411,6 +414,25 @@ export function WorkoutView({
             <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
               {rows[activeExerciseIndex].target}
             </p>
+            {rows[activeExerciseIndex].restLine ? (
+              <p className="mt-2 text-[12px] text-muted">
+                {locale === "en" ? "Rest" : "Lepo"}:{" "}
+                {rows[activeExerciseIndex].restLine}
+              </p>
+            ) : null}
+            {(() => {
+              const pl =
+                locale === "en"
+                  ? rows[activeExerciseIndex].prescriptionLineEn ??
+                    rows[activeExerciseIndex].prescriptionLineFi
+                  : rows[activeExerciseIndex].prescriptionLineFi ??
+                    rows[activeExerciseIndex].prescriptionLineEn;
+              return pl ? (
+                <p className="mt-1 text-[12px] leading-snug text-accent/90">
+                  {pl}
+                </p>
+              ) : null;
+            })()}
             {activePerfHint ? (
               <p className="mt-2 text-[12px] font-medium leading-snug text-accent/95">
                 {activePerfHint}

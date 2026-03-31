@@ -29,6 +29,8 @@ import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
 import { FoodTodayStrip } from "@/components/food/FoodTodayStrip";
 import { SupplementCoachRecommendations } from "@/components/coach/SupplementCoachRecommendations";
+import { SupplementStackEditor } from "@/components/supplements/SupplementStackEditor";
+import { FeaturedProductsStrip } from "@/components/marketplace/FeaturedProductsStrip";
 import { foodDataFallbackKey } from "@/lib/dataConfidence";
 import { generateWeeklyShoppingListForProfile } from "@/lib/food/shoppingList";
 import {
@@ -67,7 +69,7 @@ import { useOverlayLayer } from "@/hooks/useOverlayLayer";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { foodCoachLineKey } from "@/lib/coachPresenceCopy";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
-import { loadOutcomeHint } from "@/lib/storage";
+import { loadOutcomeHint, loadProfile } from "@/lib/storage";
 import { WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
 import { getMondayBasedIndex } from "@/lib/plan";
 import Link from "next/link";
@@ -175,7 +177,13 @@ function goalHeadlineKey(g: OnboardingAnswers["goal"]): MessageKey {
 export function FoodScreen() {
   const router = useRouter();
   const { t, locale } = useTranslation();
-  const profile = useClientProfile();
+  const profileRaw = useClientProfile();
+  const [profileReloadSeq, setProfileReloadSeq] = useState(0);
+  const profile = useMemo(() => {
+    if (profileRaw === undefined || profileRaw === null) return profileRaw;
+    if (profileReloadSeq === 0) return profileRaw;
+    return loadProfile() ?? profileRaw;
+  }, [profileRaw, profileReloadSeq]);
   const [now] = useState(() => new Date());
   const [renderTick, refresh] = useReducer((x: number) => x + 1, 0);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -296,7 +304,8 @@ export function FoodScreen() {
       normalizedProfile,
       {
         caloriesTarget: plan.todayCalories,
-        proteinTarget: plan.todayMacros.proteinG,
+        proteinTarget:
+          plan.foodProteinTargetG ?? plan.todayMacros.proteinG,
       },
       dateSalt,
       locale,
@@ -348,7 +357,7 @@ export function FoodScreen() {
     return buildSupplementProductRecommendations(
       buildSupplementRecommendationInput(profile, now),
     );
-  }, [profile, now, renderTick]);
+  }, [profile, now, renderTick, profileReloadSeq]);
 
   const log = loadFoodLog(now);
   const foodFallbackKey = foodDataFallbackKey(now);
@@ -601,10 +610,22 @@ export function FoodScreen() {
           )}
         />
 
+        {profile ? (
+          <SupplementStackEditor
+            profile={profile}
+            onSaved={() => {
+              setProfileReloadSeq((s) => s + 1);
+              refresh();
+            }}
+          />
+        ) : null}
+
         <SupplementCoachRecommendations
           picks={supplementPicks}
           className="mt-5"
         />
+
+        <FeaturedProductsStrip />
 
         {kcalRangeHintText ? (
           <p

@@ -185,9 +185,11 @@ export function buildMealPreferences(
   answers: OnboardingAnswers,
   plan: CoachDailyPlan,
 ): MealPreferences {
+  const foodP =
+    plan.foodProteinTargetG ?? plan.todayMacros.proteinG;
   return buildMealPreferencesFromTargets(answers, {
     caloriesTarget: plan.todayCalories,
-    proteinTarget: plan.todayMacros.proteinG,
+    proteinTarget: foodP,
   });
 }
 

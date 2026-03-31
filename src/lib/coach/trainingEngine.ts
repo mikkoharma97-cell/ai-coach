@@ -1,12 +1,17 @@
 /**
  * Treenimoottori V1 — rungon luonne ja rajat (blueprint + preset -tasolla).
- * Varsinainen liikegeneraatio: `lib/training/generator` + `programBlueprints`.
+ * Liikegeneraatio + valmennussäännöt: `lib/training/generator` + `trainingIntelligence`.
  */
 import type { CoachProgramDecision } from "@/lib/coach/programDecisionEngine";
 import { getProgramBlueprint } from "@/lib/programBlueprints";
 import type { ProgramBlueprintId } from "@/types/coach";
 import type { OnboardingAnswers } from "@/types/coach";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
+export {
+  inferMovementPattern,
+  isDeloadWeek,
+  rotationBlockIndex,
+} from "@/lib/training/trainingIntelligence";
 
 export type TrainingArchetypeId =
   | "beginner_foundation"
