@@ -41,10 +41,10 @@ export function PreStartSalesWall({
         <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[var(--text-eyebrow)]">
           {t("prestart.eyebrow")}
         </p>
-        <h1 className="mt-4 text-balance text-[1.65rem] font-semibold leading-[1.08] tracking-[-0.045em] text-foreground sm:text-[1.85rem]">
+        <h1 className="coach-page-headline mt-4 text-balance">
           {t("prestart.heroTitle")}
         </h1>
-        <p className="mx-auto mt-5 max-w-md text-[15px] font-medium leading-snug text-muted sm:mx-0">
+        <p className="coach-page-body-soft mx-auto mt-5 max-w-md font-medium sm:mx-0">
           {t("prestart.heroSubline")}
         </p>
       </div>
@@ -53,7 +53,7 @@ export function PreStartSalesWall({
         {FEAT_KEYS.map((key) => (
           <div
             key={key}
-            className="flex gap-3 rounded-[var(--radius-lg)] border border-white/[0.07] bg-[var(--coach-surface-muted)] px-3.5 py-3 shadow-[0_8px_28px_rgb(0_0_0/0.28)]"
+            className="coach-micro-lift flex gap-3 rounded-[var(--radius-lg)] border border-white/[0.07] bg-[var(--coach-surface-muted)] px-3.5 py-3 shadow-[0_8px_28px_rgb(0_0_0/0.28)]"
           >
             <span
               className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_12px_var(--accent-glow-soft)]"
@@ -132,12 +132,12 @@ export function PreStartSalesWall({
         {t("prestart.punchLine")}
       </p>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 bg-gradient-to-t from-background from-[72%] via-background/95 to-transparent pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-10">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[45] bg-gradient-to-t from-background from-[72%] via-background/95 to-transparent pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-10">
         <div className="pointer-events-auto mx-auto max-w-md px-5">
           <button
             type="button"
             onClick={onContinue}
-            className="flex h-[52px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent text-[16px] font-semibold tracking-[-0.02em] text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="flex h-[52px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent text-[16px] font-semibold tracking-[-0.02em] text-white shadow-[var(--shadow-primary-cta)] transition duration-200 ease-out hover:scale-[1.02] hover:bg-[var(--accent-hover)] hover:shadow-[0_18px_48px_rgba(41,92,255,0.5)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("prestart.cta")}
           </button>

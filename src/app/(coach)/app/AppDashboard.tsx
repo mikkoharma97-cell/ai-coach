@@ -405,12 +405,8 @@ export function AppDashboard() {
         <HelpVideoCard
           pageId="today"
           enabled={features.showHelpVideos}
-          className="mt-2"
+          className="mt-2 opacity-95"
         />
-
-        <p className="mt-3 text-center text-[11px] leading-snug text-muted-2 sm:text-left">
-          {t("app.productPromiseLine")}
-        </p>
 
         <div className="relative">
           <div

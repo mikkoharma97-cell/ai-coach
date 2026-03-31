@@ -115,6 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+      <div className="coach-header-presence" aria-hidden />
 
       <div className="app-main-scroll flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]">
         {children}
@@ -134,7 +135,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={r.href}
                 href={r.href}
                 aria-current={on ? "page" : undefined}
-                className={`touch-manipulation flex min-h-[54px] min-w-0 flex-1 flex-col items-center justify-center rounded-[14px] px-0.5 py-2 text-[9px] font-semibold leading-tight tracking-[-0.02em] transition duration-[250ms] ease-in-out min-[400px]:text-[10px] min-[480px]:min-h-[52px] sm:px-1 sm:text-[11px] ${
+                className={`touch-manipulation flex min-h-[54px] min-w-0 flex-1 flex-col items-center justify-center rounded-[14px] px-0.5 py-2 text-[9px] font-semibold leading-tight tracking-[-0.02em] transition duration-200 ease-out will-change-transform min-[400px]:text-[10px] min-[480px]:min-h-[52px] sm:px-1 sm:text-[11px] motion-reduce:transition-none min-[480px]:hover:scale-[1.04] active:scale-[0.96] ${
                   on
                     ? "bg-accent-soft/90 text-primary"
                     : "text-muted-2 hover:bg-white/[0.06] hover:text-foreground active:bg-white/[0.08]"

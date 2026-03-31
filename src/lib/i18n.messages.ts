@@ -180,6 +180,8 @@ export const fi = {
   "progress.sectionStreak": "Putki",
   "progress.pageLead":
     "Yksi näkymä: rytmi, totuus ja suunta — ei erillistä dashboardia.",
+  "progress.emotionalSubtitle":
+    "Jokainen merkintä on signaali — ei tuomiota. Suunta näkyy, kun näytät käyvän.",
   "progress.coachPresence.works": "Tämä toimii.",
   "progress.coachPresence.uneven": "Tämä ei ole vielä tasainen.",
   "progress.coachPresence.rhythm":
@@ -1298,7 +1300,7 @@ export const fi = {
   "prestart.eyebrow": "Ennen aloitusta",
   "prestart.heroTitle": "Tämä ei seuraa sinua. Tämä ohjaa sinua.",
   "prestart.heroSubline":
-    "Tämä rakentaa päivän puolestasi ja korjaa suunnan, kun elämä sotkee.",
+    "Ei arvailua. Ei hajonnutta viikkoa. Tämä pitää linjan, kun arki iskee — tai korjaa suunnan heti.",
   "prestart.feat1": "Tiedät mitä tehdä tänään — päivän ohjaus, ei arvailua.",
   "prestart.feat2": "Kotitreeni ei saa saliohjelmaa — treeni vastaa profiiliasi.",
   "prestart.feat3": "Ruokarakenne ja korjaus — yksi huono päivä ei kaada linjaa.",
@@ -2028,6 +2030,8 @@ export const en: { [K in MessageKey]: string } = {
   "progress.sectionStreak": "Streaks",
   "progress.pageLead":
     "One screen for rhythm, truth, and direction — not a separate dashboard.",
+  "progress.emotionalSubtitle":
+    "Every log is a signal — not a verdict. Direction shows when you show up.",
   "progress.coachPresence.works": "This is working.",
   "progress.coachPresence.uneven": "This isn’t steady yet.",
   "progress.coachPresence.rhythm":
@@ -3161,7 +3165,7 @@ export const en: { [K in MessageKey]: string } = {
   "prestart.eyebrow": "Before you start",
   "prestart.heroTitle": "This doesn’t track you. It guides you.",
   "prestart.heroSubline":
-    "It builds your day for you and fixes direction when life gets messy.",
+    "No guesswork. No week falling apart. This holds the line when life hits — or resets direction fast.",
   "prestart.feat1": "You know what to do today — daily guidance, not guesswork.",
   "prestart.feat2": "Home training isn’t a gym clone — training matches your profile.",
   "prestart.feat3": "Food structure + correction — one bad day doesn’t break the line.",

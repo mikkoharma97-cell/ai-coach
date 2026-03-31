@@ -115,7 +115,7 @@ body {
   color: var(--text-body);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: 16px;
-  line-height: 1.55;
+  line-height: 1.62;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
@@ -614,7 +614,9 @@ body {
   }
 
   .coach-today-cta-primary:hover:not(:disabled) {
-    filter: brightness(1.1);
+    filter: brightness(1.08);
+    transform: scale(1.02);
+    box-shadow: 0 18px 52px rgba(41, 92, 255, 0.5);
   }
 
   .coach-today-cta-primary:active:not(:disabled) {
@@ -623,6 +625,57 @@ body {
   }
 
   .coach-today-cta-done {
-    @apply rounded-[14px] border border-white/12 bg-white/[0.05] px-5 py-[1.05rem] text-[16px] font-semibold tracking-[-0.02em] text-foreground shadow-sm transition hover:border-[rgba(108,134,255,0.45)] hover:bg-white/[0.08] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ring-offset-bg)];
+    @apply rounded-[14px] border border-white/12 bg-white/[0.05] px-5 py-[1.05rem] text-[16px] font-semibold tracking-[-0.02em] text-foreground shadow-sm transition duration-200 ease-out hover:border-[rgba(108,134,255,0.45)] hover:bg-white/[0.08] hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ring-offset-bg)];
   }
+}
+
+/* Premium polish — subtle motion + coach presence line */
+@keyframes coach-header-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.coach-header-presence {
+  pointer-events: none;
+  flex-shrink: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(90, 132, 255, 0.42),
+    transparent
+  );
+  animation: coach-header-glow 5.5s ease-in-out infinite;
+}
+
+.coach-micro-lift {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.25s ease,
+    border-color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .coach-micro-lift:hover {
+    transform: translateY(-1px) scale(1.01);
+  }
+}
+
+.coach-page-headline {
+  font-size: clamp(1.35rem, 4.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  color: var(--foreground);
+}
+
+.coach-page-body-soft {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--text-body);
 }

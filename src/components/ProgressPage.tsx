@@ -146,9 +146,7 @@ export function ProgressPage() {
     <main className="coach-page">
       <Container size="phone" className="pb-28 pt-4">
         <div className="pointer-events-none mb-2 h-px w-full bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-        <h1 className="text-[1.35rem] font-semibold tracking-[-0.04em] text-foreground">
-          {t("nav.progress")}
-        </h1>
+        <h1 className="coach-page-headline">{t("nav.progress")}</h1>
         <p className="mt-3 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
           {ft.showCoachLines
             ? t(
@@ -158,6 +156,9 @@ export function ProgressPage() {
                 }),
               )
             : t("progress.pageLead")}
+        </p>
+        <p className="coach-page-body-soft mt-4 max-w-[26rem]">
+          {t("progress.emotionalSubtitle")}
         </p>
         <Link
           href="/app"

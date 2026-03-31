@@ -543,10 +543,16 @@ export function TodayCard({
                 type="button"
                 disabled={isMarkingDone}
                 onClick={onToggleDay}
-                className="group coach-today-cta-primary min-h-[52px] w-full disabled:pointer-events-none disabled:opacity-70"
+                className={`group min-h-[52px] w-full disabled:pointer-events-none disabled:opacity-70 ${
+                  startWorkoutHref
+                    ? "coach-today-cta-done"
+                    : "coach-today-cta-primary"
+                }`}
               >
                 {isMarkingDone ? (
                   <span className="relative z-[1]">{t("today.markingDay")}</span>
+                ) : startWorkoutHref ? (
+                  <span className="relative z-[1]">{t("ui.closeDay")}</span>
                 ) : (
                   <>
                     <span className="relative z-[1]">{t("ui.closeDay")}</span>
