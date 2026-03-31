@@ -1,10 +1,12 @@
 # Feature audit — kokonaisuudet
 
-**Näkyvä badge:** `HÄRMÄ7` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ7 · BUILD v7` + semver-aika.
+**Näkyvä badge:** `HÄRMÄ8` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ8 · BUILD v8` + semver-aika.
 
 **HÄRMÄ6 progress-pilarit:** `docs/harma6_progress.md` (consistency / weekly summary / coach insight / daily completion sync → koodiviitteet).
 
 **HÄRMÄ7 gap-fix:** `docs/harma7_gap.md` (nav, food add sheet, program↔nutrition sync, mobile).
+
+**HÄRMÄ8 supplements:** `docs/harma8_supplements.md` (stack, makrot, suositukset, featured placements).
 
 Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osin · **planned** = suunniteltu · **missing** = ei toteutettu.
 
@@ -13,7 +15,7 @@ Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osi
 | Asia | Status |
 |------|--------|
 | **Source of truth** | `src/config/coachVoice.ts` — säännöt, kielletyt fraasit, `fragments` |
-| **Versio** | `src/config/version.ts` — `APP_VERSION` v7, `HARMÄ_BUILD` 7 |
+| **Versio** | `src/config/version.ts` — `APP_VERSION` v8, `HARMÄ_BUILD` 8 |
 | **Käyttäjälle näkyvä teksti** | **partial** → pääpolku (`src/lib/i18n.messages.ts` FI + EN), komponentit `t()`-avaimilla; ei täyttä literaalien ajoa joka tiedostossa tässä passissa |
 | **Tarkistettu laiteella** | **planned** — tuotantobuild + push; Vercel smoke |
 
@@ -145,7 +147,7 @@ Profiili (`OnboardingAnswers`): `goal`, `level` / `trainingLevel`, `daysPerWeek`
 4. **Intensifierit:** eristyksissä / koneissa policy:n mukaan; compound strength ei drop-oletusta.
 5. **Liikevaihto:** `rotationAdviceForExercise` (neuvo); generaattori käyttää `rotationBlockIndex`-siementä.
 6. **Synkka:** profiili → blueprint + policy → sama `generateWorkoutDay` Workoutissa; Today näyttää kirjaston + jakorivin.
-7. **HÄRMÄ7:** kyllä — gap-fix `docs/harma7_gap.md` + `version.ts`.
+7. **HÄRMÄ8:** kyllä — supplements-kartta `docs/harma8_supplements.md` + `version.ts`.
 8. **Mobiili:** tuotantobuildin jälkeen smoke (planned / CI).
 9. **Live URL:** Vercel deploy — tarkista manuaalisesti.
 10. **Jatkossa:** jäljellä olevat literaalit komponenteissa; syvempi Review-EN/FI -parity.
