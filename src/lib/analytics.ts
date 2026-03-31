@@ -7,6 +7,7 @@ export const ANALYTICS_EVENTS = [
   "open_start",
   "open_app",
   "onboarding_start",
+  "prestart_wall_continue",
   "onboarding_complete",
   "open_today",
   "open_food",

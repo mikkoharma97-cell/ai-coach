@@ -1,5 +1,6 @@
 "use client";
 
+import { PreStartSalesWall } from "@/components/start/PreStartSalesWall";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
 import { ProgramPackageCards } from "@/components/packages/ProgramPackageCards";
@@ -10,6 +11,7 @@ import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { emptyAnswers } from "@/lib/plan";
 import { PROGRAM_TRACKS } from "@/lib/programTracks";
 import { trackEvent } from "@/lib/analytics";
+import { flowLog } from "@/lib/flowLog";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import type {
   BiggestChallenge,
@@ -24,9 +26,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 
 const QUESTION_TOTAL = 11;
+const PRESTART_SEEN_KEY = "coach_prestart_seen";
 const BUILD_DELAY_MS = 1200;
 
 const dayOptions: { value: DaysPerWeek; label: string }[] = [
@@ -135,12 +138,25 @@ export function StartFlow() {
   const [step, setStep] = useState(0);
   const [building, setBuilding] = useState(false);
   const [existingProfile, setExistingProfile] = useState(false);
+  const [preStartDone, setPreStartDone] = useState(false);
   const [answers, setAnswers] = useState<OnboardingAnswers>(() =>
     initialFromStorage(),
   );
 
-  useEffect(() => {
-    setExistingProfile(Boolean(loadProfile()));
+  useLayoutEffect(() => {
+    try {
+      const has = Boolean(loadProfile());
+      setExistingProfile(has);
+      if (has) {
+        setPreStartDone(true);
+        return;
+      }
+      if (sessionStorage.getItem(PRESTART_SEEN_KEY) === "1") {
+        setPreStartDone(true);
+      }
+    } catch {
+      setExistingProfile(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -162,12 +178,14 @@ export function StartFlow() {
     (next: OnboardingAnswers) => {
       try {
         saveProfile(next);
+        flowLog("onboarding.profileSaved");
       } catch (e) {
         console.warn("[coach] saveProfile in startBuild failed", e);
       }
       setBuilding(true);
       window.setTimeout(() => {
         console.debug("[coach] onboarding: navigate /app after build");
+        flowLog("onboarding.navigateApp");
         trackEvent("onboarding_complete");
         router.push("/app");
       }, BUILD_DELAY_MS);
@@ -277,7 +295,23 @@ export function StartFlow() {
 
       <main className="pb-16 pt-8 sm:pt-10">
         <Container size="phone" className="px-5">
-          {step === 0 ? (
+          {step === 0 && !preStartDone && !existingProfile ? (
+            <PreStartSalesWall
+              onContinue={() => {
+                try {
+                  sessionStorage.setItem(PRESTART_SEEN_KEY, "1");
+                } catch {
+                  /* ignore */
+                }
+                trackEvent("prestart_wall_continue");
+                setPreStartDone(true);
+                router.replace("/start", { scroll: false });
+                window.scrollTo(0, 0);
+              }}
+            />
+          ) : null}
+
+          {step === 0 && (preStartDone || existingProfile) ? (
             <HelpVideoCard
               pageId="start"
               enabled={getCoachFeatureToggles(answers).showHelpVideos}
@@ -285,7 +319,7 @@ export function StartFlow() {
             />
           ) : null}
 
-          {step === 0 ? (
+          {step === 0 && (preStartDone || existingProfile) ? (
             <div className="flex min-h-[calc(100dvh-8.5rem)] flex-col">
               <div className="flex flex-1 flex-col justify-center pt-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-accent">
