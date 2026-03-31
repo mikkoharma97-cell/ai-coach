@@ -44,7 +44,7 @@ export function FoodShoppingListBlock({
         <div className="min-w-0 flex-1">
           <h2
             id="weekly-shopping"
-            className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2"
+            className="text-[1.05rem] font-semibold leading-tight tracking-[-0.02em] text-foreground"
           >
             {t("food.shoppingTitle")}
           </h2>
