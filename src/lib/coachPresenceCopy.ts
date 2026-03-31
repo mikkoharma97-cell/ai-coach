@@ -12,10 +12,14 @@ export function dayKeyHash(dayKey: string): number {
   return Math.abs(h);
 }
 
+const TODAY_COACH_VOICE_KEYS = [
+  "today.coachVoice.direct",
+  "today.coachVoice.simple",
+  "today.coachVoice.third",
+] as const satisfies readonly MessageKey[];
+
 export function todayCoachVoiceKey(dayKey: string): MessageKey {
-  return dayKeyHash(dayKey) % 2 === 0
-    ? "today.coachVoice.direct"
-    : "today.coachVoice.simple";
+  return TODAY_COACH_VOICE_KEYS[dayKeyHash(dayKey) % TODAY_COACH_VOICE_KEYS.length]!;
 }
 
 export function progressInterpretationKey(input: {
