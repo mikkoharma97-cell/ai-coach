@@ -149,7 +149,8 @@ export function clearAllCoachLocalData(): void {
         k.startsWith(OUTCOME_HINT_PREFIX) ||
         k.startsWith(FOOD_LOG_PREFIX) ||
         k.startsWith("ai-coach-day-exec-v1:") ||
-        k.startsWith("ai-coach-thinkless-v1:")
+        k.startsWith("ai-coach-thinkless-v1:") ||
+        k.startsWith("ai-coach-reminder-")
       ) {
         localStorage.removeItem(k);
       }

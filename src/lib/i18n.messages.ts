@@ -41,6 +41,20 @@ export const fi = {
   "pwa.installCta": "Asenna",
   "pwa.installDismiss": "Ei nyt",
 
+  "notifications.titleWorkout": "Treeni",
+  "notifications.bodyWorkout":
+    "Jos sopii, yksi selkeä treeni tänään.",
+  "notifications.titleFood": "Ruoka",
+  "notifications.bodyFood": "Pidä päivän linja — maltillisesti.",
+  "notifications.titleDay": "Päivä",
+  "notifications.bodyDay": "Päivä on vielä kesken — sulje kun ehdit.",
+  "notifications.prefsTitle": "Muistutukset",
+  "notifications.prefsHint":
+    "Enintään kolme kevyttä ilmoitusta päivässä. Hiljaisuus yöllä (22–7). Ei spämmiä.",
+  "notifications.prefsEnable": "Selainmuistutukset",
+  "notifications.permissionDenied":
+    "Ilmoitukset on estetty selaimessa — salli asetuksista, jos haluat muistutuksia.",
+
   "fallback.sharpensWithUse": "Tarkentuu kun merkitset päiviä.",
   "fallback.firstWeeksBuildView": "Ensimmäiset viikot täyttävät tämän.",
   "fallback.trendClearerWithData": "Kun merkintöjä kertyy, suunta selkenee.",
@@ -2086,6 +2100,20 @@ export const en: { [K in MessageKey]: string } = {
     "Install Coach on your home screen — faster access without the browser chrome.",
   "pwa.installCta": "Install",
   "pwa.installDismiss": "Not now",
+
+  "notifications.titleWorkout": "Training",
+  "notifications.bodyWorkout":
+    "If it fits, one clear session today.",
+  "notifications.titleFood": "Food",
+  "notifications.bodyFood": "Hold today’s line — steady.",
+  "notifications.titleDay": "Today",
+  "notifications.bodyDay": "Your day is still open — close it when you can.",
+  "notifications.prefsTitle": "Reminders",
+  "notifications.prefsHint":
+    "Up to three gentle notifications per day. Quiet overnight (10pm–7am). No spam.",
+  "notifications.prefsEnable": "Browser reminders",
+  "notifications.permissionDenied":
+    "Notifications are blocked in the browser — enable them in settings if you want reminders.",
 
   "fallback.sharpensWithUse": "Sharpens when you log days.",
   "fallback.firstWeeksBuildView": "The first weeks fill this in.",

@@ -5,6 +5,7 @@ import {
   APP_SHORT_NAME,
 } from "@/config/appInfo";
 import { VersionBadge } from "@/components/common/VersionBadge";
+import { CoachReminderNotifications } from "@/components/CoachReminderNotifications";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { getPublicSiteUrl } from "@/lib/siteUrl";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -73,6 +74,7 @@ export default function RootLayout({
         <div className="app-grain" aria-hidden />
         {children}
         <PwaInstallPrompt />
+        <CoachReminderNotifications />
         <VersionBadge />
       </body>
     </html>

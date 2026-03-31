@@ -1,6 +1,6 @@
 # Feature audit — kokonaisuudet
 
-**Näkyvä badge:** `HÄRMÄ19` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ19 · BUILD v19` + semver-aika.
+**Näkyvä badge:** `HÄRMÄ20` (`VersionBadge` → `src/config/version.ts` → `COACH_RELEASE_LABEL`). Asetuksissa: `BuildMarkerLine` näyttää `HÄRMÄ20 · BUILD v20` + semver-aika.
 
 **HÄRMÄ6 progress-pilarit:** `docs/harma6_progress.md` (consistency / weekly summary / coach insight / daily completion sync → koodiviitteet).
 
@@ -22,6 +22,8 @@
 
 **HÄRMÄ19 AI engine:** `docs/harma19_ai_engine.md` — `buildCoachAiEngineResult`, Today käyttää yhtä päätöspolkua.
 
+**HÄRMÄ20 notifications:** `docs/harma20_notifications.md` — opt-in selainmuistutukset, treeni / ruoka / päivä kesken.
+
 Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osin · **planned** = suunniteltu · **missing** = ei toteutettu.
 
 ### Coach Voice System (HÄRMÄ5+)
@@ -29,7 +31,7 @@ Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osi
 | Asia | Status |
 |------|--------|
 | **Source of truth** | `src/config/coachVoice.ts` — säännöt, kielletyt fraasit, `fragments` |
-| **Versio** | `src/config/version.ts` — `APP_VERSION` v19, `HARMÄ_BUILD` 19 |
+| **Versio** | `src/config/version.ts` — `APP_VERSION` v20, `HARMÄ_BUILD` 20 |
 | **Käyttäjälle näkyvä teksti** | **partial** → pääpolku (`src/lib/i18n.messages.ts` FI + EN), komponentit `t()`-avaimilla; ei täyttä literaalien ajoa joka tiedostossa tässä passissa |
 | **Tarkistettu laiteella** | **planned** — tuotantobuild + push; Vercel smoke |
 

@@ -22,6 +22,12 @@ import {
   getCoachFeatureToggles,
   mergeCoachFeatureToggles,
 } from "@/lib/coachFeatureToggles";
+import {
+  DEFAULT_REMINDER_PREFS,
+  loadReminderPrefs,
+  saveReminderPrefs,
+  type ReminderPrefs,
+} from "@/lib/notifications/reminderStorage";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import type {
   BiggestChallenge,
@@ -92,6 +98,8 @@ export function PreferencesScreen() {
   const [profile] = useState(() => loadProfile());
   const [form, setForm] = useState<OnboardingAnswers | null>(null);
   const [saved, setSaved] = useState(false);
+  const [reminderPrefs, setReminderPrefs] =
+    useState<ReminderPrefs>(DEFAULT_REMINDER_PREFS);
 
   useEffect(() => {
     if (!profile) {
@@ -102,6 +110,30 @@ export function PreferencesScreen() {
     merged.uiLocale = merged.uiLocale ?? "fi";
     setForm(merged);
   }, [profile, router]);
+
+  useEffect(() => {
+    setReminderPrefs(loadReminderPrefs());
+  }, []);
+
+  const onReminderToggle = useCallback(async (checked: boolean) => {
+    if (!checked) {
+      saveReminderPrefs({ ...reminderPrefs, enabled: false });
+      setReminderPrefs(loadReminderPrefs());
+      return;
+    }
+    if (typeof Notification === "undefined") return;
+    let p: NotificationPermission = Notification.permission;
+    if (p === "default") {
+      p = await Notification.requestPermission();
+    }
+    if (p !== "granted") {
+      saveReminderPrefs({ ...reminderPrefs, enabled: false });
+      setReminderPrefs(loadReminderPrefs());
+      return;
+    }
+    saveReminderPrefs({ ...reminderPrefs, enabled: true });
+    setReminderPrefs(loadReminderPrefs());
+  }, [reminderPrefs]);
 
   const patch = useCallback((p: Partial<OnboardingAnswers>) => {
     setSaved(false);
@@ -188,6 +220,31 @@ export function PreferencesScreen() {
             ))}
           </div>
         </PreferenceSection>
+        </div>
+
+        <div className="mt-6">
+          <PreferenceSection title={t("notifications.prefsTitle")}>
+            <p className="text-[12px] leading-relaxed text-muted-2">
+              {t("notifications.prefsHint")}
+            </p>
+            <label className="mt-3 flex cursor-pointer items-center justify-between gap-4 px-1 py-1">
+              <span className="text-[13px] leading-snug text-foreground">
+                {t("notifications.prefsEnable")}
+              </span>
+              <input
+                type="checkbox"
+                className="h-4 w-4 shrink-0 rounded border-border text-accent accent-accent"
+                checked={reminderPrefs.enabled}
+                onChange={(e) => onReminderToggle(e.target.checked)}
+              />
+            </label>
+            {typeof Notification !== "undefined" &&
+              Notification.permission === "denied" && (
+                <p className="mt-2 text-[12px] leading-snug text-amber-600/90 dark:text-amber-400/85">
+                  {t("notifications.permissionDenied")}
+                </p>
+              )}
+          </PreferenceSection>
         </div>
 
         <HelpVideoCard
