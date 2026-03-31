@@ -13,7 +13,8 @@
     "lint": "eslint",
     "verify:engine": "npx tsx scripts/verify-engine.ts",
     "audit:system": "npx tsx scripts/audit-system-v1.ts",
-    "screenshots": "node scripts/capture-screenshots.mjs"
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "qa:routes": "node scripts/qa-final-routes.mjs"
   },
   "dependencies": {
     "next": "16.2.1",
