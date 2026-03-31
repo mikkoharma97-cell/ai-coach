@@ -1,6 +1,7 @@
 "use client";
 
 import { HeroTodayLiving } from "@/components/landing/HeroTodayLiving";
+import { SalesPitchIntro, SalesPitchOutro } from "@/components/demo/SalesPitchDemo";
 import { CTAButton } from "@/components/CTAButton";
 import { useTranslation } from "@/hooks/useTranslation";
 import { appendBuildQuery } from "@/lib/buildInfo";
@@ -44,6 +45,14 @@ export function DemoPreviewPage() {
         <p className="mt-3 max-w-md text-[14px] leading-relaxed text-muted">
           {t("demo.subtitle")}
         </p>
+
+        <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-2">
+          {t("demo.salesEyebrow")}
+        </p>
+
+        <div className="mt-4">
+          <SalesPitchIntro />
+        </div>
 
         <section className="mt-10" aria-labelledby="demo-today">
           <h2 id="demo-today" className="sr-only">
@@ -95,6 +104,28 @@ export function DemoPreviewPage() {
             {t("demo.foodBody")}
           </p>
         </section>
+
+        <section
+          className="mt-5 rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.04] px-4 py-5"
+          aria-labelledby="demo-progress"
+        >
+          <h2
+            id="demo-progress"
+            className="text-[10px] font-semibold uppercase tracking-[0.18em] text-accent"
+          >
+            {t("demo.progressEyebrow")}
+          </h2>
+          <p className="mt-2 text-[17px] font-semibold leading-snug">
+            {t("demo.progressTitle")}
+          </p>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted">
+            {t("demo.progressBody")}
+          </p>
+        </section>
+
+        <div className="mt-10">
+          <SalesPitchOutro />
+        </div>
 
         <div className="mt-10 flex flex-col gap-3">
           <CTAButton

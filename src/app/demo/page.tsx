@@ -4,12 +4,12 @@ import { DemoPreviewPage } from "@/components/demo/DemoPreviewPage";
 import { LocaleProvider } from "@/hooks/useTranslation";
 
 export const metadata: Metadata = {
-  title: "Coach — Esikatselu",
+  title: "Coach — Demo alle 2 min",
   description:
-    "Näe Tänään-rakenne, treeni ja ruoka ennen maksua. Interaktiivinen demo saatavilla.",
+    "Myyntipuhe ja demo-polku: Today, treeni, ruoka, kehitys. Interaktiivinen demo yhdellä napilla.",
   openGraph: {
-    title: "Coach — Esikatselu",
-    description: "Staattinen esikatselu ja demo-linkki.",
+    title: "Coach — Demo alle 2 min",
+    description: "Myyntipuhe + esikatselu samalla sivulla.",
   },
 };
 
