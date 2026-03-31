@@ -15,7 +15,9 @@ export function dayKeyHash(dayKey: string): number {
 const TODAY_COACH_VOICE_KEYS = [
   "today.coachVoice.direct",
   "today.coachVoice.simple",
-  "today.coachVoice.third",
+  "coach.presence.active",
+  "coach.presence.tracking",
+  "coach.presence.adjust",
 ] as const satisfies readonly MessageKey[];
 
 export function todayCoachVoiceKey(dayKey: string): MessageKey {
