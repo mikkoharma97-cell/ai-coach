@@ -6,8 +6,6 @@
  * Parannus: kielivalitsin voisi olla asetuksissa vain → vähemmän melua headerissa.
  * Parannus: max-w-lg bottom navissa — jos tabletti landscape, keskitys tai full-width harkintaa.
  */
-// Temporary version marker — remove import + usage when no longer needed (see HarmavVersionBadge.tsx)
-import { HarmavVersionBadge } from "@/components/app/HarmavVersionBadge";
 import { PreviewBuildStrip } from "@/components/PreviewBuildStrip";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { Locale } from "@/lib/i18n";
@@ -114,7 +112,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <option value="fi">FI</option>
               <option value="en">EN</option>
             </select>
-            <HarmavVersionBadge />
           </div>
         </div>
       </header>

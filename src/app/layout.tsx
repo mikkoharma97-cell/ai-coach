@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { VersionBadge } from "@/components/common/VersionBadge";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { getPublicSiteUrl } from "@/lib/siteUrl";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -57,6 +58,7 @@ export default function RootLayout({
         <div className="app-grain" aria-hidden />
         {children}
         <PwaInstallPrompt />
+        <VersionBadge />
       </body>
     </html>
   );
