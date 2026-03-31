@@ -241,6 +241,12 @@ export function ProgressPage() {
           />
         </div>
         <WeightQuickLog onLogged={bumpWeight} />
+        {ft.showProgressCharts ? (
+          <div className="mt-6 space-y-6">
+            <WeightTrendCard profile={profile} version={weightTick} />
+            <ConsistencyCard snap={consistency} />
+          </div>
+        ) : null}
         <div className="space-y-7">
           <ProgressHeroInsightCard
             insight={ft.showCoachLines ? heroInsight : null}
@@ -287,14 +293,12 @@ export function ProgressPage() {
               {ft.showProgressCharts ? (
                 <>
                   <StrengthProgressCard rows={strengthRows} />
-                  <WeightTrendCard profile={profile} version={weightTick} />
                   <MacroTrendCard
                     answers={profile}
                     referenceDate={ref}
                     rebalanceActive={rebalanceActive}
                   />
                   <RecoveryTrendCard referenceDate={ref} streaks={streaks} />
-                  <ConsistencyCard snap={consistency} />
                 </>
               ) : (
                 <p className="px-2 text-[12px] leading-relaxed text-muted-2">

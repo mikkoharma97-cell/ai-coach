@@ -235,9 +235,9 @@ export const fi = {
   "engine.week.resume.detail":
     "Aloita pienestä, pidä sarjat laadukkaina — ei kiirettä takaisin.",
 
-  "engine.feedback.today": "{{week}} — {{program}}",
-  "engine.feedback.food": "{{food}} · {{program}}",
-  "engine.feedback.workout": "Runko: {{track}} — pidä tekniikka, älä ego.",
+  "engine.feedback.today": "{{week}} · {{program}}",
+  "engine.feedback.food": "{{food}}. {{program}}",
+  "engine.feedback.workout": "{{track}} — tekniikka ensin.",
   "engine.feedback.review": "Seuraava viikko: {{line}}",
   "engine.feedback.reviewNeutral": "Seuraava viikko: sama runko, parempi toisto.",
 
@@ -690,8 +690,15 @@ export const fi = {
     "Kun liikkeelle lisätään vihje, se näkyy tässä aina — myös ilman videota.",
   "workout.exercise.coachMistakeLabel": "Yleinen virhe",
   "workout.exercise.coachFocusLabel": "Fokus",
-  "food.libraryEyebrow": "Perusateriat",
-  "food.libraryHint": "Lisää yhdellä napilla — voit säätää määrää seuraavassa vaiheessa.",
+  "food.libraryEyebrow": "Valmislista — yksi napin painallus",
+  "food.libraryHint":
+    "Helppo = sama rutiini. Kiire = nopeasti käteen. Muut = täydennä viikkoa.",
+  "food.librarySectionEasy": "Helppo vaihtoehto",
+  "food.librarySectionBusy": "Jos kiire",
+  "food.librarySectionMore": "Muut ateriat",
+
+  "app.productPromiseLine":
+    "Treeni, ruoka, rytmi — yksi lista tänään (sama lupaus kuin etusivulla).",
   "food.kcalRangeHint": "Energiaviite ilman painoa: noin {{range}} kcal (suuntaa antava haarukka).",
   "landing.comingNext.title": "Seuraavaksi",
   "landing.comingNext.scan": "Laiteskannaus kameralla",
@@ -2024,9 +2031,9 @@ export const en: { [K in MessageKey]: string } = {
   "engine.week.resume.detail":
     "Start small, keep sets clean — no rush to ‘catch up’.",
 
-  "engine.feedback.today": "{{week}} — {{program}}",
-  "engine.feedback.food": "{{food}} · {{program}}",
-  "engine.feedback.workout": "Frame: {{track}} — technique over ego.",
+  "engine.feedback.today": "{{week}} · {{program}}",
+  "engine.feedback.food": "{{food}}. {{program}}",
+  "engine.feedback.workout": "{{track}} — technique first.",
   "engine.feedback.review": "Next week: {{line}}",
   "engine.feedback.reviewNeutral":
     "Next week: same frame, better repeats.",
@@ -2490,8 +2497,15 @@ export const en: { [K in MessageKey]: string } = {
     "When a tip is added for this lift, it shows here — even without a video.",
   "workout.exercise.coachMistakeLabel": "Common mistake",
   "workout.exercise.coachFocusLabel": "Focus",
-  "food.libraryEyebrow": "Staple meals",
-  "food.libraryHint": "Add in one tap — you can fine-tune portions in the next step.",
+  "food.libraryEyebrow": "Quick picks — one tap",
+  "food.libraryHint":
+    "Easy = repeat the habit. Rush = grab-and-go. More = round out your week.",
+  "food.librarySectionEasy": "Easy option",
+  "food.librarySectionBusy": "If you’re in a rush",
+  "food.librarySectionMore": "More meals",
+
+  "app.productPromiseLine":
+    "Training, food, rhythm — one list today (same promise as the homepage).",
   "food.kcalRangeHint": "Without a weight on file, energy target is roughly {{range}} kcal (indicative range).",
   "landing.comingNext.title": "Coming next",
   "landing.comingNext.scan": "Equipment scan with the camera",

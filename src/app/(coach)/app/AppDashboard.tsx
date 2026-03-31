@@ -416,6 +416,10 @@ export function AppDashboard() {
           className="mt-2"
         />
 
+        <p className="mt-3 text-center text-[11px] leading-snug text-muted-2 sm:text-left">
+          {t("app.productPromiseLine")}
+        </p>
+
         <TodaySwipeStrip
           focus={focus!}
           foodLine={plan.todayFoodTask}

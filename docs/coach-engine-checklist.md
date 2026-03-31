@@ -18,7 +18,7 @@ Tila: `planned` | `partial` | `verified`
 | UI: Review adaptation | verified | `WeeklyReviewScreen.tsx` | build | `/review` |
 | UI: Adjustments engine headline | verified | `AdjustmentsScreen.tsx` | build | `/adjustments` |
 | Progress: viikkolinja-kortti | verified | `ProgressPage.tsx`, `DevelopmentTrajectoryCard.tsx` | build | `/progress` |
-| Mobile interaction safety (P0) | partial | — | Ei automatisoitu tässä paketissa; manuaali | kaikki polut |
+| Mobile interaction safety (P0) | partial | `useOverlayLayer.ts`, `FoodScreen.tsx` (sheet z≥120), `SwipePanels` touch-pan-x | `npm run build` | Ruoka-modali + swipe; täysi verify puhelimella |
 
 ## Huomio
 

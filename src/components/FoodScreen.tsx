@@ -1060,18 +1060,18 @@ export function FoodScreen() {
       {portalReady && sheetOpen
         ? createPortal(
             <div
-              className="fixed inset-0 z-[50] flex touch-manipulation flex-col justify-end"
+              className="fixed inset-0 z-[120] flex touch-manipulation flex-col justify-end"
               role="presentation"
             >
               <button
                 type="button"
                 tabIndex={-1}
                 aria-label={t("food.cancel")}
-                className="absolute inset-0 z-0 cursor-default border-0 bg-foreground/25 backdrop-blur-[2px] p-0"
+                className="absolute inset-0 z-0 cursor-default border-0 bg-foreground/30 backdrop-blur-[3px] p-0 [touch-action:manipulation]"
                 onClick={closeSheet}
               />
               <div
-                className="relative z-[60] mt-auto w-full max-h-[85dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto"
+                className="relative z-[130] mt-auto w-full max-h-[85dvh] overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="add-food-title"
