@@ -1,5 +1,7 @@
 # Tuote-audit (repo-tila — final pass)
 
+Yksityiskohtainen feature-taulukko (testipolut, mobiili, tiedostot): **[feature-audit.md](./feature-audit.md)**.
+
 Tilat: **DONE** valmis käyttöön · **PARTIAL** osin · **MISSING** ei toteutettu / ulkoinen riippuvuus.
 
 ## Core

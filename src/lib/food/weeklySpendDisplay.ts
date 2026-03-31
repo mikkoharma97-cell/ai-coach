@@ -31,10 +31,13 @@ export function weeklySpendFromStoreBaskets(
     low *= f;
     high *= f;
   }
-  const save = Math.max(0, high - low);
-  return {
-    lowEur: roundNice(low),
-    highEur: roundNice(high),
-    saveEur: Math.max(5, roundNice(save)),
-  };
+  /** Kovakatto: yhden hengen viikko-ostos (FI), ei nelinumeroisia näyttövirheitä */
+  let lowEur = roundNice(Math.min(low, high));
+  let highEur = roundNice(Math.max(low, high));
+  highEur = Math.min(highEur, 115);
+  lowEur = Math.min(lowEur, highEur);
+  lowEur = Math.max(28, lowEur);
+  const rawSave = highEur - lowEur;
+  const saveEur = Math.min(30, Math.max(5, roundNice(rawSave)));
+  return { lowEur, highEur, saveEur };
 }

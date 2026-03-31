@@ -1,8 +1,11 @@
 "use client";
 
 // TEMP: version marker for release validation, remove later
+/** Juokseva HÄRMÄ-numero — nosta yhdellä jokaisen viimeistelypassin jälkeen (3, 4, …). */
+export const HARMÄ_BUILD = 2;
 
 export function VersionBadge() {
+  const label = `HÄRMÄ${HARMÄ_BUILD}`;
   return (
     <div
       className="pointer-events-none select-none"
@@ -22,7 +25,7 @@ export function VersionBadge() {
         boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
       }}
     >
-      HÄRMÄ2
+      {label}
     </div>
   );
 }
