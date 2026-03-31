@@ -1,10 +1,15 @@
-# Feature audit — kokonaisuudet (HÄRMÄ-passi)
+# Feature audit — kokonaisuudet (HÄRMÄ3)
+
+**Versio:** näkyvä badge `HÄRMÄ3` (`VersionBadge` → `HARMÄ_BUILD`). Juokseva numero nousee jokaisen viimeistelypassin jälkeen.
 
 Tilat: **verified** = testattu / linjassa · **partial** = osin · **planned** = suunniteltu / future · **missing** = ei toteutettu.
 
 | Feature | Status | Tiedostot (pää) | Testipolku | Mobiili | Huomautukset |
 |---------|--------|-------------------|------------|---------|--------------|
-| **Onboarding** | verified | `src/app/start/StartFlow.tsx`, `src/lib/storage.ts` | `/start` → tallenna → `/app` | Kyllä | PreStartSalesWall ennen kyselyjä |
+| **Training Program Library** | verified | `src/lib/coachProgramCatalog.ts`, `src/types/programLibrary.ts`, `src/lib/trainingCategoryLibrary.ts` (liikekategoriat) | `/start` askeleet 9–10, `/plans` | Kyllä | `forcedPresetId` lukitsee presetin; kategoriajako erillisessä moduulissa |
+| **Nutrition Library** | verified | `src/lib/nutritionLibrary.ts`, `src/types/nutritionLibrary.ts` | `/start` askel 10 | Kyllä | `selectedNutritionLibraryId` + `nutritionBlueprintId` → `refinePresetBlueprints` kunnioittaa |
+| **Food Search Library** | verified | `src/types/foodLibrary.ts`, `src/lib/foodLibrary.ts`, `src/lib/food/foodSearchExtra.ts`, `FoodLibrarySearch` | `/food-library` | Kyllä | 70+ riviä (ydin + extra), haku + suodattimet |
+| **Onboarding** | verified | `src/app/start/StartFlow.tsx`, `src/lib/storage.ts` | `/start` → tallenna → `/app` | Kyllä | PreStartSalesWall; tavoite ensin → … → ohjelma + ruokarakenne |
 | **Profile engine** | partial | `src/lib/coach/profileNormalizer.ts`, `src/types/coach.ts`, `src/hooks/useClientProfile.ts` | Profiili → Today | Kyllä | Täysi “miksi tämä ohjelma” hajautettu |
 | **Training engine** | partial | `src/lib/training/generator.ts`, `src/lib/coach/programDecisionEngine.ts`, `src/lib/coach/trainingEngine.ts`, blueprints | `/workout` | Kyllä | Archetype + blueprint; Pro vs guided erot |
 | **Nutrition engine** | partial | `src/lib/nutrition*.ts`, `src/lib/mealEngine.ts`, `src/lib/adaptive.ts` | `/food` | Kyllä | Makrot, rakenne; shift-kerros `shiftAdaptation.ts` |
@@ -40,7 +45,7 @@ Tilat: **verified** = testattu / linjassa · **partial** = osin · **planned** =
 
 | Reitti | Rooli |
 |--------|--------|
-| `/home`, `/start`, `/app`, `/food`, `/workout`, `/progress`, `/review`, `/adjustments`, `/paywall` | Pääpolku |
+| `/home`, `/start`, `/app`, `/food`, `/workout`, `/progress`, `/review`, `/adjustments`, `/paywall`, `/plans`, `/food-library` | Pääpolku + kirjastot |
 | `/subscribe`, `/premium` | Paywall-alias |
 | `/plan`, `/preferences`, `/settings`, `/profile`, `/packages`, `/scan`, `/pro` | Tuki / profiili / Pro — ei yhdistetty tässä passissa (audit vain) |
 

@@ -26,7 +26,7 @@ import type {
   ProgramTrackId,
 } from "@/types/coach";
 import { coachTipsForExercise } from "@/lib/exerciseCoachTips";
-import { getLibraryCategoriesOrFallback } from "@/lib/programLibrary";
+import { getLibraryCategoriesOrFallback } from "@/lib/trainingCategoryLibrary";
 import {
   exerciseDisplayName,
   type Exercise,

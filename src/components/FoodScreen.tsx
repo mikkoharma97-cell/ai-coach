@@ -1044,7 +1044,14 @@ export function FoodScreen() {
           )}
         </section>
 
-        <CoachAppShortcuts compact omit={["/food"]} />
+        <CoachAppShortcuts
+          compact
+          omit={["/food"]}
+          extra={[
+            { href: "/food-library", labelKey: "foodLibrary.pageTitle" },
+            { href: "/plans", labelKey: "plans.title" },
+          ]}
+        />
 
         <p className="mt-8 text-center text-[10px] leading-relaxed text-muted-2">
           {t("food.footNote")}

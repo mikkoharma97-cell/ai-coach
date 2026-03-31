@@ -1,0 +1,288 @@
+/**
+ * Käyttäjän ohjelmakirjasto V1 — katalogi + suositus; moottori: forcedPresetId.
+ */
+import { resolveProgramPresetId } from "@/lib/programPresets";
+import type { ProgramLibraryEntry } from "@/types/programLibrary";
+import type { OnboardingAnswers } from "@/types/coach";
+
+export const PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
+  {
+    id: "fat_loss_rhythm_light",
+    nameFi: "Painonhallinnan kevyt rytmi",
+    nameEn: "Light fat-loss rhythm",
+    goal: "lose_weight",
+    trainingVenue: "any",
+    weeklyDays: { min: 2, max: 4 },
+    shortDescriptionFi: "Hallittu aloitus, ei äärimakeutuksia.",
+    shortDescriptionEn: "Controlled start without extremes.",
+    whyItFitsFi: "Kun haluat pudottaa painetta ilman jatkuvaa nälkää.",
+    whyItFitsEn: "When you want weight down without constant hunger.",
+    styleTag: "rytmi",
+    presetId: "fat_loss_rhythm",
+    linkedPackageId: "light_cut",
+    programTrackId: "light_fat_loss",
+  },
+  {
+    id: "fat_loss_busy",
+    nameFi: "Kiireisen kevennys",
+    nameEn: "Busy-day fat loss",
+    goal: "lose_weight",
+    trainingVenue: "any",
+    weeklyDays: { min: 2, max: 4 },
+    shortDescriptionFi: "Vähän treenipäiviä, selkeä ruokarytmi.",
+    shortDescriptionEn: "Fewer training days, clear food rhythm.",
+    whyItFitsFi: "Kun aikataulu ei anna periksi.",
+    whyItFitsEn: "When your schedule does not give in.",
+    styleTag: "kiire",
+    presetId: "busy_life_reset",
+    linkedPackageId: "light_cut",
+    programTrackId: "daily_rhythm",
+  },
+  {
+    id: "fat_loss_gym_4",
+    nameFi: "Salilla 4 pv — kevennys",
+    nameEn: "Gym 4x — lean phase",
+    goal: "lose_weight",
+    trainingVenue: "gym",
+    weeklyDays: { min: 3, max: 5 },
+    shortDescriptionFi: "Enemmän volyymia salilla, ruoka linjassa.",
+    shortDescriptionEn: "More gym volume, food aligned.",
+    whyItFitsFi: "Kun treenaat salilla useamman kerran viikossa.",
+    whyItFitsEn: "When you train at the gym several times a week.",
+    styleTag: "sali",
+    presetId: "fat_loss_rhythm",
+    linkedPackageId: "light_cut",
+    programTrackId: "light_fat_loss",
+  },
+  {
+    id: "fat_loss_home",
+    nameFi: "Kotona — keveys ja johdonmukaisuus",
+    nameEn: "Home — light and consistent",
+    goal: "lose_weight",
+    trainingVenue: "home",
+    weeklyDays: { min: 2, max: 4 },
+    shortDescriptionFi: "Liikettä kotona, ruoka yksinkertaisesti.",
+    shortDescriptionEn: "Movement at home, food kept simple.",
+    whyItFitsFi: "Kun salille ei ole matkaa tai aikaa.",
+    whyItFitsEn: "When the gym is not an option.",
+    styleTag: "koti",
+    presetId: "home_consistency",
+    linkedPackageId: "steady_start",
+    programTrackId: "daily_rhythm",
+  },
+  {
+    id: "muscle_growth_3day",
+    nameFi: "Lihasta 3 treenipäivällä",
+    nameEn: "Muscle on 3 days",
+    goal: "build_muscle",
+    trainingVenue: "any",
+    weeklyDays: { min: 3, max: 3 },
+    shortDescriptionFi: "Tiivis kokonaisuus, palautuminen mukana.",
+    shortDescriptionEn: "Tight package, recovery included.",
+    whyItFitsFi: "Kun kolme kovaa päivää riittää.",
+    whyItFitsEn: "When three hard days are enough.",
+    styleTag: "3 pv",
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "muscle_rhythm",
+    programTrackId: "muscle_growth",
+  },
+  {
+    id: "muscle_growth_4day",
+    nameFi: "Lihaskasvu 4 päivää",
+    nameEn: "Muscle growth 4 days",
+    goal: "build_muscle",
+    trainingVenue: "any",
+    weeklyDays: { min: 4, max: 5 },
+    shortDescriptionFi: "Klassinen salirytmi kasvuun.",
+    shortDescriptionEn: "Classic gym rhythm for growth.",
+    whyItFitsFi: "Kun nostat neljästi viikossa.",
+    whyItFitsEn: "When you lift four times a week.",
+    styleTag: "4 pv",
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "muscle_rhythm",
+    programTrackId: "muscle_growth",
+  },
+  {
+    id: "muscle_growth_home",
+    nameFi: "Kotona kasvuun",
+    nameEn: "Home hypertrophy",
+    goal: "build_muscle",
+    trainingVenue: "home",
+    weeklyDays: { min: 3, max: 4 },
+    shortDescriptionFi: "Painot ja kehonpaino, ei monimutkaista.",
+    shortDescriptionEn: "Weights and bodyweight, kept simple.",
+    whyItFitsFi: "Kun treeni tapahtuu kotona.",
+    whyItFitsEn: "When training happens at home.",
+    styleTag: "koti",
+    presetId: "home_consistency",
+    linkedPackageId: "muscle_rhythm",
+    programTrackId: "muscle_growth",
+  },
+  {
+    id: "hypertrophy_gym_split",
+    nameFi: "Salijako — volyymi",
+    nameEn: "Gym split — volume",
+    goal: "build_muscle",
+    trainingVenue: "gym",
+    weeklyDays: { min: 4, max: 6 },
+    shortDescriptionFi: "Enemmän päiviä, enemmän tilaa volyymille.",
+    shortDescriptionEn: "More days, more room for volume.",
+    whyItFitsFi: "Kun olet valmis nostamaan usein.",
+    whyItFitsEn: "When you are ready to train often.",
+    styleTag: "split",
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "performance_block",
+    programTrackId: "muscle_growth",
+  },
+  {
+    id: "beginner_foundation",
+    nameFi: "Aloittelijan perusta",
+    nameEn: "Beginner foundation",
+    goal: "improve_fitness",
+    trainingVenue: "any",
+    weeklyDays: { min: 2, max: 4 },
+    shortDescriptionFi: "Tekniikka ja rutiini ensin.",
+    shortDescriptionEn: "Technique and routine first.",
+    whyItFitsFi: "Kun rakennat pohjaa rauhassa.",
+    whyItFitsEn: "When you build the base calmly.",
+    styleTag: "aloitus",
+    presetId: "beginner_foundation",
+    linkedPackageId: "steady_start",
+    programTrackId: "daily_rhythm",
+  },
+  {
+    id: "comeback_restart",
+    nameFi: "Paluu ja uusi alku",
+    nameEn: "Comeback restart",
+    goal: "improve_fitness",
+    trainingVenue: "any",
+    weeklyDays: { min: 2, max: 4 },
+    shortDescriptionFi: "Kevyt paluu ilman häpeää.",
+    shortDescriptionEn: "A light return without shame.",
+    whyItFitsFi: "Kun tauko on venynyt.",
+    whyItFitsEn: "When the break has been long.",
+    styleTag: "paluu",
+    presetId: "comeback_restart",
+    linkedPackageId: "steady_start",
+    programTrackId: "returning",
+  },
+  {
+    id: "busy_life_reset",
+    nameFi: "Kiireisen arjen nollaus",
+    nameEn: "Busy life reset",
+    goal: "improve_fitness",
+    trainingVenue: "any",
+    weeklyDays: { min: 2, max: 3 },
+    shortDescriptionFi: "Vähän mutta säännöllisesti.",
+    shortDescriptionEn: "Little but consistent.",
+    whyItFitsFi: "Kun kalenteri on täynnä.",
+    whyItFitsEn: "When the calendar is full.",
+    styleTag: "kiire",
+    presetId: "busy_life_reset",
+    linkedPackageId: "steady_start",
+    programTrackId: "daily_rhythm",
+  },
+  {
+    id: "home_consistency",
+    nameFi: "Kotin johdonmukaisuus",
+    nameEn: "Home consistency",
+    goal: "improve_fitness",
+    trainingVenue: "home",
+    weeklyDays: { min: 3, max: 5 },
+    shortDescriptionFi: "Liikettä kotona, viikko hallittuna.",
+    shortDescriptionEn: "Movement at home, week under control.",
+    whyItFitsFi: "Kun koti on sun sali.",
+    whyItFitsEn: "When home is your gym.",
+    styleTag: "koti",
+    presetId: "home_consistency",
+    linkedPackageId: "steady_start",
+    programTrackId: "daily_rhythm",
+  },
+  {
+    id: "performance_block",
+    nameFi: "Suoritusblokki",
+    nameEn: "Performance block",
+    goal: "improve_fitness",
+    trainingVenue: "gym",
+    weeklyDays: { min: 4, max: 6 },
+    shortDescriptionFi: "Kuormaa ja rakennetta kokeneelle.",
+    shortDescriptionEn: "Load and structure for the experienced.",
+    whyItFitsFi: "Kun haet kovaa viikkorytmiä.",
+    whyItFitsEn: "When you want a hard weekly rhythm.",
+    styleTag: "suoritus",
+    presetId: "performance_block",
+    linkedPackageId: "performance_block",
+    programTrackId: "performance",
+  },
+  {
+    id: "pro_control",
+    nameFi: "Pro-ohjaus",
+    nameEn: "Pro control",
+    goal: "improve_fitness",
+    trainingVenue: "any",
+    weeklyDays: { min: 4, max: 6 },
+    shortDescriptionFi: "Tiukka linja ja oma runko.",
+    shortDescriptionEn: "Tight line and your own framework.",
+    whyItFitsFi: "Pro-tilassa: täysi säätö.",
+    whyItFitsEn: "In Pro mode: full control.",
+    styleTag: "pro",
+    presetId: "pro_control",
+    linkedPackageId: "performance_block",
+    programTrackId: "performance",
+    requiresProMode: true,
+  },
+];
+
+export function getProgramLibraryEntry(id: string): ProgramLibraryEntry | undefined {
+  return PROGRAM_LIBRARY.find((e) => e.id === id);
+}
+
+function entryVisible(e: ProgramLibraryEntry, profile: OnboardingAnswers): boolean {
+  if (e.requiresProMode && profile.mode !== "pro") return false;
+  if (e.goal !== profile.goal) return false;
+  const d = profile.daysPerWeek;
+  if (d < e.weeklyDays.min || d > e.weeklyDays.max) return false;
+  const v = profile.trainingVenue ?? "mixed";
+  if (e.trainingVenue !== "any") {
+    if (e.trainingVenue === "gym" && v !== "gym" && v !== "mixed") return false;
+    if (e.trainingVenue === "home" && v !== "home" && v !== "mixed") return false;
+  }
+  return true;
+}
+
+export function listProgramsForProfile(profile: OnboardingAnswers): ProgramLibraryEntry[] {
+  return PROGRAM_LIBRARY.filter((e) => entryVisible(e, profile));
+}
+
+export function recommendProgramForProfile(
+  profile: OnboardingAnswers,
+): ProgramLibraryEntry {
+  const auto = resolveProgramPresetId({ ...profile, forcedPresetId: undefined });
+  const pool = listProgramsForProfile(profile);
+  const hit = pool.find((e) => e.presetId === auto);
+  if (hit) return hit;
+  return pool[0] ?? PROGRAM_LIBRARY[0];
+}
+
+export function alternativeProgramsForProfile(
+  profile: OnboardingAnswers,
+  recommended: ProgramLibraryEntry,
+  limit = 5,
+): ProgramLibraryEntry[] {
+  const pool = listProgramsForProfile(profile).filter((e) => e.id !== recommended.id);
+  return pool.slice(0, limit);
+}
+
+export function applyProgramLibraryEntry(
+  entryId: string,
+  _base: OnboardingAnswers,
+): Partial<OnboardingAnswers> {
+  const entry = getProgramLibraryEntry(entryId);
+  if (!entry) return {};
+  return {
+    forcedPresetId: entry.presetId,
+    selectedProgramLibraryId: entry.id,
+    selectedPackageId: entry.linkedPackageId,
+    programTrackId: entry.programTrackId,
+  };
+}

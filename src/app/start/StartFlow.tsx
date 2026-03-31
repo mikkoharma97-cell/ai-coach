@@ -3,13 +3,14 @@
 import { PreStartSalesWall } from "@/components/start/PreStartSalesWall";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { OnboardingProgress } from "@/components/onboarding/OnboardingProgress";
-import { ProgramPackageCards } from "@/components/packages/ProgramPackageCards";
+import { NutritionStructurePicker } from "@/components/nutrition/NutritionStructurePicker";
+import { ProgramPicker } from "@/components/programs/ProgramPicker";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
-import { applyPackageToAnswers } from "@/lib/programPackages";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
+import { applyNutritionLibraryEntry } from "@/lib/nutritionLibrary";
+import { applyProgramLibraryEntry } from "@/lib/coachProgramCatalog";
 import { emptyAnswers } from "@/lib/plan";
-import { PROGRAM_TRACKS } from "@/lib/programTracks";
 import { trackEvent } from "@/lib/analytics";
 import { flowLog } from "@/lib/flowLog";
 import { loadProfile, saveProfile } from "@/lib/storage";
@@ -18,7 +19,6 @@ import type {
   DaysPerWeek,
   LastBestShape,
   OnboardingAnswers,
-  ProgramTrackId,
   RecentTrainingFreq,
   TrainingVenue,
 } from "@/types/coach";
@@ -360,61 +360,62 @@ export function StartFlow() {
           ) : null}
 
           {step === 1 ? (
-            <section aria-labelledby="q-package">
+            <section aria-labelledby="q-goal">
               <OnboardingProgress current={1} total={QUESTION_TOTAL} />
               <h2
-                id="q-package"
+                id="q-goal"
                 className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
               >
-                {t("onboarding.qPackage")}
+                {t("onboarding.qGoal")}
               </h2>
-              <p className="mt-3 text-[14px] leading-relaxed text-muted">
-                {t("onboarding.packageHint")}
-              </p>
-              <div className="mt-8">
-                <ProgramPackageCards
-                  selectedId={answers.selectedPackageId}
-                  onSelect={(id) => {
-                    const patch = applyPackageToAnswers(id);
-                    setAnswers((a) => {
-                      const next = { ...a, ...patch };
-                      try {
-                        saveProfile(next);
-                      } catch (e) {
-                        console.warn("[coach] package step saveProfile failed", e);
-                      }
-                      return next;
-                    });
-                    setStep(2);
-                    router.replace("/start?step=2", { scroll: false });
-                  }}
-                />
+              <div className="mt-8 flex flex-col gap-2.5">
+                {(
+                  [
+                    { value: "lose_weight" as const, labelKey: "onboarding.goalLose" as const },
+                    { value: "build_muscle" as const, labelKey: "onboarding.goalMuscle" as const },
+                    {
+                      value: "improve_fitness" as const,
+                      labelKey: "onboarding.goalFitness" as const,
+                    },
+                  ] as const
+                ).map((o) => (
+                  <PickButton
+                    key={o.value}
+                    selected={answers.goal === o.value}
+                    onClick={() => patchAndNext({ goal: o.value })}
+                  >
+                    {t(o.labelKey)}
+                  </PickButton>
+                ))}
               </div>
             </section>
           ) : null}
 
           {step === 2 ? (
-            <section aria-labelledby="q-track">
+            <section aria-labelledby="q-level">
               <OnboardingProgress current={2} total={QUESTION_TOTAL} />
               <h2
-                id="q-track"
+                id="q-level"
                 className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
               >
-                {t("onboarding.qProgramTrack")}
+                {t("onboarding.qLevel")}
               </h2>
-              <p className="mt-3 text-[14px] leading-relaxed text-muted">
-                {t("onboarding.programTrackHint")}
-              </p>
               <div className="mt-8 flex flex-col gap-2.5">
-                {PROGRAM_TRACKS.map((tr) => (
+                {(
+                  [
+                    { value: "beginner" as const, labelKey: "onboarding.levelBeginner" as const },
+                    { value: "intermediate" as const, labelKey: "onboarding.levelMid" as const },
+                    { value: "advanced" as const, labelKey: "onboarding.levelAdvanced" as const },
+                  ] as const
+                ).map((o) => (
                   <PickButton
-                    key={tr.id}
-                    selected={answers.programTrackId === tr.id}
+                    key={o.value}
+                    selected={answers.level === o.value}
                     onClick={() =>
-                      patchAndNext({ programTrackId: tr.id as ProgramTrackId })
+                      patchAndNext({ level: o.value, trainingLevel: o.value })
                     }
                   >
-                    {t(`programTrack.${tr.id}` as const)}
+                    {t(o.labelKey)}
                   </PickButton>
                 ))}
               </div>
@@ -422,23 +423,28 @@ export function StartFlow() {
           ) : null}
 
           {step === 3 ? (
-            <section aria-labelledby="q-last-shape">
+            <section aria-labelledby="q-days">
               <OnboardingProgress current={3} total={QUESTION_TOTAL} />
               <h2
-                id="q-last-shape"
+                id="q-days"
                 className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
               >
-                {t("onboarding.qLastBestShape")}
+                {t("onboarding.qDays")}
               </h2>
-              <div className="mt-8 flex flex-col gap-2.5">
-                {LAST_SHAPE_OPTS.map((o) => (
-                  <PickButton
+              <div className="mt-8 grid grid-cols-3 gap-2.5 sm:grid-cols-6">
+                {dayOptions.map((o) => (
+                  <button
                     key={o.value}
-                    selected={answers.lastBestShape === o.value}
-                    onClick={() => patchAndNext({ lastBestShape: o.value })}
+                    type="button"
+                    onClick={() => patchAndNext({ daysPerWeek: o.value })}
+                    className={`flex min-h-[52px] items-center justify-center rounded-[var(--radius-lg)] border text-[17px] font-semibold tabular-nums transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 active:scale-[0.98] ${
+                      answers.daysPerWeek === o.value
+                        ? "border-accent bg-accent-soft text-accent"
+                        : "border-border/90 bg-card/80 text-foreground hover:border-accent/35"
+                    }`}
                   >
-                    {t(o.labelKey)}
-                  </PickButton>
+                    {o.label}
+                  </button>
                 ))}
               </div>
             </section>
@@ -516,29 +522,20 @@ export function StartFlow() {
           ) : null}
 
           {step === 7 ? (
-            <section aria-labelledby="q-goal">
+            <section aria-labelledby="q-last-shape">
               <OnboardingProgress current={7} total={QUESTION_TOTAL} />
               <h2
-                id="q-goal"
+                id="q-last-shape"
                 className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
               >
-                {t("onboarding.qGoal")}
+                {t("onboarding.qLastBestShape")}
               </h2>
               <div className="mt-8 flex flex-col gap-2.5">
-                {(
-                  [
-                    { value: "lose_weight" as const, labelKey: "onboarding.goalLose" as const },
-                    { value: "build_muscle" as const, labelKey: "onboarding.goalMuscle" as const },
-                    {
-                      value: "improve_fitness" as const,
-                      labelKey: "onboarding.goalFitness" as const,
-                    },
-                  ] as const
-                ).map((o) => (
+                {LAST_SHAPE_OPTS.map((o) => (
                   <PickButton
                     key={o.value}
-                    selected={answers.goal === o.value}
-                    onClick={() => patchAndNext({ goal: o.value })}
+                    selected={answers.lastBestShape === o.value}
+                    onClick={() => patchAndNext({ lastBestShape: o.value })}
                   >
                     {t(o.labelKey)}
                   </PickButton>
@@ -548,67 +545,8 @@ export function StartFlow() {
           ) : null}
 
           {step === 8 ? (
-            <section aria-labelledby="q-level">
-              <OnboardingProgress current={8} total={QUESTION_TOTAL} />
-              <h2
-                id="q-level"
-                className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
-              >
-                {t("onboarding.qLevel")}
-              </h2>
-              <div className="mt-8 flex flex-col gap-2.5">
-                {(
-                  [
-                    { value: "beginner" as const, labelKey: "onboarding.levelBeginner" as const },
-                    { value: "intermediate" as const, labelKey: "onboarding.levelMid" as const },
-                    { value: "advanced" as const, labelKey: "onboarding.levelAdvanced" as const },
-                  ] as const
-                ).map((o) => (
-                  <PickButton
-                    key={o.value}
-                    selected={answers.level === o.value}
-                    onClick={() =>
-                      patchAndNext({ level: o.value, trainingLevel: o.value })
-                    }
-                  >
-                    {t(o.labelKey)}
-                  </PickButton>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {step === 9 ? (
-            <section aria-labelledby="q-days">
-              <OnboardingProgress current={9} total={QUESTION_TOTAL} />
-              <h2
-                id="q-days"
-                className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
-              >
-                {t("onboarding.qDays")}
-              </h2>
-              <div className="mt-8 grid grid-cols-3 gap-2.5 sm:grid-cols-6">
-                {dayOptions.map((o) => (
-                  <button
-                    key={o.value}
-                    type="button"
-                    onClick={() => patchAndNext({ daysPerWeek: o.value })}
-                    className={`flex min-h-[52px] items-center justify-center rounded-[var(--radius-lg)] border text-[17px] font-semibold tabular-nums transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 active:scale-[0.98] ${
-                      answers.daysPerWeek === o.value
-                        ? "border-accent bg-accent-soft text-accent"
-                        : "border-border/90 bg-card/80 text-foreground hover:border-accent/35"
-                    }`}
-                  >
-                    {o.label}
-                  </button>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {step === 10 ? (
             <section aria-labelledby="q-eating">
-              <OnboardingProgress current={10} total={QUESTION_TOTAL} />
+              <OnboardingProgress current={8} total={QUESTION_TOTAL} />
               <h2
                 id="q-eating"
                 className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
@@ -631,6 +569,70 @@ export function StartFlow() {
                     {t(o.labelKey)}
                   </PickButton>
                 ))}
+              </div>
+            </section>
+          ) : null}
+
+          {step === 9 ? (
+            <section aria-labelledby="q-program-library">
+              <OnboardingProgress current={9} total={QUESTION_TOTAL} />
+              <h2
+                id="q-program-library"
+                className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
+              >
+                {t("onboarding.qProgramLibrary")}
+              </h2>
+              <p className="mt-3 text-[14px] leading-relaxed text-muted">
+                {t("onboarding.programLibraryHint")}
+              </p>
+              <div className="mt-8">
+                <ProgramPicker
+                  profile={answers}
+                  onConfirm={(programLibraryId) => {
+                    const patch = applyProgramLibraryEntry(programLibraryId, answers);
+                    const next = { ...answers, ...patch };
+                    setAnswers(next);
+                    try {
+                      saveProfile(next);
+                    } catch (e) {
+                      console.warn("[coach] program library save failed", e);
+                    }
+                    setStep(10);
+                    router.replace("/start?step=10", { scroll: false });
+                  }}
+                />
+              </div>
+            </section>
+          ) : null}
+
+          {step === 10 ? (
+            <section aria-labelledby="q-nutrition-library">
+              <OnboardingProgress current={10} total={QUESTION_TOTAL} />
+              <h2
+                id="q-nutrition-library"
+                className="mt-10 text-[1.375rem] font-semibold leading-[1.2] tracking-[-0.03em] text-foreground"
+              >
+                {t("onboarding.qNutritionLibrary")}
+              </h2>
+              <p className="mt-3 text-[14px] leading-relaxed text-muted">
+                {t("onboarding.nutritionLibraryHint")}
+              </p>
+              <div className="mt-8">
+                <NutritionStructurePicker
+                  profile={answers}
+                  onConfirm={(nutritionLibraryId) => {
+                    const patch = applyNutritionLibraryEntry(nutritionLibraryId);
+                    const next = { ...answers, ...patch };
+                    setAnswers(next);
+                    try {
+                      saveProfile(next);
+                    } catch (e) {
+                      console.warn("[coach] nutrition library save failed", e);
+                    }
+                    setStep(11);
+                    router.replace("/start?step=11", { scroll: false });
+                  }}
+                />
               </div>
             </section>
           ) : null}

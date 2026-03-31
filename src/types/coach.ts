@@ -139,6 +139,15 @@ export interface OnboardingAnswers {
   uiLocale?: UiLocale;
   /** Ready-made program package — drives defaults + engine modifiers */
   selectedPackageId?: ProgramPackageId;
+  /**
+   * Ohjelmakirjasto: lukittu preset — `resolveProgramPresetId` palauttaa tämän.
+   * Tyhjä = automaattinen päätös profiilista.
+   */
+  forcedPresetId?: string;
+  /** Ohjelmakirjaston valinnan id (näyttö / audit) */
+  selectedProgramLibraryId?: string;
+  /** Ruokarakenteen kirjaston valinta */
+  selectedNutritionLibraryId?: string;
   /** Valinnainen treenirunko; tyhjä = paketti + Pro-tilan oletus */
   programBlueprintId?: ProgramBlueprintId;
   /** Valinnainen ruokarunko; tyhjä = paketti + Pro-tilan oletus */

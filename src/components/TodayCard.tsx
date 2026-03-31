@@ -79,6 +79,8 @@ type Props = {
   trialBanner?: string | null;
   /** Kun asetettu, kokeilurivi on linkki esim. /paywall */
   trialBannerHref?: string;
+  /** Kirjastosta valitut nimet (ohjelma + ruoka) */
+  librarySelectionLine?: string | null;
   /** Lyhyt: rungon nimi (esim. “Tämän profiilin runko · …”) */
   programPresetLine?: string | null;
   /** Yksi lause: miksi tämä viikko vastaa profiilia */
@@ -136,6 +138,7 @@ export function TodayCard({
   rebalanceDailyKcal,
   trialBanner,
   trialBannerHref,
+  librarySelectionLine,
   programPresetLine,
   programRationaleLine,
   engineWeekLine,
@@ -251,9 +254,18 @@ export function TodayCard({
           )
         ) : null}
 
+        {librarySelectionLine ? (
+          <p
+            className="mt-3 max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left"
+            role="status"
+          >
+            {librarySelectionLine}
+          </p>
+        ) : null}
+
         {programPresetLine ? (
           <p
-            className="mt-3 max-w-[26rem] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-accent/90 sm:text-left"
+            className={`max-w-[26rem] text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-accent/90 sm:text-left ${librarySelectionLine ? "mt-2" : "mt-3"}`}
             role="status"
           >
             {programPresetLine}
@@ -262,7 +274,7 @@ export function TodayCard({
 
         {programRationaleLine ? (
           <p
-            className={`max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left ${programPresetLine ? "mt-2" : "mt-3"}`}
+            className={`max-w-[26rem] text-center text-[12px] font-medium leading-snug text-muted sm:text-left ${programPresetLine || librarySelectionLine ? "mt-2" : "mt-3"}`}
             role="status"
           >
             {programRationaleLine}

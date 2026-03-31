@@ -2,7 +2,7 @@
 
 // TEMP: version marker for release validation, remove later
 /** Juokseva HÄRMÄ-numero — nosta yhdellä jokaisen viimeistelypassin jälkeen (3, 4, …). */
-export const HARMÄ_BUILD = 2;
+export const HARMÄ_BUILD = 3;
 
 export function VersionBadge() {
   const label = `HÄRMÄ${HARMÄ_BUILD}`;

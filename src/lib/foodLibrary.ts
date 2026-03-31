@@ -1,18 +1,13 @@
 /**
  * Perusruoka-idea — kcal + makrot (appin oma data).
+ * Hakukirjasto: valinnaiset kentät suodattimille.
  */
-export type FoodLibraryItem = {
-  id: string;
-  nameFi: string;
-  nameEn: string;
-  kcal: number;
-  proteinG: number;
-  carbsG: number;
-  fatG: number;
-  tags: string[];
-};
+import { FOOD_SEARCH_EXTRA } from "@/lib/food/foodSearchExtra";
+import type { FoodLibraryItem } from "@/types/foodLibrary";
 
-export const FOOD_LIBRARY: FoodLibraryItem[] = [
+export type { FoodLibraryItem } from "@/types/foodLibrary";
+
+const FOOD_LIBRARY_CORE: FoodLibraryItem[] = [
   { id: "fl_chicken_rice", nameFi: "Kana + riisi", nameEn: "Chicken + rice", kcal: 520, proteinG: 45, carbsG: 55, fatG: 12, tags: ["meal"] },
   { id: "fl_beef_potato", nameFi: "Jauheliha + peruna", nameEn: "Ground beef + potato", kcal: 580, proteinG: 38, carbsG: 45, fatG: 24, tags: ["meal"] },
   { id: "fl_salmon_rice", nameFi: "Lohi + riisi", nameEn: "Salmon + rice", kcal: 540, proteinG: 42, carbsG: 48, fatG: 18, tags: ["meal"] },
@@ -39,6 +34,12 @@ export const FOOD_LIBRARY: FoodLibraryItem[] = [
   { id: "fl_minced_pasta", nameFi: "Jauheliha + täysjyväpasta", nameEn: "Minced meat + wholewheat pasta", kcal: 590, proteinG: 40, carbsG: 62, fatG: 20, tags: ["meal"] },
   { id: "fl_tofu_veg", nameFi: "Tofu + nuudeli + kasvikset", nameEn: "Tofu + noodles + vegetables", kcal: 480, proteinG: 28, carbsG: 58, fatG: 16, tags: ["meal"] },
   { id: "fl_halibut_potato", nameFi: "Kampela + uunisperuna", nameEn: "Halibut + oven potato", kcal: 510, proteinG: 40, carbsG: 48, fatG: 16, tags: ["meal"] },
+];
+
+/** Ydin + laajennettu haku (60+ riviä). */
+export const FOOD_LIBRARY: FoodLibraryItem[] = [
+  ...FOOD_LIBRARY_CORE,
+  ...FOOD_SEARCH_EXTRA,
 ];
 
 export function foodLibrarySample(count = 8): FoodLibraryItem[] {

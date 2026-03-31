@@ -191,6 +191,12 @@ function isComebackSignal(a: OnboardingAnswers): boolean {
 export function resolveProgramPresetId(
   profile: OnboardingAnswers,
 ): ProgramPresetId {
+  if (
+    profile.forcedPresetId &&
+    profile.forcedPresetId in PRESETS
+  ) {
+    return profile.forcedPresetId as ProgramPresetId;
+  }
   if (profile.mode === "pro") return "pro_control";
 
   const scheduleRaw = inferLifeSchedule(profile);
@@ -355,6 +361,10 @@ export function refinePresetBlueprints(
 
   if (social === "often" && nutritionBlueprintId !== "event_balance") {
     nutritionBlueprintId = "event_balance";
+  }
+
+  if (profile.selectedNutritionLibraryId && profile.nutritionBlueprintId) {
+    nutritionBlueprintId = profile.nutritionBlueprintId;
   }
 
   return {

@@ -1452,6 +1452,22 @@ export const fi = {
   "onboarding.buildingPromise":
     "Et tarvitse uutta ohjelmaa joka viikko — tarvitset ohjauksen joka kehittyy mukana. Tänään-näkymä aukeaa.",
   "onboarding.qGoal": "Päämäärä",
+  "onboarding.qProgramLibrary": "Treeniohjelma",
+  "onboarding.programLibraryHint":
+    "Suositus perustuu tavoitteeseen ja vastauksiisi. Voit vaihtaa — tämä lukitaan eteenpäin.",
+  "onboarding.qNutritionLibrary": "Ruokarakenne",
+  "onboarding.nutritionLibraryHint":
+    "Ateriarytmi ja blueprint. Voit säätää myöhemmin Asetuksista.",
+  "nutritionLibrary.alternatives": "Muut ruokarytmit",
+  "plans.title": "Ohjelmat",
+  "plans.browseHint": "Suodata tavoitteen ja paikan mukaan.",
+  "foodLibrary.pageTitle": "Ruokakirjasto",
+  "foodLibrary.searchPlaceholder": "Hae nimellä tai tagilla",
+  "programChange.confirmTitle": "Vaihdetaanko ohjelma?",
+  "programChange.confirmBody":
+    "Uusi ohjelma koskee tästä eteenpäin — tämä viikko voi päättyä eri linjaan.",
+  "nutritionChange.confirmTitle": "Vaihdetaanko ruokarakenne?",
+  "nutritionChange.confirmBody": "Rakenne päivittyy heti päivän ohjeeseen.",
   "onboarding.qLevel": "Lähtötaso",
   "onboarding.qDays": "Treenipäiviä / viikko",
   "onboarding.qEating": "Syöminen viime aikoina",
@@ -3413,6 +3429,22 @@ export const en: { [K in MessageKey]: string } = {
   "onboarding.buildingPromise":
     "You don’t need a new program every week — you need guidance that evolves with you. Opening Today.",
   "onboarding.qGoal": "Primary goal",
+  "onboarding.qProgramLibrary": "Training program",
+  "onboarding.programLibraryHint":
+    "Recommendation is based on your goal and answers. You can switch — it locks in going forward.",
+  "onboarding.qNutritionLibrary": "Meal structure",
+  "onboarding.nutritionLibraryHint":
+    "Meal rhythm and blueprint. You can adjust later in Settings.",
+  "nutritionLibrary.alternatives": "Other meal rhythms",
+  "plans.title": "Programs",
+  "plans.browseHint": "Filter by goal and venue.",
+  "foodLibrary.pageTitle": "Food library",
+  "foodLibrary.searchPlaceholder": "Search by name or tag",
+  "programChange.confirmTitle": "Switch program?",
+  "programChange.confirmBody":
+    "The new program applies from here on — this week may finish on a different line.",
+  "nutritionChange.confirmTitle": "Switch meal structure?",
+  "nutritionChange.confirmBody": "Structure updates in today’s guidance immediately.",
   "onboarding.qLevel": "Starting level",
   "onboarding.qDays": "Training days / week",
   "onboarding.qEating": "Eating lately",

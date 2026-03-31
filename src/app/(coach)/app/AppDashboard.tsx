@@ -36,6 +36,8 @@ import { computeStreakSummary } from "@/lib/streaks";
 import { trackEvent } from "@/lib/analytics";
 import { todayCoachVoiceKey } from "@/lib/coachPresenceCopy";
 import { resolveProgramFromProfile } from "@/lib/profileProgramResolver";
+import { getProgramLibraryEntry } from "@/lib/coachProgramCatalog";
+import { getNutritionLibraryEntry } from "@/lib/nutritionLibrary";
 import { getProgramPackage, normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
@@ -291,6 +293,25 @@ export function AppDashboard() {
     };
   }, [normalizedProfile, t]);
 
+  const librarySelectionLine = useMemo(() => {
+    if (!normalizedProfile) return null;
+    const pl = normalizedProfile.selectedProgramLibraryId
+      ? getProgramLibraryEntry(normalizedProfile.selectedProgramLibraryId)
+      : null;
+    const nl = normalizedProfile.selectedNutritionLibraryId
+      ? getNutritionLibraryEntry(normalizedProfile.selectedNutritionLibraryId)
+      : null;
+    const fi = locale === "fi";
+    const parts: string[] = [];
+    if (pl) {
+      parts.push(`${fi ? "Ohjelma" : "Program"}: ${fi ? pl.nameFi : pl.nameEn}`);
+    }
+    if (nl) {
+      parts.push(`${fi ? "Ruoka" : "Food"}: ${fi ? nl.nameFi : nl.nameEn}`);
+    }
+    return parts.length ? parts.join(" · ") : null;
+  }, [normalizedProfile, locale]);
+
   const engineWeekLine = useMemo(() => {
     if (!features.showCoachLines || !coachEngine) return null;
     return t(coachEngine.adaptation.headlineKey);
@@ -542,6 +563,7 @@ export function AppDashboard() {
             }
             trialBanner={trialBanner}
             trialBannerHref={trialBanner ? "/paywall" : undefined}
+            librarySelectionLine={librarySelectionLine}
             programPresetLine={programPresetLine}
             programRationaleLine={programRationaleLine}
             engineWeekLine={engineWeekLine}
