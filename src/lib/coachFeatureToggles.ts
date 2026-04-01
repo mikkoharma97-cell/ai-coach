@@ -10,10 +10,19 @@ export function getCoachFeatureToggles(
   if (!profile) {
     return { ...DEFAULT_COACH_FEATURE_TOGGLES };
   }
-  return {
+  const merged: CoachFeatureToggles = {
     ...DEFAULT_COACH_FEATURE_TOGGLES,
     ...profile.coachFeatureToggles,
   };
+  /** Pro: vähemmän ohjeistusta — vain oleellinen data pysyy (treeni/ruoka/progressio). */
+  if (profile.mode === "pro") {
+    return {
+      ...merged,
+      showHelpVideos: false,
+      showCoachLines: false,
+    };
+  }
+  return merged;
 }
 
 export function mergeCoachFeatureToggles(

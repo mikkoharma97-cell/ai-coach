@@ -43,6 +43,8 @@ export interface MealPreferences {
 }
 
 export interface MealOption {
+  /** `MealTemplate.id` — stable override / korvaus */
+  templateId?: string;
   name: string;
   calories: number;
   protein: number;
@@ -233,6 +235,7 @@ export function adjustMealToUser(
     to: locale === "fi" ? s.toFi : s.toEn,
   }));
   return {
+    templateId: tmpl.id,
     name,
     calories: kcal,
     protein: proteinG,

@@ -463,7 +463,7 @@ body {
   }
 
   .coach-page {
-    @apply pt-4 pb-8 sm:pb-10;
+    @apply pt-6 pb-12 sm:pb-14;
   }
 
   /* Mobiili: fokus ei jää näppäimistön / navin alle */

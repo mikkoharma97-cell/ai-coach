@@ -243,29 +243,36 @@ export function WorkoutSession() {
     generated.exercises.length === 0;
 
   if (isRest) {
+    const proMode = profile.mode === "pro";
     return (
       <main className="coach-page pb-10">
         <div className="mx-auto max-w-[var(--container-phone)] px-5 pt-8">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2">
             {t("workout.eyebrow")}
           </p>
-          <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
-            {t("brand.identityLine")}
-          </p>
-          <h1 className="mt-4 text-[1.65rem] font-semibold leading-tight tracking-[-0.035em] text-foreground">
+          {!proMode ? (
+            <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
+              {t("brand.identityLine")}
+            </p>
+          ) : null}
+          <h1
+            className={`text-[1.65rem] font-semibold leading-tight tracking-[-0.035em] text-foreground ${proMode ? "mt-3" : "mt-4"}`}
+          >
             {t("workout.restTitle")}
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
             {generated.workout}
           </p>
-          {coachFrameWithShift ? (
+          {!proMode && coachFrameWithShift ? (
             <p className="mt-3 text-[12px] font-semibold leading-snug text-muted">
               {coachFrameWithShift}
             </p>
           ) : null}
-          <p className="mt-3 text-[14px] font-medium leading-snug text-foreground/90">
-            {t("workout.restHint")}
-          </p>
+          {!proMode ? (
+            <p className="mt-3 text-[14px] font-medium leading-snug text-foreground/90">
+              {t("workout.restHint")}
+            </p>
+          ) : null}
           <HelpVideoCard
             pageId="workout"
             enabled={features.showHelpVideos}
@@ -301,6 +308,8 @@ export function WorkoutSession() {
       ? mapProToView(exercisesResolved.withOv, exercisesResolved.raw.map((e) => e.id))
       : [];
 
+  const proMode = profile.mode === "pro";
+
   return (
     <WorkoutView
       exercises={exercises}
@@ -308,9 +317,9 @@ export function WorkoutSession() {
       dataFallbackKey={dataFallbackKey}
       showVoiceWorkout={features.showVoiceWorkout}
       showHelpVideos={features.showHelpVideos}
-      coachFrameLine={coachFrameWithShift}
-      exercisePerformanceHints={perfHintsForView}
-      showBrandIdentity
+      coachFrameLine={proMode ? null : coachFrameWithShift}
+      exercisePerformanceHints={proMode ? [] : perfHintsForView}
+      showBrandIdentity={!proMode}
       enableExerciseSwap={!isFoodOnlyMode(profile)}
       onSwapExercise={onSwapExercise}
     />

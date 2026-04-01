@@ -33,12 +33,13 @@ import {
 } from "@/lib/i18n";
 import { flowLog } from "@/lib/flowLog";
 import { dayKeyFromDate } from "@/lib/dateKey";
+import { calendarDayKey } from "@/lib/dateKeys";
 import { DAILY_ACTIVITIES_CHANGED } from "@/lib/activityStorage";
 import { countTrainingDays, getMondayBasedIndex } from "@/lib/plan";
 import { streakRhythmTone } from "@/components/streak/StreakRhythmBlock";
 import { buildRealityScore } from "@/lib/realityScore";
 import { gatherRealityScoreContext } from "@/lib/realityScoreContext";
-import { computeStreakSummary } from "@/lib/streaks";
+import { buildDayRecordMap, computeStreakSummary } from "@/lib/streaks";
 import { trackEvent } from "@/lib/analytics";
 import { todayCoachVoiceKey } from "@/lib/coachPresenceCopy";
 import { resolveProgramFromProfile } from "@/lib/profileProgramResolver";
@@ -435,6 +436,29 @@ export function AppDashboard() {
     });
   }, [normalizedProfile, now, locale]);
 
+  const weekDayDots = useMemo(() => {
+    const map = buildDayRecordMap(now, 7);
+    const dots: boolean[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      dots.push(Boolean(map.get(calendarDayKey(d))?.markedDone));
+    }
+    return dots;
+  }, [
+    now,
+    streakRefresh,
+    dayDone,
+    signalTick,
+    activityPlanTick,
+    shiftTick,
+    exTick,
+    minimumTick,
+    autopilotTick,
+    thinklessTick,
+    workoutLogTick,
+  ]);
+
   const reopenDay = useCallback(() => {
     clearDayExecution(now);
     clearThinklessPick(now);
@@ -579,7 +603,7 @@ export function AppDashboard() {
         active={minimumDayActive}
         onActivated={() => setMinimumTick((x) => x + 1)}
       />
-      <Container size="phone" className="px-5">
+      <Container size="phone" className="px-5 pb-1 pt-2 sm:px-6">
         <h1 className="sr-only">
           Today — {dateParts.weekday}, {dateParts.calendarDate}
         </h1>
@@ -706,6 +730,8 @@ export function AppDashboard() {
             focus={focus!}
             food={plan.todayFoodTask}
             activity={plan.todayActivityTask}
+            todayWorkoutSummary={plan.todayWorkout}
+            weekDayDots={weekDayDots}
             systemStatusKey={todaySystemStatusKey}
             systemStatusLive={
               Boolean(plan.systemLine?.trim()) ||
@@ -737,7 +763,9 @@ export function AppDashboard() {
             onToggleDay={reopenDay}
             onRequestCompleteDay={() => setCompleteModalOpen(true)}
             onReopenDay={reopenDay}
-            onThinkless={activateThinkless}
+            onThinkless={
+              profile.mode === "pro" ? undefined : activateThinkless
+            }
             thinklessActive={Boolean(thinklessPick)}
             thinklessLines={thinklessLines}
             dayCloseRetention={dayCloseRetention}
@@ -767,45 +795,10 @@ export function AppDashboard() {
           />
         </div>
 
-        <details className="group mt-10 rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.02]">
-          <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+        <details className="coach-panel-subtle group mt-14">
+          <summary className="cursor-pointer list-none px-4 py-4 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden sm:px-5 sm:py-4">
             <span className="flex items-center justify-between gap-3">
-              <span>{t("today.weekPlanFold")}</span>
-              <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
-                {t("common.show")}
-              </span>
-              <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
-                {t("common.hide")}
-              </span>
-            </span>
-          </summary>
-          <div className="border-t border-border/40 px-1 pb-3 pt-1">
-            <AutopilotWeekStrip
-              enabled={autopilotEnabled}
-              onEnable={enableAutopilot}
-              onDisable={disableAutopilot}
-              days={plan.weeklyPlan.days}
-              referenceDate={now}
-              trainingDaysCount={countTrainingDays({
-                days: plan.weeklyPlan.days,
-              })}
-              mealStructureLabel={mealStructureLabel}
-              programFrameLine={programPresetLine}
-              className="!mt-0"
-            />
-          </div>
-        </details>
-
-        <HelpVideoCard
-          pageId="today"
-          enabled={features.showHelpVideos}
-          className="mt-8 opacity-95"
-        />
-
-        <details className="coach-panel-subtle mt-8 group">
-          <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
-            <span className="flex items-center justify-between gap-3">
-              <span>{t("dashboard.weekFold")}</span>
+              <span>{t("today.belowFoldTitle")}</span>
               <span className="text-[11px] font-normal tabular-nums text-muted-2 group-open:hidden">
                 {t("common.show")}
               </span>
@@ -814,32 +807,62 @@ export function AppDashboard() {
               </span>
             </span>
           </summary>
-          <div className="border-t border-border/50 px-4 pb-5 pt-4">
-            <div className="space-y-6">
-              <WeekProgress days={plan.weeklyPlan.days} referenceDate={now} />
-              <CoachingInsightsSection
-                profile={profile}
-                referenceDate={now}
-                locale={locale}
-                refreshKey={workoutLogTick}
+          <div className="border-t border-border/50 px-3 pb-7 pt-6 sm:px-4">
+            <div className="space-y-12">
+              <div>
+                <p className="coach-section-label-sm mb-4">
+                  {t("today.weekPlanFold")}
+                </p>
+                <AutopilotWeekStrip
+                  enabled={autopilotEnabled}
+                  onEnable={enableAutopilot}
+                  onDisable={disableAutopilot}
+                  days={plan.weeklyPlan.days}
+                  referenceDate={now}
+                  trainingDaysCount={countTrainingDays({
+                    days: plan.weeklyPlan.days,
+                  })}
+                  mealStructureLabel={mealStructureLabel}
+                  programFrameLine={programPresetLine}
+                  className="!mt-0"
+                />
+              </div>
+              <div>
+                <p className="coach-section-label-sm mb-4">
+                  {t("dashboard.weekFold")}
+                </p>
+                <div className="space-y-8">
+                  <WeekProgress days={plan.weeklyPlan.days} referenceDate={now} />
+                  <CoachingInsightsSection
+                    profile={profile}
+                    referenceDate={now}
+                    locale={locale}
+                    refreshKey={workoutLogTick}
+                  />
+                </div>
+                {goalProgressRealism ? (
+                  <p
+                    className="mx-auto mt-8 max-w-md text-center text-[13px] leading-relaxed text-muted"
+                    role="status"
+                  >
+                    {goalProgressRealism}
+                  </p>
+                ) : null}
+              </div>
+              <HelpVideoCard
+                pageId="today"
+                enabled={features.showHelpVideos}
+                className="opacity-95"
               />
             </div>
-            {goalProgressRealism ? (
-              <p
-                className="mx-auto mt-6 max-w-md text-center text-[13px] leading-relaxed text-muted"
-                role="status"
-              >
-                {goalProgressRealism}
-              </p>
-            ) : null}
           </div>
         </details>
 
-        <footer className="mt-14 border-t border-border/50 pb-10 pt-8 text-center">
+        <footer className="mt-16 border-t border-border/50 pb-12 pt-10 text-center">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2">
             {t("dashboard.footerQuick")}
           </p>
-          <p className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px]">
+          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[14px]">
             <Link
               href="/workout"
               className="font-semibold text-accent underline-offset-[3px] hover:underline"
@@ -852,44 +875,16 @@ export function AppDashboard() {
             >
               {t("ui.review")}
             </Link>
+          </p>
+          <p className="mt-6">
             <Link
-              href="/plans"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
+              href="/more"
+              className="text-[13px] font-medium text-muted underline-offset-[3px] transition hover:text-foreground hover:underline"
             >
-              {t("plans.title")}
-            </Link>
-            <Link
-              href="/nutrition-plans"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("nutritionPlans.title")}
-            </Link>
-            <Link
-              href="/adjustments"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("nav.adjustments")}
-            </Link>
-            <Link
-              href="/preferences"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("ui.preferences")}
-            </Link>
-            <Link
-              href="/settings"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("nav.settings")}
-            </Link>
-            <Link
-              href="/paywall"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("paywall.linkPremium")}
+              {t("dashboard.footerSeeMore")}
             </Link>
           </p>
-          <p className="mt-5 text-[13px]">
+          <p className="mt-8 text-[13px]">
             <Link
               href="/start"
               className="font-medium text-muted underline-offset-[4px] transition hover:text-foreground hover:underline"

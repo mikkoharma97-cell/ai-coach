@@ -164,7 +164,7 @@ export function ProgressPage() {
 
   return (
     <main className="coach-page">
-      <Container size="phone" className="pb-28 pt-4">
+      <Container size="phone" className="pb-28 pt-6 sm:px-6">
         <div className="pointer-events-none mb-2 h-px w-full bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         {!foodOnly ? (
           <p className="brand-identity-lead mb-3 max-w-[26rem] text-balance">
@@ -212,7 +212,7 @@ export function ProgressPage() {
             {t(progressFallbackKey)}
           </p>
         ) : null}
-        <div className="mt-10">
+        <div className="mt-12">
           <DevelopmentTrajectoryCard
             profile={profile}
             consistencyPct={consistency.pct}
@@ -220,13 +220,8 @@ export function ProgressPage() {
             version={weightTick}
           />
         </div>
-        <HelpVideoCard
-          pageId="progress"
-          enabled={ft.showHelpVideos}
-          className="mt-10 opacity-95"
-        />
         {ft.showProgressCharts ? (
-          <div className="mt-10">
+          <div className="mt-12">
             <WeightTrendCard profile={profile} version={weightTick} />
           </div>
         ) : null}
@@ -239,8 +234,8 @@ export function ProgressPage() {
             {t("progress.seeWeeklyReview")}
           </Link>
         </div>
-        <details className="coach-panel-subtle group mt-10">
-          <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+        <details className="coach-panel-subtle group mt-12">
+          <summary className="cursor-pointer list-none px-4 py-4 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden sm:px-5">
             <span className="flex items-center justify-between gap-3">
               <span>{t("progress.moreMetrics")}</span>
               <span className="text-[11px] font-normal tabular-nums text-muted-2 group-open:hidden">
@@ -251,7 +246,7 @@ export function ProgressPage() {
               </span>
             </span>
           </summary>
-          <div className="space-y-6 border-t border-border/50 px-2 pb-5 pt-5">
+          <div className="space-y-8 border-t border-border/50 px-2 pb-6 pt-6">
             {ft.showCoachLines ? (
               <ProgressHeroInsightCard
                 insight={heroInsight}
@@ -291,6 +286,11 @@ export function ProgressPage() {
                 {t("progress.chartsHiddenHint")}
               </p>
             )}
+            <HelpVideoCard
+              pageId="progress"
+              enabled={ft.showHelpVideos}
+              className="opacity-95"
+            />
           </div>
         </details>
 

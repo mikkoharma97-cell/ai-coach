@@ -27,8 +27,8 @@ type Props = {
   whyLine: string;
   logItems: FoodLogItem[];
   current: MealOption | null;
-  canSwap: boolean;
-  onSwap: () => void;
+  /** Korvaava ateria — lista + tallennus */
+  onSubstitute?: () => void;
   /** Prefill from suggestion when the slot has no log yet */
   onAdd: (prefill: MealOption | null) => void;
   onRemoveLog: (id: string) => void;
@@ -65,8 +65,7 @@ export function FoodMealSlotBlock({
   whyLine,
   logItems,
   current,
-  canSwap,
-  onSwap,
+  onSubstitute,
   onAdd,
   onRemoveLog,
   isLastMealSlot = false,
@@ -167,25 +166,24 @@ export function FoodMealSlotBlock({
           <p className="mt-3 border-t border-border/35 pt-3 text-[11px] font-medium leading-relaxed text-muted-2">
             {whyLine}
           </p>
-          <div className="mt-4 flex gap-2.5">
-            {canSwap ? (
-              <button
-                type="button"
-                onClick={onSwap}
-                className="min-h-[44px] flex-1 rounded-2xl border-2 border-white/12 bg-white/[0.08] px-3 text-[13px] font-semibold text-muted shadow-sm transition duration-[250ms] ease-in-out hover:scale-[0.99] hover:border-accent/40 hover:bg-accent-soft/20 hover:text-accent active:scale-[0.98]"
-              >
-                {t("food.swapSuggestion")}
-              </button>
-            ) : null}
+          <div className="mt-4 flex flex-col gap-2">
             <button
               type="button"
               onClick={() => onAdd(hasLog ? null : current)}
-              className={`min-h-[44px] rounded-2xl bg-accent px-4 text-[13px] font-semibold text-white shadow-[0_8px_24px_-6px_rgb(42_92_191/0.45)] transition hover:scale-[0.99] hover:bg-[var(--accent-hover)] active:scale-[0.98] ${
-                canSwap ? "flex-1" : "w-full"
-              }`}
+              className="min-h-[44px] w-full rounded-2xl bg-accent px-4 text-[13px] font-semibold text-white shadow-[0_8px_24px_-6px_rgb(42_92_191/0.45)] transition hover:scale-[0.99] hover:bg-[var(--accent-hover)] active:scale-[0.98]"
             >
               {hasLog ? t("food.add") : t("food.eatThis")}
             </button>
+            {onSubstitute ? (
+              <button
+                type="button"
+                onClick={onSubstitute}
+                className="mx-auto inline-flex min-h-[36px] max-w-full items-center justify-center rounded-full border border-white/10 bg-transparent px-3.5 py-1.5 text-[12px] font-semibold text-muted-2 transition hover:border-accent/30 hover:text-accent active:scale-[0.99]"
+                title={t("food.substituteSheetTitle")}
+              >
+                {t("food.substituteCta")}
+              </button>
+            ) : null}
           </div>
         </div>
       ) : (

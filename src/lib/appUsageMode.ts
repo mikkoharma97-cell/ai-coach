@@ -16,9 +16,3 @@ export function isFoodOnlyMode(
   return getAppUsageMode(profile) === "food_only";
 }
 
-/** Navissa näytetäänkö treeni-välilehti (ei food_only). */
-export function showWorkoutTab(
-  profile: OnboardingAnswers | null | undefined,
-): boolean {
-  return !isFoodOnlyMode(profile);
-}

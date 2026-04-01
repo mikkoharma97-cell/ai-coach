@@ -30,6 +30,7 @@ import { FoodLibraryQuickBlock } from "@/components/food/FoodLibraryQuickBlock";
 import { FoodOffPlanQuickBlock } from "@/components/food/FoodOffPlanQuickBlock";
 import { FoodIntelligenceBlock } from "@/components/food/FoodIntelligenceBlock";
 import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
+import { MealSubstituteSheet } from "@/components/food/MealSubstituteSheet";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
 import { FoodTodayStrip } from "@/components/food/FoodTodayStrip";
 import { SupplementCoachRecommendations } from "@/components/coach/SupplementCoachRecommendations";
@@ -44,10 +45,18 @@ import {
 } from "@/lib/foodRecommendationCopy";
 import {
   generateDailyMeals,
-  nextSwapIndex,
   optionsForSlot,
   type MealOption,
 } from "@/lib/mealEngine";
+import {
+  loadMealSlotOverride,
+  saveMealSlotOverride,
+} from "@/lib/mealSlotOverrideStorage";
+import {
+  listSubstituteCandidates,
+  resolveDisplayedMeal,
+} from "@/lib/mealSubstitute";
+import { estimateProteinForSlot } from "@/lib/mealSlotShares";
 import {
   addQuickFromSaved,
   addSavedMeal,
@@ -192,9 +201,8 @@ export function FoodScreen() {
   const [renderTick, refresh] = useReducer((x: number) => x + 1, 0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetSlot, setSheetSlot] = useState<MealSlot>("lunch");
-  const [swapBySlot, setSwapBySlot] = useState<Partial<Record<MealSlot, number>>>(
-    {},
-  );
+  const [substituteSlot, setSubstituteSlot] = useState<MealSlot | null>(null);
+  const [addFromSubstitute, setAddFromSubstitute] = useState(false);
 
   const [formLabel, setFormLabel] = useState("");
   const [formKcal, setFormKcal] = useState("");
@@ -402,10 +410,26 @@ export function FoodScreen() {
     if (!nextMealSlot || !dailyMeals) return null;
     const opts = optionsForSlot(nextMealSlot.slot, dailyMeals);
     if (opts.length === 0) return null;
-    const len = opts.length;
-    const idx = (swapBySlot[nextMealSlot.slot] ?? 0) % len;
-    return opts[idx] ?? null;
-  }, [nextMealSlot, dailyMeals, swapBySlot]);
+    const stored = loadMealSlotOverride(dateSalt, nextMealSlot.slot);
+    return resolveDisplayedMeal(opts, stored);
+  }, [nextMealSlot, dailyMeals, dateSalt, renderTick]);
+
+  const substituteSheetModel = useMemo(() => {
+    if (!substituteSlot || !dailyMeals) return null;
+    const subOpts = optionsForSlot(substituteSlot, dailyMeals);
+    const subStored = loadMealSlotOverride(dateSalt, substituteSlot);
+    const subCurrent = resolveDisplayedMeal(subOpts, subStored);
+    if (!subCurrent) return null;
+    const label =
+      slotList.find((s) => s.slot === substituteSlot)?.label ?? "";
+    return {
+      slot: substituteSlot,
+      opts: subOpts,
+      current: subCurrent,
+      candidates: listSubstituteCandidates(subCurrent, subOpts),
+      label,
+    };
+  }, [substituteSlot, dailyMeals, dateSalt, renderTick, slotList]);
 
   const bump = useCallback(() => {
     refresh();
@@ -452,8 +476,32 @@ export function FoodScreen() {
     logButtonClick("FoodScreen", "closeSheet");
     setSheetOpen(false);
     setSheetError(null);
+    setAddFromSubstitute(false);
     addFood.reset();
   }, [addFood]);
+
+  const openAddFromSubstitute = useCallback(
+    (slot: MealSlot) => {
+      logButtonClick("FoodScreen", "openAddFromSubstitute");
+      setSubstituteSlot(null);
+      setAddFromSubstitute(true);
+      setSheetError(null);
+      setSheetSlot(slot);
+      if (dailyMeals) {
+        const opts = optionsForSlot(slot, dailyMeals);
+        const stored = loadMealSlotOverride(dateSalt, slot);
+        const cur = resolveDisplayedMeal(opts, stored);
+        setFormLabel("");
+        setFormKcal(cur ? String(cur.calories) : "");
+      } else {
+        setFormLabel("");
+        setFormKcal("");
+      }
+      setSaveRepeat(false);
+      setSheetOpen(true);
+    },
+    [dailyMeals, dateSalt],
+  );
 
   useOverlayLayer(sheetOpen, closeSheet);
 
@@ -462,12 +510,28 @@ export function FoodScreen() {
     const kcal = Math.round(Number(formKcal));
     const label = formLabel.trim();
     if (!label || !Number.isFinite(kcal) || kcal <= 0) return;
+    const pinSlotOverride = addFromSubstitute;
     setSheetError(null);
     void addFood.run(async () => {
       try {
         appendFoodLog(now, { label, kcal, slot: sheetSlot });
         trackEvent("log_food");
         trackEvent("add_food");
+        if (pinSlotOverride && profile && plan) {
+          const pG = plan.foodProteinTargetG ?? plan.todayMacros.proteinG;
+          saveMealSlotOverride(dateSalt, sheetSlot, {
+            v: 1,
+            kind: "custom",
+            name: label,
+            calories: kcal,
+            protein: estimateProteinForSlot(
+              pG,
+              sheetSlot,
+              profile.mealStructure,
+            ),
+          });
+          setAddFromSubstitute(false);
+        }
         if (saveRepeat) addSavedMeal(label, kcal);
         bump();
         flowLog("food.logged");
@@ -976,10 +1040,8 @@ export function FoodScreen() {
               const items = log.filter((x) => x.slot === slot);
               const opts =
                 dailyMeals ? optionsForSlot(slot, dailyMeals) : [];
-              const len = opts.length;
-              const idx =
-                len > 0 ? (swapBySlot[slot] ?? 0) % len : 0;
-              const current = len > 0 ? opts[idx] : null;
+              const stored = loadMealSlotOverride(dateSalt, slot);
+              const current = resolveDisplayedMeal(opts, stored);
               const whyKey = foodWhyThisMealKey(slot, profile, plan, current);
               const slotWeight =
                 i === 0 ? "lead" : i === 1 ? "mid" : "light";
@@ -1004,12 +1066,13 @@ export function FoodScreen() {
                   whyLine={t(whyKey)}
                   logItems={items}
                   current={current}
-                  canSwap={len > 1}
-                  onSwap={() =>
-                    setSwapBySlot((s) => ({
-                      ...s,
-                      [slot]: nextSwapIndex(s[slot] ?? 0, len),
-                    }))
+                  onSubstitute={
+                    current
+                      ? () => {
+                          logButtonClick("FoodScreen", "openSubstitute");
+                          setSubstituteSlot(slot);
+                        }
+                      : undefined
                   }
                   onAdd={(prefill) => openAdd(slot, prefill)}
                   onRemoveLog={(id) => {
@@ -1153,6 +1216,57 @@ export function FoodScreen() {
           {t("food.footNote")}
         </p>
       </Container>
+
+      {portalReady && substituteSheetModel ? (
+        <MealSubstituteSheet
+          open
+          onClose={() => setSubstituteSlot(null)}
+          slotLabel={substituteSheetModel.label}
+          current={substituteSheetModel.current}
+          candidates={substituteSheetModel.candidates}
+          onPick={(m) => {
+            if (m.templateId) {
+              saveMealSlotOverride(dateSalt, substituteSheetModel.slot, {
+                v: 1,
+                kind: "template",
+                templateId: m.templateId,
+              });
+            }
+            setSubstituteSlot(null);
+            bump();
+          }}
+          onQuickNext={
+            substituteSheetModel.opts.length > 1
+              ? () => {
+                  const pool = substituteSheetModel.opts;
+                  const slot = substituteSheetModel.slot;
+                  const stored = loadMealSlotOverride(dateSalt, slot);
+                  let idx = 0;
+                  if (stored?.kind === "template") {
+                    const i = pool.findIndex(
+                      (o) => o.templateId === stored.templateId,
+                    );
+                    if (i >= 0) idx = i;
+                  } else if (stored?.kind === "custom") {
+                    idx = -1;
+                  }
+                  const nextIdx = (idx + 1 + pool.length) % pool.length;
+                  const next = pool[nextIdx];
+                  if (next.templateId) {
+                    saveMealSlotOverride(dateSalt, slot, {
+                      v: 1,
+                      kind: "template",
+                      templateId: next.templateId,
+                    });
+                    bump();
+                  }
+                }
+              : undefined
+          }
+          onAddOwn={() => openAddFromSubstitute(substituteSheetModel.slot)}
+          t={t}
+        />
+      ) : null}
 
       {portalReady && sheetOpen
         ? createPortal(

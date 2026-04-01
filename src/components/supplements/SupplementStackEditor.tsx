@@ -157,15 +157,19 @@ export function SupplementStackEditor({ profile, onSaved }: Props) {
                     min={0}
                     max={120}
                     className="mt-1 w-full rounded-[var(--radius-md)] border border-border bg-background px-3 py-2 text-[15px] tabular-nums text-foreground"
-                    value={row.proteinGPerDay}
-                    onChange={(e) =>
+                    value={row.proteinGPerDay > 0 ? String(row.proteinGPerDay) : ""}
+                    onChange={(e) => {
+                      const v = e.target.value.trim();
+                      if (v === "") {
+                        updateRow(row.id, { proteinGPerDay: 0 });
+                        return;
+                      }
+                      const n = Number(v);
+                      if (!Number.isFinite(n)) return;
                       updateRow(row.id, {
-                        proteinGPerDay: Math.min(
-                          120,
-                          Math.max(0, Number(e.target.value) || 0),
-                        ),
-                      })
-                    }
+                        proteinGPerDay: Math.min(120, Math.max(0, Math.round(n))),
+                      });
+                    }}
                   />
                 </label>
               ) : (

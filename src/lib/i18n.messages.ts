@@ -289,6 +289,8 @@ export const fi = {
   "common.select": "Valitse",
 
   "nav.more": "Lisää",
+  "nav.openNewTabTitle": "Avaa uudessa välilehdessä",
+  "nav.openNewTabAria": "Avaa tämä näkymä uudessa välilehdessä",
 
   "more.title": "Lisää",
   "more.intro":
@@ -796,6 +798,17 @@ export const fi = {
   "today.systemStatus.fixInProgress": "Pieni säätö. Runko pysyy.",
   "today.labelFocus": "Tämän päivän tehtävä",
   "today.doThisToday": "Pidä linja. Tee tämä päivä normaalisti.",
+  "today.rebuildEnergyTitle": "Tänään · energia ylös",
+  "today.rebuildPillarsEyebrow": "Päivän oletus",
+  "today.rebuildPillarWorkout": "Treeni",
+  "today.rebuildPillarFood": "Ruoka",
+  "today.rebuildPillarSteps": "Askeleet",
+  "today.rebuildTaskEyebrow": "Päivän tehtävä",
+  "today.rebuildProgressEyebrow": "Progressio",
+  "today.rebuildLastWeek": "Viimeiset 7 päivää",
+  "today.rebuildWeekGoal": "Tämän viikon tavoite",
+  "today.rebuildSparklineAria":
+    "Päivien sulku: seitsemän päivää vasemmalta oikealle, korkeampi pylväs tarkoittaa päivää merkitty valmiiksi.",
   "today.changeProgram": "Vaihda ohjelmaa",
   "today.changeNutrition": "Vaihda ruokarakennetta",
   "today.todayRhythmBlock": "Ruoka & liike tänään",
@@ -897,6 +910,7 @@ export const fi = {
   "today.statusMany": "Päivitetty · {{n}} säätöä",
   "today.labelToday": "TÄNÄÄN",
   "today.weekPlanFold": "Viikko & autopilot",
+  "today.belowFoldTitle": "Viikko & oivallukset",
   "today.contextFoldSummary": "Tausta & ohjelmarivit",
   "today.progressSnippetAria": "Päivän tilannekuva",
   "today.trustSystemLine": "Tämä riittää. Pidä linja.",
@@ -1063,6 +1077,8 @@ export const fi = {
   "dashboard.yourSetup": "Asetuksesi",
   "dashboard.changeAnswers": "Muuta vastauksia",
   "dashboard.footerQuick": "Muualla",
+  "dashboard.footerSeeMore":
+    "Kaikki linkit ja asetukset — Lisää-välilehti",
   "dashboard.daysPerWeek": "{{n}} pv/vko",
   "dashboard.flexStructured": "Jäsennelty",
   "dashboard.flexBalanced": "Tasapainoinen",
@@ -1217,6 +1233,19 @@ export const fi = {
   "food.macroCoachApprox": "~{{kcal}} kcal · {{p}} g proteiinia",
   "food.systemRecommendation": "Seuraava ateria on tämä.",
   "food.swapSuggestion": "Vaihda ehdotus",
+  "food.substituteCta": "Korvaa ateria",
+  "food.substituteSheetTitle": "Pidetään rakenne, vaihdetaan ruoka.",
+  "food.substituteSheetLead":
+    "Lista näyttää samassa kategoriassa olevia vaihtoehtoja — kalori ja proteiini pysyvät lähellä tätä riviä.",
+  "food.substituteSheetMacroNote":
+    "Päivän kokonaistavoite ei muutu — vain tämän aterian sisältö.",
+  "food.substituteQuickNext": "Seuraava valmis ehdotus",
+  "food.substituteNoAlternatives":
+    "Tälle slottille ei löytynyt toista valmista riviä — lisää oma ateria tai muuta ruokavalintoja.",
+  "food.substituteAddOwn": "Lisää oma ateria",
+  "food.substituteAddOwnHint":
+    "Tallentuu tähän ateriaan tälle päivälle ja pysyy kunnes vaihdat.",
+  "food.substituteCurrentHint": "Valittu nyt: {{name}}",
   "food.eventHook": "Erikoispäivä tulossa?",
   "food.eventHookCta": "Lisää tapahtuma →",
   "food.addYourOwn": "Lisää oma ruoka",
@@ -2550,6 +2579,8 @@ export const en: { [K in MessageKey]: string } = {
   "common.select": "Select",
 
   "nav.more": "More",
+  "nav.openNewTabTitle": "Open in new tab",
+  "nav.openNewTabAria": "Open this view in a new browser tab",
 
   "more.title": "More",
   "more.intro":
@@ -3053,6 +3084,17 @@ export const en: { [K in MessageKey]: string } = {
     "Small tweak. Frame stays.",
   "today.labelFocus": "Today’s task",
   "today.doThisToday": "Hold the line. Run today normally.",
+  "today.rebuildEnergyTitle": "Today · energy up",
+  "today.rebuildPillarsEyebrow": "Your default view",
+  "today.rebuildPillarWorkout": "Workout",
+  "today.rebuildPillarFood": "Food",
+  "today.rebuildPillarSteps": "Steps",
+  "today.rebuildTaskEyebrow": "Today’s task",
+  "today.rebuildProgressEyebrow": "Progress",
+  "today.rebuildLastWeek": "Last 7 days",
+  "today.rebuildWeekGoal": "This week’s focus",
+  "today.rebuildSparklineAria":
+    "Days closed: seven days left to right; taller bar means the day was marked done.",
   "today.changeProgram": "Change program",
   "today.changeNutrition": "Change meal structure",
   "today.todayRhythmBlock": "Food & movement today",
@@ -3155,6 +3197,7 @@ export const en: { [K in MessageKey]: string } = {
   "today.statusMany": "Updated · {{n}} adjustments",
   "today.labelToday": "TODAY",
   "today.weekPlanFold": "Week & autopilot",
+  "today.belowFoldTitle": "Week & insights",
   "today.contextFoldSummary": "Context & program lines",
   "today.progressSnippetAria": "Today at a glance",
   "today.trustSystemLine": "This is enough. Hold the line.",
@@ -3329,6 +3372,8 @@ export const en: { [K in MessageKey]: string } = {
   "dashboard.yourSetup": "Your setup",
   "dashboard.changeAnswers": "Change answers",
   "dashboard.footerQuick": "Elsewhere",
+  "dashboard.footerSeeMore":
+    "All links & settings — More tab",
   "dashboard.daysPerWeek": "{{n}} days/week",
   "dashboard.flexStructured": "Structured",
   "dashboard.flexBalanced": "Balanced",
@@ -3486,6 +3531,19 @@ export const en: { [K in MessageKey]: string } = {
   "food.macroCoachApprox": "~{{kcal}} kcal · {{p}} g protein",
   "food.systemRecommendation": "Your next meal is this.",
   "food.swapSuggestion": "Swap suggestion",
+  "food.substituteCta": "Replace meal",
+  "food.substituteSheetTitle": "Keep the structure — swap the food.",
+  "food.substituteSheetLead":
+    "Same-category picks — calories and protein stay close to this line.",
+  "food.substituteSheetMacroNote":
+    "Your daily total doesn’t change — only this meal’s content.",
+  "food.substituteQuickNext": "Next ready suggestion",
+  "food.substituteNoAlternatives":
+    "No second ready option for this slot — add your own line or adjust food preferences.",
+  "food.substituteAddOwn": "Add my meal",
+  "food.substituteAddOwnHint":
+    "Saved for this meal today until you change it.",
+  "food.substituteCurrentHint": "Selected now: {{name}}",
   "food.eventHook": "Special day coming up?",
   "food.eventHookCta": "Add event →",
   "food.addYourOwn": "Log your own meal",

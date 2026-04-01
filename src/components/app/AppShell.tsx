@@ -1,15 +1,13 @@
 "use client";
 
 /**
- * App-kuori — bottom nav (HÄRMÄ39): Tänään · Ruoka · Treeni · Kehitys · Lisää
- * Food Only -tilassa treeni-välilehti piilotetaan.
+ * App-kuori — bottom nav (HÄRMÄ50): Tänään · Ruoka · Kehitys · Lisää (+ Treeni /app:sta ja /workout-linkinä).
+ * Food Only -tilassa sama nelikko (treeni ei näy erillisenä välilehtenä).
  */
 import { PreviewBuildStrip } from "@/components/PreviewBuildStrip";
 import { useTranslation } from "@/hooks/useTranslation";
-import { showWorkoutTab } from "@/lib/appUsageMode";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import { trackEvent } from "@/lib/analytics";
-import { useClientProfile } from "@/hooks/useClientProfile";
 import type { Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -85,33 +83,20 @@ export function AppShell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const { t, locale, setLocale } = useTranslation();
   const titleKey = headerTitleKey(path);
-  const profile = useClientProfile();
-  const showWorkout = profile === undefined ? true : showWorkoutTab(profile);
-
-  const routeKeys = showWorkout
-    ? ([
-        { href: "/app", key: "ui.today" as const },
-        { href: "/food", key: "nav.food" as const },
-        { href: "/workout", key: "ui.workout" as const },
-        { href: "/progress", key: "nav.progress" as const },
-        { href: "/more", key: "nav.more" as const },
-      ] as const)
-    : ([
-        { href: "/app", key: "ui.today" as const },
-        { href: "/food", key: "nav.food" as const },
-        { href: "/progress", key: "nav.progress" as const },
-        { href: "/more", key: "nav.more" as const },
-      ] as const);
+  /** Neljä päävälilehteä — treeni ei kilpaile pohjassa (linkki Tänään + /workout). */
+  const routeKeys = [
+    { href: "/app", key: "ui.today" as const },
+    { href: "/food", key: "nav.food" as const },
+    { href: "/progress", key: "nav.progress" as const },
+    { href: "/more", key: "nav.more" as const },
+  ] as const;
 
   useEffect(() => {
     const ev = PATH_ANALYTICS[path];
     if (ev) trackEvent(ev);
   }, [path]);
 
-  const navGrid =
-    routeKeys.length >= 5
-      ? "grid-cols-5 min-[480px]:max-w-lg"
-      : "grid-cols-4 min-[480px]:max-w-md";
+  const navGrid = "grid-cols-4 min-[480px]:max-w-md";
 
   return (
     <div className="flex h-full min-h-0 w-full min-w-0 max-w-full flex-1 flex-col">
@@ -126,7 +111,35 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className="max-w-[min(100%,9rem)] text-center text-[9px] font-semibold uppercase tracking-[0.16em] text-muted truncate min-[400px]:max-w-[10rem] min-[480px]:text-[10px] min-[480px]:tracking-[0.18em] sm:max-w-none">
             {t(titleKey)}
           </span>
-          <div className="justify-self-end">
+          <div className="justify-self-end flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window === "undefined") return;
+                const u = `${window.location.origin}${path}${window.location.search || ""}${window.location.hash || ""}`;
+                window.open(u, "_blank", "noopener,noreferrer");
+              }}
+              className="inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-md border border-white/10 bg-white/[0.06] text-muted-2 transition hover:border-accent/35 hover:text-foreground"
+              title={t("nav.openNewTabTitle")}
+              aria-label={t("nav.openNewTabAria")}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden
+              >
+                <path
+                  d="M14 3h7v7M10 14L21 3M21 14v6a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
             <label className="sr-only" htmlFor="coach-locale">
               Language
             </label>

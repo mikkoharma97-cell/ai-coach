@@ -23,6 +23,39 @@ export type CoachHeroBlock = {
   direction: string;
 };
 
+function TodayWeekSparkline({
+  dots,
+  ariaLabel,
+}: {
+  dots: boolean[];
+  ariaLabel: string;
+}) {
+  const seq =
+    dots.length >= 7 ? dots.slice(-7) : Array.from({ length: 7 }, (_, i) => dots[i] ?? false);
+  return (
+    <div
+      className="flex h-11 items-end justify-between gap-[3px] sm:gap-1.5"
+      role="img"
+      aria-label={ariaLabel}
+    >
+      {seq.map((ok, i) => (
+        <div
+          key={i}
+          className="relative h-full min-h-[2.5rem] flex-1 overflow-hidden rounded-[4px] bg-white/[0.06]"
+        >
+          <div
+            className={`absolute bottom-0 left-0 right-0 rounded-[4px] transition-all duration-500 ${
+              ok
+                ? "h-full bg-gradient-to-t from-accent/90 to-accent/45"
+                : "h-[26%] bg-white/[0.18]"
+            }`}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 type Props = {
   weekday: string;
   calendarDate: string;
@@ -111,6 +144,10 @@ type Props = {
   features?: CoachFeatureToggles;
   /** Yksi pääankkuri: treenipäivällä treeni, muuten fokus */
   primaryAnchor?: "focus" | "workout";
+  /** Päivän treenirivi (plan.todayWorkout) — pylväsnäkymä */
+  todayWorkoutSummary?: string;
+  /** Viimeiset 7 päivää: päivä suljettu (vasen = vanhin) */
+  weekDayDots?: boolean[];
   /** HÄRMÄ25 — kevyt päivä, rytmin säilytys */
   minimumDayActive?: boolean;
   onOpenMinimumDay?: () => void;
@@ -168,6 +205,8 @@ export function TodayCard({
   streakTone,
   features = DEFAULT_COACH_FEATURE_TOGGLES,
   primaryAnchor = "focus",
+  todayWorkoutSummary = "",
+  weekDayDots,
   minimumDayActive = false,
   onOpenMinimumDay,
   autopilotActive = false,
@@ -215,6 +254,12 @@ export function TodayCard({
       (features.showStreaks && streakSummary && streakTone),
   );
 
+  const showProgressionBlock = Boolean(
+    (weekDayDots && weekDayDots.length >= 7) ||
+      Boolean(engineWeekLine?.trim()) ||
+      hasProgressSnippet,
+  );
+
   return (
     <section
       className="coach-panel-today-hero"
@@ -231,25 +276,44 @@ export function TodayCard({
       <div className="coach-topline" aria-hidden />
 
       <div className="relative px-5 pb-8 pt-6 sm:px-8 sm:pb-9 sm:pt-8">
-        {/* 1. Päivän status */}
-        <div className="flex flex-col items-center gap-3 sm:items-start">
-          <p className="brand-identity-lead max-w-[26rem] text-center text-balance sm:text-left">
-            {t("brand.identityLine")}
-          </p>
-          {features.showCoachLines ? (
-            <p
-              className="text-[10px] font-medium text-muted-2 sm:text-left"
-              role="status"
+        {/* 1. Yläosa — energia + päivä */}
+        <div className="flex flex-col gap-4 sm:gap-5">
+          <div className="text-center sm:text-left">
+            <h1
+              id="today-heading"
+              className="text-[1.35rem] font-semibold leading-[1.12] tracking-[-0.04em] text-foreground sm:text-[1.55rem]"
             >
-              {systemStatusLive
-                ? t("brand.coachActive")
-                : t("brand.coachReady")}
-            </p>
-          ) : null}
+              {t("today.rebuildEnergyTitle")}
+            </h1>
+            <div className="mt-3 flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:justify-start">
+              <p className="text-[13px] font-medium leading-snug text-muted-2">
+                <span>{weekday}</span>
+                <span className="mx-1.5 text-border-strong" aria-hidden>
+                  ·
+                </span>
+                <span className="text-foreground/90">{calendarDate}</span>
+              </p>
+              {packageBadge ? (
+                <span className="inline-flex max-w-full rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium tracking-[0.04em] text-muted-2">
+                  {packageBadge}
+                </span>
+              ) : null}
+            </div>
+            {dataFallbackKey ? (
+              <p
+                className="mt-2 text-[11px] leading-relaxed text-muted-2"
+                role="status"
+              >
+                {t(dataFallbackKey)}
+              </p>
+            ) : null}
+          </div>
+
           <CoachSystemStatus
             text={t(systemStatusKey)}
             liveSignal={systemStatusLive}
           />
+
           {shiftBadgeKey ? (
             <div className="flex w-full max-w-[26rem] flex-col items-center gap-2 sm:items-start">
               <p className="text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/95 sm:text-left">
@@ -272,21 +336,60 @@ export function TodayCard({
               </Link>
             </div>
           ) : null}
-          {minimumDayActive ? (
-            <span className="inline-flex rounded-full border border-emerald-400/35 bg-emerald-400/[0.12] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200/95">
-              {t("today.minimumDayBadge")}
-            </span>
-          ) : null}
-          {autopilotActive ? (
-            <span className="inline-flex rounded-full border border-sky-400/40 bg-sky-400/[0.12] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-200/95">
-              {t("today.autopilotBadge")}
-            </span>
-          ) : null}
+
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+            {minimumDayActive ? (
+              <span className="inline-flex rounded-full border border-emerald-400/35 bg-emerald-400/[0.12] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200/95">
+                {t("today.minimumDayBadge")}
+              </span>
+            ) : null}
+            {autopilotActive ? (
+              <span className="inline-flex rounded-full border border-sky-400/40 bg-sky-400/[0.12] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-200/95">
+                {t("today.autopilotBadge")}
+              </span>
+            ) : null}
+          </div>
         </div>
 
-        <p className="mt-4 text-center text-[13px] font-semibold leading-snug text-accent sm:text-left">
-          {t("today.doThisToday")}
-        </p>
+        {/* 2. Päivän oletus: Treeni / Ruoka / Askeleet */}
+        <div className="mt-8 rounded-[var(--radius-xl)] border border-white/[0.07] bg-white/[0.02] px-4 py-5 sm:px-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-2">
+            {t("today.rebuildPillarsEyebrow")}
+          </p>
+          <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/[0.06]">
+            <div className="sm:pr-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                {t("today.rebuildPillarWorkout")}
+              </p>
+              <p className="mt-2 line-clamp-3 text-[14px] font-medium leading-snug text-foreground/95">
+                {todayWorkoutSummary.trim() || "—"}
+              </p>
+            </div>
+            <div className="sm:px-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                {t("today.rebuildPillarFood")}
+              </p>
+              <p className="mt-2 line-clamp-4 text-[14px] font-medium leading-snug text-foreground/95">
+                {food}
+              </p>
+              <Link
+                href="/food"
+                prefetch
+                className="mt-3 inline-flex text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
+              >
+                {t("today.openFoodCta")}
+              </Link>
+            </div>
+            <div className="sm:pl-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                {t("today.rebuildPillarSteps")}
+              </p>
+              <p className="mt-2 line-clamp-4 text-[14px] font-medium leading-snug text-muted">
+                {activity}
+              </p>
+            </div>
+          </div>
+        </div>
 
         {(onThinkless && !thinklessActive && !dayDone) ||
         (onOpenMinimumDay && !dayDone) ? (
@@ -489,63 +592,13 @@ export function TodayCard({
           </details>
         ) : null}
 
-        <header className="mt-6 text-center sm:mt-7 sm:text-left">
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-            <h2
-              id="today-heading"
-              className="text-[1.125rem] font-semibold leading-[1.12] tracking-[-0.035em] text-muted-2 sm:text-[1.2rem]"
-            >
-              <span>{weekday}</span>
-              <span className="mx-1.5 text-border-strong" aria-hidden>
-                ·
-              </span>
-              <span className="text-foreground">{calendarDate}</span>
-            </h2>
-            {packageBadge ? (
-              <span className="inline-flex max-w-full rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium tracking-[0.04em] text-muted-2">
-                {packageBadge}
-              </span>
-            ) : null}
-          </div>
-          {dataFallbackKey ? (
-            <p
-              className="mt-3 text-[11px] leading-relaxed text-muted-2"
-              role="status"
-            >
-              {t(dataFallbackKey)}
-            </p>
-          ) : null}
-        </header>
-
-        {hasProgressSnippet ? (
-          <div
-            className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-3"
-            aria-label={t("today.progressSnippetAria")}
-          >
-            {features.showRealityScore && realityScore ? (
-              <div className="min-w-0 flex-1 [&>*]:mt-0">
-                <RealityScoreStrip score={realityScore} locale={locale} />
-              </div>
-            ) : null}
-            {features.showStreaks && streakSummary && streakTone ? (
-              <div className="min-w-0 flex-1 sm:max-w-[14rem]">
-                <StreakRhythmBlock
-                  summary={streakSummary}
-                  tone={streakTone}
-                  className="!mt-0 !py-3"
-                />
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        <div className="today-one-screen mt-6 space-y-10">
-        {/* 2. Pääfokus — visuaalinen paino alas kun ankkuri on treeni */}
+        <div className="today-one-screen mt-8 space-y-10">
+        {/* 3. Päivän tehtävä */}
         <div className={`relative mt-0 ${anchorWorkout ? "opacity-80" : ""}`}>
           <p
             className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${anchorWorkout ? "text-muted-2/90" : "text-muted-2"}`}
           >
-            {t("today.labelFocus")}
+            {t("today.rebuildTaskEyebrow")}
           </p>
           <div
             className={`mt-3 p-5 sm:p-6 ${
@@ -641,25 +694,67 @@ export function TodayCard({
           </div>
         ) : null}
 
-        {/* 5–6. Ruoka + liike — yksi toissijainen lohko */}
-        <div className="relative mt-8 border-t border-white/[0.06] pt-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-2">
-            {t("today.todayRhythmBlock")}
-          </p>
-          <p className="mt-3 text-[13px] font-medium leading-snug text-foreground/95">
-            {food}
-          </p>
-          <p className="mt-2 text-[13px] font-medium leading-snug text-muted">
-            {activity}
-          </p>
-          <Link
-            href="/food"
-            prefetch
-            className="mt-4 inline-flex min-h-[44px] items-center text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
-          >
-            {t("today.openFoodCta")}
-          </Link>
-        </div>
+        {/* 4. Progressio: käyrä + viikkotavoite */}
+        {showProgressionBlock ? (
+          <div className="relative mt-2 rounded-[var(--radius-xl)] border border-white/[0.06] bg-white/[0.02] px-4 py-5 sm:px-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-2">
+              {t("today.rebuildProgressEyebrow")}
+            </p>
+            {weekDayDots && weekDayDots.length >= 7 ? (
+              <div className="mt-4">
+                <p className="text-[11px] font-medium text-muted-2">
+                  {t("today.rebuildLastWeek")}
+                </p>
+                <div className="mt-2 max-w-md">
+                  <TodayWeekSparkline
+                    dots={weekDayDots}
+                    ariaLabel={t("today.rebuildSparklineAria")}
+                  />
+                </div>
+              </div>
+            ) : null}
+            {engineWeekLine ? (
+              <div
+                className={
+                  weekDayDots && weekDayDots.length >= 7 ? "mt-6" : "mt-4"
+                }
+              >
+                <p className="text-[11px] font-medium text-muted-2">
+                  {t("today.rebuildWeekGoal")}
+                </p>
+                <p className="mt-2 text-[13px] font-semibold leading-snug text-foreground/95">
+                  {engineWeekLine}
+                </p>
+              </div>
+            ) : null}
+            {hasProgressSnippet ? (
+              <div
+                className={`flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-3 ${
+                  (weekDayDots && weekDayDots.length >= 7) ||
+                  engineWeekLine
+                    ? "mt-6 border-t border-white/[0.06] pt-5"
+                    : "mt-4"
+                }`}
+                aria-label={t("today.progressSnippetAria")}
+              >
+                {features.showRealityScore && realityScore ? (
+                  <div className="min-w-0 flex-1 [&>*]:mt-0">
+                    <RealityScoreStrip score={realityScore} locale={locale} />
+                  </div>
+                ) : null}
+                {features.showStreaks && streakSummary && streakTone ? (
+                  <div className="min-w-0 flex-1 sm:max-w-[14rem]">
+                    <StreakRhythmBlock
+                      summary={streakSummary}
+                      tone={streakTone}
+                      className="!mt-0 !py-3"
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
 
         {features.showExceptionGuidance && exceptionGuidance ? (
           <div

@@ -107,7 +107,8 @@ function ActivityVoiceMic({
 export function DailyActivityInput({ dateKey, showVoice = false }: Props) {
   const { t } = useTranslation();
   const [type, setType] = useState<DailyActivity["type"]>("walk");
-  const [durationMin, setDurationMin] = useState(25);
+  /** Merkkijono — ei Number('')→0 -bugia; tyhjä sallittu */
+  const [durationStr, setDurationStr] = useState("25");
   const [intensity, setIntensity] =
     useState<DailyActivity["intensity"]>("moderate");
   const [ack, setAck] = useState(false);
@@ -124,11 +125,14 @@ export function DailyActivityInput({ dateKey, showVoice = false }: Props) {
   }, [ack]);
 
   const onAdd = useCallback(() => {
+    const trimmed = durationStr.trim();
+    const n = trimmed === "" ? NaN : Number(trimmed);
+    if (!Number.isFinite(n) || n < 0 || n > 600) return;
     void addActivity.run(async () => {
       try {
         appendDailyActivity(dateKey, {
           type,
-          durationMin: Math.max(0, Math.round(durationMin)),
+          durationMin: Math.max(0, Math.round(n)),
           intensity,
         });
         trackEvent("log_activity");
@@ -139,7 +143,14 @@ export function DailyActivityInput({ dateKey, showVoice = false }: Props) {
         throw e;
       }
     });
-  }, [addActivity, dateKey, type, durationMin, intensity]);
+  }, [addActivity, dateKey, type, durationStr, intensity]);
+
+  const durationOk = (() => {
+    const trimmed = durationStr.trim();
+    if (trimmed === "") return false;
+    const n = Number(trimmed);
+    return Number.isFinite(n) && n >= 0 && n <= 600;
+  })();
 
   const typeKey = (x: DailyActivity["type"]): MessageKey =>
     `activity.type.${x}` as MessageKey;
@@ -185,12 +196,20 @@ export function DailyActivityInput({ dateKey, showVoice = false }: Props) {
             {t("activity.duration")}
           </span>
           <input
-            type="number"
+            type="text"
             inputMode="numeric"
-            min={0}
-            max={600}
-            value={durationMin}
-            onChange={(e) => setDurationMin(Number(e.target.value))}
+            autoComplete="off"
+            value={durationStr}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === "") {
+                setDurationStr("");
+                return;
+              }
+              if (!/^\d+$/.test(v)) return;
+              if (v.length > 3) return;
+              setDurationStr(v);
+            }}
             className="mt-1.5 w-full rounded-[var(--radius-md)] border border-border/50 bg-white/[0.06] px-3 py-2.5 text-[15px] font-medium text-foreground outline-none ring-0 focus:border-accent/50"
           />
         </label>
@@ -220,7 +239,7 @@ export function DailyActivityInput({ dateKey, showVoice = false }: Props) {
         <button
           type="button"
           onClick={onAdd}
-          disabled={addActivity.loading}
+          disabled={addActivity.loading || !durationOk}
           className="coach-today-cta-primary mt-2 min-h-[48px] w-full text-[12px] font-semibold uppercase tracking-[0.12em] disabled:opacity-60"
         >
           {addActivity.loading ? t("common.loading") : t("activity.add")}
