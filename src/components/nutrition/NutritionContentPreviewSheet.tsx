@@ -24,7 +24,7 @@ export function NutritionContentPreviewSheet({ entry, onClose }: Props) {
   return (
     <div
       role="presentation"
-      className="fixed inset-0 z-[280] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center"
+      className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] lg:items-center"
       onClick={onClose}
       onKeyDown={(e) => {
         if (e.key === "Escape") onClose();

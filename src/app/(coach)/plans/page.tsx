@@ -164,7 +164,7 @@ export default function PlansPage() {
       {confirmId ? (
         <div
           role="presentation"
-          className="fixed inset-0 z-[280] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center"
+          className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] lg:items-center"
           onClick={() => setConfirmId(null)}
           onKeyDown={(e) => {
             if (e.key === "Escape") setConfirmId(null);
@@ -173,7 +173,7 @@ export default function PlansPage() {
           <div
             role="dialog"
             aria-modal="true"
-            className="w-full max-w-md rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-6 shadow-[var(--shadow-float)] sm:rounded-[var(--radius-xl)]"
+            className="max-h-[min(88vh,90dvh)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-6 shadow-[var(--shadow-float)] lg:max-h-none lg:rounded-[var(--radius-xl)] [-webkit-overflow-scrolling:touch]"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-[16px] font-semibold text-foreground">

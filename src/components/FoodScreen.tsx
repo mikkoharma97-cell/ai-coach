@@ -359,7 +359,10 @@ export function FoodScreen() {
     return foodGoalSupportEnergyKey(plan);
   }, [plan]);
 
-  const hasTrainingToday = resolveWeeklyPlanHasTrainingToday(plan, now);
+  const hasTrainingToday = useMemo(
+    () => resolveWeeklyPlanHasTrainingToday(plan, now),
+    [plan, now],
+  );
 
   const concreteIdeas = useMemo(() => {
     if (!profile || !plan) return [];
@@ -630,9 +633,10 @@ export function FoodScreen() {
         ) : null}
 
         <button
+          id="food-primary-cta"
           type="button"
           onClick={() => openAdd(primaryLogSlot, nextMealOption)}
-          className="mt-4 flex min-h-[56px] w-full items-center justify-center rounded-[var(--radius-xl)] bg-accent px-5 text-[16px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99]"
+          className="mt-4 flex min-h-[56px] w-full scroll-mt-[min(12rem,28vh)] items-center justify-center rounded-[var(--radius-xl)] bg-accent px-5 text-[16px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99]"
         >
           {t("food.addMealHero")}
         </button>
@@ -1241,7 +1245,7 @@ export function FoodScreen() {
       {portalReady && sheetOpen
         ? createPortal(
             <div
-              className="fixed inset-0 z-[280] flex touch-manipulation flex-col justify-end"
+              className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex touch-manipulation flex-col justify-end"
               role="presentation"
             >
               <button
@@ -1252,7 +1256,7 @@ export function FoodScreen() {
                 onClick={closeSheet}
               />
               <div
-                className="relative z-[281] mt-auto w-full max-h-[85dvh] overscroll-contain overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
+                className="relative z-[var(--z-overlay-sheet)] mt-auto w-full max-h-[min(88vh,90dvh)] overscroll-contain overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="add-food-title"

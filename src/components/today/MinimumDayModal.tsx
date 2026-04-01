@@ -50,7 +50,7 @@ export function MinimumDayModal({
 
   return (
     <div
-      className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center sm:pb-8"
+      className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] lg:items-center lg:pb-8"
       role="presentation"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -60,7 +60,7 @@ export function MinimumDayModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="max-h-[min(90vh,36rem)] w-full max-w-md overflow-y-auto rounded-[var(--radius-xl)] border border-white/[0.12] bg-[var(--background)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.55)]"
+        className="max-h-[min(88vh,90dvh)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-[var(--radius-2xl)] border border-white/[0.12] bg-[var(--background)] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.55)] lg:max-h-[min(90vh,36rem)] lg:rounded-[var(--radius-xl)] [-webkit-overflow-scrolling:touch]"
       >
         {step === "intro" && !active ? (
           <>

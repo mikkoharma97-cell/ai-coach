@@ -199,6 +199,20 @@ export function WorkoutView({
 
   useOverlayLayer(customizeOpen || swapModalOpen, closeAllOverlays);
 
+  const workoutCtaRef = useRef<HTMLDivElement>(null);
+  const skipFirstCtaScroll = useRef(true);
+  useEffect(() => {
+    if (list.length === 0) return;
+    if (skipFirstCtaScroll.current) {
+      skipFirstCtaScroll.current = false;
+      return;
+    }
+    workoutCtaRef.current?.scrollIntoView({
+      block: "center",
+      behavior: "smooth",
+    });
+  }, [activeExerciseIndex, activeSetIndex, list.length]);
+
   const saveSessionAndGoApp = useCallback(() => {
     const log = serializeWorkoutSession(
       exerciseRowsToSerializable(rowsRef.current),
@@ -442,7 +456,7 @@ export function WorkoutView({
         />
 
         {list.length > 0 && onSessionModeChange ? (
-          <div className="mt-4 flex flex-col gap-2">
+          <div className="mt-4 flex scroll-mt-28 flex-col gap-2">
             {confirmFlash ? (
               <p className="text-[12px] font-medium text-accent" role="status">
                 {confirmFlash}
@@ -591,7 +605,11 @@ export function WorkoutView({
         ) : null}
 
         {list.length > 0 && setsTotal > 0 && setsDone < setsTotal ? (
-          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:gap-3">
+          <div
+            ref={workoutCtaRef}
+            id="workout-primary-cta"
+            className="mt-5 flex flex-col gap-2 sm:flex-row sm:gap-3"
+          >
             <button
               type="button"
               onClick={() => {
@@ -724,7 +742,7 @@ export function WorkoutView({
         {customizeOpen && onSessionModeChange ? (
           <div
             role="presentation"
-            className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2.5rem)] sm:items-center"
+            className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2.5rem)] lg:items-center"
             onClick={() => setCustomizeOpen(false)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setCustomizeOpen(false);
@@ -734,7 +752,7 @@ export function WorkoutView({
               role="dialog"
               aria-modal="true"
               aria-labelledby="customize-sheet-title"
-              className="w-full max-w-md rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-5 shadow-[var(--shadow-float)] sm:rounded-[var(--radius-xl)]"
+              className="max-h-[min(88vh,90dvh)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-5 shadow-[var(--shadow-float)] lg:max-h-[min(90vh,40rem)] lg:rounded-[var(--radius-xl)] [-webkit-overflow-scrolling:touch]"
               onClick={(e) => e.stopPropagation()}
             >
               <p
@@ -813,7 +831,7 @@ export function WorkoutView({
         {swapModalOpen && modalSwapSourceId && onSwapExercise ? (
           <div
             role="presentation"
-            className="fixed inset-0 z-[290] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2.5rem)] sm:items-center"
+            className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2.5rem)] lg:items-center"
             onClick={closeSwapModal}
             onKeyDown={(e) => {
               if (e.key === "Escape") closeSwapModal();
@@ -823,7 +841,7 @@ export function WorkoutView({
               role="dialog"
               aria-modal="true"
               aria-labelledby="swap-ex-title"
-              className="w-full max-w-md rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-5 shadow-[var(--shadow-float)] sm:rounded-[var(--radius-xl)]"
+              className="max-h-[min(88vh,90dvh)] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-5 shadow-[var(--shadow-float)] lg:max-h-[min(90vh,40rem)] lg:rounded-[var(--radius-xl)] [-webkit-overflow-scrolling:touch]"
               onClick={(e) => e.stopPropagation()}
             >
               <p

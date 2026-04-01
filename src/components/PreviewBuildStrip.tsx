@@ -22,7 +22,7 @@ export function PreviewBuildStrip() {
 
   return (
     <div
-      className="shrink-0 border-t border-amber-500/25 bg-amber-500/[0.07] px-3 py-1.5 text-center text-[10px] font-medium leading-snug text-amber-200/95"
+      className="relative z-[var(--z-preview-strip)] shrink-0 border-t border-amber-500/25 bg-amber-500/[0.07] px-3 py-1.5 text-center text-[10px] font-medium leading-snug text-amber-200/95"
       role="status"
     >
       <span className="tabular-nums">{line}</span>

@@ -100,7 +100,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-full min-h-0 w-full min-w-0 max-w-full flex-1 flex-col">
-      <header className="sticky top-0 z-[50] w-full shrink-0 border-b border-white/[0.06] bg-[rgba(5,6,10,0.82)] pt-[env(safe-area-inset-top,0px)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.78)]">
+      <header className="sticky top-0 z-[var(--z-nav)] w-full shrink-0 border-b border-white/[0.06] bg-[rgba(5,6,10,0.82)] pt-[env(safe-area-inset-top,0px)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.78)]">
         <div className="mx-auto grid h-11 w-full max-w-[100vw] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4">
           <Link
             href="/app"
@@ -119,7 +119,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 const u = `${window.location.origin}${path}${window.location.search || ""}${window.location.hash || ""}`;
                 window.open(u, "_blank", "noopener,noreferrer");
               }}
-              className="inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-md border border-white/10 bg-white/[0.06] text-muted-2 transition hover:border-accent/35 hover:text-foreground"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-white/10 bg-white/[0.06] text-muted-2 transition hover:border-accent/35 hover:text-foreground active:scale-[0.98]"
               title={t("nav.openNewTabTitle")}
               aria-label={t("nav.openNewTabAria")}
             >
@@ -169,7 +169,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <PreviewBuildStrip />
 
       <nav
-        className="relative z-[50] shrink-0 border-t border-white/[0.06] bg-[rgba(5,6,10,0.88)] pb-[calc(12px+env(safe-area-inset-bottom,0px))] pt-1.5 shadow-[0_-8px_32px_rgb(0_0_0/0.4)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.82)] transition duration-[250ms] ease-in-out"
+        className="relative z-[var(--z-nav)] shrink-0 border-t border-white/[0.06] bg-[rgba(5,6,10,0.88)] pb-[calc(12px+env(safe-area-inset-bottom,0px))] pt-1.5 shadow-[0_-8px_32px_rgb(0_0_0/0.4)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.82)] transition duration-[250ms] ease-in-out"
         aria-label="Primary"
       >
         <div

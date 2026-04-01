@@ -9,7 +9,7 @@ html {
  * - Tokenit: niputa toistuvat arbitrary-koot (text-[17px], rounded-[14px]) näihin CSS-muuttujiin → yksi typografia- ja radius-skaala.
  * - Dark / high-contrast: toinen :root-blokki tai data-theme; tänään accent on kovakoodattu siniseen.
  * - Landing vs coach-app: pidä nämä --panel-*, --coach-* synkassa landing-komponenttien kanssa (drift-riski).
- * - Z-index: coach header/nav ~50; modal backdrop ~280; sheet ~281; workout swap ~290 (FoodScreen portal → body).
+ * - Z-index: katso :root --z-nav, --z-overlay-backdrop, --z-overlay-sheet, --z-overlay-swap.
  * - Motion: vähennä varjojen määrää samalla näytöllä (Today + Food + Plan) jos tuntuu “koristeelta”.
  */
 /* —— AI Coach: angry black + electric blue (valmennusjärjestelmä, kova kontrasti) —— */
@@ -70,6 +70,12 @@ html {
   --coach-ring-surface: rgba(255, 255, 255, 0.06);
   --coach-shadow-soft: 0 10px 36px rgb(0 0 0 / 0.32);
   --coach-surface-muted: rgba(255, 255, 255, 0.035);
+
+  /* Z-index — yksi järjestys: header/nav < preview < overlay backdrop < sheet */
+  --z-nav: 50;
+  --z-preview-strip: 45;
+  --z-overlay-backdrop: 260;
+  --z-overlay-sheet: 261;
 }
 
 @theme inline {
