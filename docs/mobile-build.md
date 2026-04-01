@@ -1,60 +1,47 @@
 # Mobiilibuild (Capacitor / iOS)
 
-Web-sovellus on ensisijainen; natiivi on valinnainen wrapper. Tämä dokumentti kertoo miten `ios/`-projekti synkataan ja mitä `capacitor.config.ts` sisältää.
+Web-sovellus on ensisijainen; natiivi on valinnainen wrapper. **TestFlight-polku askel askeleelta:** [mobile-release-checklist.md](./mobile-release-checklist.md).
 
 ## `capacitor.config.ts` (nykyinen)
 
 | Kenttä | Arvo | Huomio |
 |--------|------|--------|
-| `appId` | `com.coach.dailyguidance` | Bundle ID (iOS / Android) |
-| `appName` | `Coach` | Näkyvä nimi |
-| `webDir` | `out` | Staattinen web-buildin kansio — **Next oletuksena ei tuota `out/`** (katso alla) |
+| `appId` | `fi.siteos.aicoach` | Bundle ID — sama Xcode + App Store Connect |
+| `appName` | `AI Coach` | Näkyvä nimi |
+| `webDir` | `out` | Synkataan `npm run cap:prepare` → `out/index.html` (fallback) |
+| `server.url` | env `CAPACITOR_SERVER_URL` | **Suositeltu tuotannossa:** Vercel-base-URL, jotta WebView lataa koko Next-appin (myös API-reitit). Ilman URL:ia näkyy vain placeholder. |
 | `server.androidScheme` | `https` | |
 | `ios.contentInset` | `automatic` | Safe area / notch WebViewissa |
 
 ## Esiehdot
 
-1. Asenna Capacitor-työkalut (projektissa `devDependencies`):
+1. `npm install` (Capacitor: `@capacitor/cli`, `@capacitor/core`, `@capacitor/ios`).
+
+2. **`out/`-kansio:** Next ei tuota `out/` ilman `output: 'export'`; repossa on `scripts/prepare-cap-web.mjs`, jonka `npm run cap:prepare` kirjoittaa ennen `cap sync`. **Tuotannon URL:**
 
    ```bash
-   npm install
+   export CAPACITOR_SERVER_URL="https://sinun-app.vercel.app"
    ```
 
-   Jos paketit puuttuvat kokonaan:
+3. iOS-projekti puuttuu: `npx cap add ios` (kerran).
 
-   ```bash
-   npm install --save-dev @capacitor/core @capacitor/cli @capacitor/ios
-   ```
-
-2. **Staattinen export:** `webDir: "out"` olettaa että `npm run build` tuottaa kansion `out/`. Nykyinen Next-konfiguraatio ei välttämättä käytä `output: 'export'` — lisää Nextiin staattinen export tai erillinen mobile-build -pipeline ennen kuin `npx cap sync` kopioi oikean sisällön. Muuten synkkaa `out/`-hakemisto manuaalisesti vastaamaan tuotosta.
-
-3. iOS-projekti puuttuu reposta: ensimmäisellä kerralla:
-
-   ```bash
-   npx cap add ios
-   ```
-
-## Komennot (tyypillinen flow)
+## Komennot
 
 ```bash
 npm run build
+npm run cap:prepare
 npx cap sync ios
 npx cap open ios
 ```
 
-Android (valinnainen):
-
-```bash
-npx cap sync android
-npx cap open android
-```
+Tai yhdistettynä: `npm run cap:sync` (build + prepare + sync).
 
 ## Testaus
 
-- Oikea laite: safe area (notch, home indicator), bottom nav, modaalien scroll-lukko (`useOverlayLayer` + `overlayStack`).
-- Web: cache-smoke `?ver=67` (tai uudempi `HARMÄ_BUILD`).
+- Laite: safe area, bottom nav, overlay-stack.
+- Web: `?ver=xx` vastaa `HARMÄ_BUILD`-fingerprintiä.
 
 ## Huomiot
 
-- Modal manager: `src/lib/overlayStack.ts` — yksi aktiivinen overlay kerrallaan, scroll palautuu suljettaessa.
-- Älä commitoi `ios/DerivedData` tms. — pidä `ios/` vain jos tiimi haluaa versionhallinnan natiiviprojektiin.
+- Modal manager: `src/lib/overlayStack.ts`.
+- `out/` on `.gitignore`issa — luodaan paikallisesti ennen synkkaa.

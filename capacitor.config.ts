@@ -1,22 +1,26 @@
 /**
- * Capacitor-native wrapper — aja `npm run build` ennen `npx cap sync`.
+ * Capacitor — iOS TestFlight -polku.
  *
- * Taulukko: docs/mobile-build.md
- * - appId: com.coach.dailyguidance
- * - appName: Coach
- * - webDir: out (vaatii staattisen Next-exportin tai vastaavan — ks. mobile-build.md)
+ * - appId / appName: App Store Connect + Xcode Bundle ID -synkassa.
+ * - webDir: `out/` (scripts/prepare-cap-web.mjs ennen cap sync).
+ * - CAPACITOR_SERVER_URL: tuotannon base-URL (Vercel) → WebView lataa täyden Next-appin (API-reitit mukana).
+ *   Ilman URL:ia näkyy vain minimaalinen fallback out/index.html.
+ *
+ * Taulukko: docs/mobile-build.md, docs/mobile-release-checklist.md
  */
+const serverUrl = process.env.CAPACITOR_SERVER_URL?.trim();
+
 const config = {
-  appId: "com.coach.dailyguidance",
-  appName: "Coach",
+  appId: "fi.siteos.aicoach",
+  appName: "AI Coach",
   webDir: "out",
   server: {
     androidScheme: "https",
+    ...(serverUrl ? { url: serverUrl } : {}),
   },
   ios: {
-    /** Safe area / insetit WebViewissa */
     contentInset: "automatic",
   },
-} as const;
+};
 
 export default config;
