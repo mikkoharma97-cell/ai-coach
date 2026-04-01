@@ -313,13 +313,10 @@ export function WorkoutSession() {
   return (
     <WorkoutView
       exercises={exercises}
-      sessionSummary={generated.workout}
       dataFallbackKey={dataFallbackKey}
       showVoiceWorkout={features.showVoiceWorkout}
       showHelpVideos={features.showHelpVideos}
-      coachFrameLine={proMode ? null : coachFrameWithShift}
       exercisePerformanceHints={proMode ? [] : perfHintsForView}
-      showBrandIdentity={!proMode}
       enableExerciseSwap={!isFoodOnlyMode(profile)}
       onSwapExercise={onSwapExercise}
     />

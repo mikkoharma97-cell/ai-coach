@@ -26,22 +26,22 @@ export function HeroFocusCard() {
           className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(59,130,246,0.07)_0%,transparent_42%,rgba(0,0,0,0.4)_100%)]"
           aria-hidden
         />
-        <div className="relative px-7 pb-8 pt-7">
+        <div className="relative px-6 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
             {t("landing.heroCardTitle")}
           </p>
-          <div className="mt-6 space-y-3.5">
-            <p className="text-[15px] font-medium leading-snug tracking-[-0.02em] text-zinc-100">
+          <div className="mt-4 space-y-2.5 sm:mt-5 sm:space-y-3">
+            <p className="text-[14px] font-medium leading-snug tracking-[-0.02em] text-zinc-100 sm:text-[15px]">
               {t("landing.heroCardWorkout")}
             </p>
-            <p className="text-[15px] font-medium leading-snug tracking-[-0.02em] text-zinc-100">
+            <p className="text-[14px] font-medium leading-snug tracking-[-0.02em] text-zinc-100 sm:text-[15px]">
               {t("landing.heroCardFood")}
             </p>
-            <p className="text-[15px] font-medium leading-snug tracking-[-0.02em] text-zinc-200/95">
+            <p className="text-[14px] font-medium leading-snug tracking-[-0.02em] text-zinc-200/95 sm:text-[15px]">
               {t("landing.heroCardDirection")}
             </p>
           </div>
-          <div className="mt-8 w-full rounded-[var(--radius-lg)] bg-gradient-to-b from-[rgb(59,130,246)] to-[rgb(41,92,255)] py-3.5 text-center text-[14px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(41,92,255,0.55)] ring-1 ring-white/10">
+          <div className="mt-6 w-full rounded-[var(--radius-lg)] bg-gradient-to-b from-[rgb(59,130,246)] to-[rgb(41,92,255)] py-3 text-center text-[13px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(41,92,255,0.55)] ring-1 ring-white/10 sm:mt-7 sm:py-3.5 sm:text-[14px]">
             {t("landing.heroCardCtaDecor")}
           </div>
         </div>

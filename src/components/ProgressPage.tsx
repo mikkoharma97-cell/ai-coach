@@ -7,12 +7,8 @@ import { CoachAppShortcuts } from "@/components/app/CoachAppShortcuts";
 import { Container } from "@/components/ui/Container";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { ProgressHeroInsightCard } from "@/components/progress/ProgressHeroInsightCard";
-import { StreakSummaryCard } from "@/components/progress/StreakSummaryCard";
-import { StrengthProgressCard } from "@/components/progress/StrengthProgressCard";
+import { ProgressMetricsRow } from "@/components/progress/ProgressMetricsRow";
 import { WeightTrendCard } from "@/components/progress/WeightTrendCard";
-import { MacroTrendCard } from "@/components/progress/MacroTrendCard";
-import { RecoveryTrendCard } from "@/components/progress/RecoveryTrendCard";
-import { ConsistencyCard } from "@/components/progress/ConsistencyCard";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -21,7 +17,6 @@ import { buildRebalancePlan } from "@/lib/nutrition/rebalance";
 import { collectOvereatingEventsForLast7Days } from "@/lib/nutrition/rebalanceCollect";
 import { buildRealityScore } from "@/lib/realityScore";
 import { gatherRealityScoreContext } from "@/lib/realityScoreContext";
-import { progressInterpretationKey } from "@/lib/coachPresenceCopy";
 import {
   buildStrengthRows,
   computeConsistency,
@@ -30,7 +25,6 @@ import {
   loadWeightSeries,
   WEIGHT_LOG_CHANGED,
 } from "@/lib/progress";
-import { DevelopmentTrajectoryCard } from "@/components/progress/DevelopmentTrajectoryCard";
 import { WeightQuickLog } from "@/components/progress/WeightQuickLog";
 import { progressDataFallbackKey } from "@/lib/dataConfidence";
 import { progressContinueReasonKey } from "@/lib/progressContinueReason";
@@ -38,8 +32,6 @@ import { computeStreakSummary } from "@/lib/streaks";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { generateDailyPlan } from "@/lib/dailyEngine";
-import { buildFullProgressionEngineResult } from "@/lib/coach/fullProgressionEngine";
-import { ProgressionEngineStrip } from "@/components/progress/ProgressionEngineStrip";
 
 export function ProgressPage() {
   const router = useRouter();
@@ -111,21 +103,6 @@ export function ProgressPage() {
     });
   }, [streaks, consistency, rebalanceActive]);
 
-  const coachPlan = useMemo(
-    () => (profile ? generateDailyPlan(profile, ref, locale) : null),
-    [profile, ref, locale],
-  );
-
-  const fullProgression = useMemo(() => {
-    if (!profile || !coachPlan) return null;
-    return buildFullProgressionEngineResult({
-      profile,
-      locale,
-      plan: coachPlan,
-      now: ref,
-    });
-  }, [profile, locale, coachPlan, ref]);
-
   useEffect(() => {
     if (profile === undefined) return;
     if (!profile) {
@@ -166,65 +143,49 @@ export function ProgressPage() {
     <main className="coach-page">
       <Container size="phone" className="pb-28 pt-6 sm:px-6">
         <div className="pointer-events-none mb-2 h-px w-full bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-        {!foodOnly ? (
-          <p className="brand-identity-lead mb-3 max-w-[26rem] text-balance">
-            {t("brand.identityLine")}
-          </p>
-        ) : null}
         <h1 className="coach-page-headline">{t("nav.progress")}</h1>
         {foodOnly ? (
           <p className="mt-2 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
             {t("foodOnly.progressLead")}
           </p>
-        ) : null}
-        <p className="mt-3 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
-          {ft.showCoachLines
-            ? t(
-                progressInterpretationKey({
-                  combinedStreakDays: streaks.combined,
-                  consistencyPct: consistency.pct,
-                }),
-              )
-            : t("progress.pageLead")}
-        </p>
-        <p className="coach-page-body-soft mt-4 max-w-[26rem]">
-          {t("progress.emotionalSubtitle")}
-        </p>
-        {fullProgression ? (
-          <ProgressionEngineStrip
-            className="mt-8 max-w-[26rem]"
-            food={fullProgression.food}
-            activity={fullProgression.activityState}
-            training={fullProgression.trainingState}
-          />
-        ) : null}
+        ) : (
+          <p className="mt-2 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
+            {t("progress.oneTruthLead")}
+          </p>
+        )}
         <Link
           href="/app"
-          className="mt-6 inline-flex min-h-[44px] items-center text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
+          className="mt-5 inline-flex min-h-[44px] items-center text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
         >
           {t("nav.backToToday")}
         </Link>
         {progressFallbackKey ? (
           <p
-            className="mb-3 text-[11px] leading-relaxed text-muted-2"
+            className="mb-2 mt-3 text-[11px] leading-relaxed text-muted-2"
             role="status"
           >
             {t(progressFallbackKey)}
           </p>
         ) : null}
-        <div className="mt-12">
-          <DevelopmentTrajectoryCard
-            profile={profile}
-            consistencyPct={consistency.pct}
-            streakDays={streaks.combined}
-            version={weightTick}
-          />
-        </div>
+
         {ft.showProgressCharts ? (
-          <div className="mt-12">
+          <div className="mt-8">
             <WeightTrendCard profile={profile} version={weightTick} />
           </div>
-        ) : null}
+        ) : (
+          <p
+            className="mt-8 text-[12px] leading-relaxed text-muted-2"
+            role="status"
+          >
+            {t("progress.chartsHiddenHint")}
+          </p>
+        )}
+
+        <ProgressMetricsRow
+          consistency={consistency}
+          combinedStreak={streaks.combined}
+        />
+
         <WeightQuickLog onLogged={bumpWeight} />
         <div className="mt-6 text-center sm:text-left">
           <Link
@@ -234,7 +195,8 @@ export function ProgressPage() {
             {t("progress.seeWeeklyReview")}
           </Link>
         </div>
-        <details className="coach-panel-subtle group mt-12">
+
+        <details className="coach-panel-subtle group mt-10">
           <summary className="cursor-pointer list-none px-4 py-4 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden sm:px-5">
             <span className="flex items-center justify-between gap-3">
               <span>{t("progress.moreMetrics")}</span>
@@ -246,7 +208,7 @@ export function ProgressPage() {
               </span>
             </span>
           </summary>
-          <div className="space-y-8 border-t border-border/50 px-2 pb-6 pt-6">
+          <div className="space-y-6 border-t border-border/50 px-2 pb-6 pt-6">
             {ft.showCoachLines ? (
               <ProgressHeroInsightCard
                 insight={heroInsight}
@@ -269,23 +231,6 @@ export function ProgressPage() {
                 </p>
               </section>
             ) : null}
-            {ft.showStreaks ? <StreakSummaryCard summary={streaks} /> : null}
-            {ft.showProgressCharts ? (
-              <>
-                <ConsistencyCard snap={consistency} />
-                <StrengthProgressCard rows={strengthRows} />
-                <MacroTrendCard
-                  answers={profile}
-                  referenceDate={ref}
-                  rebalanceActive={rebalanceActive}
-                />
-                <RecoveryTrendCard referenceDate={ref} streaks={streaks} />
-              </>
-            ) : (
-              <p className="px-2 text-[12px] leading-relaxed text-muted-2">
-                {t("progress.chartsHiddenHint")}
-              </p>
-            )}
             <HelpVideoCard
               pageId="progress"
               enabled={ft.showHelpVideos}

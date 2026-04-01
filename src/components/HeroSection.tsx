@@ -22,37 +22,27 @@ export function HeroSection() {
         aria-hidden
       />
       <Container size="default" className="relative z-[1]">
-        <div className="flex flex-col items-center gap-16 pb-24 pt-16 sm:gap-20 sm:pb-28 sm:pt-20 lg:flex-row lg:items-center lg:justify-between lg:gap-24 lg:pb-36 lg:pt-28">
-          <div className="w-full max-w-[min(100%,26rem)] text-center lg:max-w-[min(100%,28rem)] lg:text-left">
+        <div className="flex min-h-0 flex-col items-center gap-10 pb-14 pt-10 sm:gap-12 sm:pb-16 sm:pt-12">
+          <div className="w-full max-w-[min(100%,26rem)] text-center">
             <h1 className="text-balance text-[clamp(1.55rem,4.2vw+0.65rem,2.75rem)] font-semibold leading-[1.12] tracking-[-0.04em] text-[color:var(--foreground)]">
               <span className="block">{t("landing.heroLine1")}</span>
-              <span className="mt-4 block text-[0.92em] font-medium leading-snug tracking-[-0.03em] text-zinc-200">
+              <span className="mt-3 block text-[0.92em] font-medium leading-snug tracking-[-0.03em] text-zinc-200">
                 {t("landing.heroLine2")}
               </span>
             </h1>
-            <p className="mx-auto mt-6 max-w-md text-[15px] font-medium leading-relaxed text-zinc-400 sm:text-[16px] lg:mx-0">
+            <p className="mx-auto mt-5 max-w-md text-[15px] font-medium leading-relaxed text-zinc-400 sm:text-[16px]">
               {t("landing.heroMicro")}
             </p>
-            <p className="mx-auto mt-8 max-w-md text-[13px] leading-relaxed text-zinc-500 sm:text-[14px] lg:mx-0">
-              {t("landing.heroCredibility")}
-            </p>
-            <div className="relative z-[2] mt-12 flex flex-col items-center gap-4 pointer-events-auto sm:mt-14 sm:flex-row sm:items-center sm:gap-6 lg:justify-start">
+            <div className="relative z-[2] mx-auto mt-8 flex w-full max-w-xs justify-center pointer-events-auto sm:mt-10">
               <CTAButton
                 href={appendBuildQuery("/start")}
-                className={`!min-h-[54px] !min-w-[200px] !rounded-[15px] !px-10 !py-4 !text-[16px] !font-semibold !shadow-[var(--shadow-primary-cta)] hover:!brightness-110 ${ctaRingOffset}`}
+                className={`!min-h-[52px] w-full !max-w-[280px] !rounded-[15px] !px-8 !py-3.5 !text-[16px] !font-semibold !shadow-[var(--shadow-primary-cta)] hover:!brightness-110 ${ctaRingOffset}`}
               >
                 {t("landing.heroCta")}
               </CTAButton>
-              <CTAButton
-                href={appendBuildQuery("/app")}
-                variant="link"
-                className={`!min-h-0 !py-2 !text-[14px] !font-medium !text-muted !no-underline hover:!text-[color:var(--foreground)] ${ctaRingOffset}`}
-              >
-                {t("landing.heroOpenApp")}
-              </CTAButton>
             </div>
           </div>
-          <div className="flex w-full flex-1 justify-center lg:justify-end">
+          <div className="flex w-full justify-center">
             <HeroFocusCard />
           </div>
         </div>

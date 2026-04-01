@@ -10,11 +10,6 @@ import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useWorkoutVoiceCommands } from "@/hooks/useWorkoutVoiceCommands";
-import {
-  countCompletedSets,
-  totalSetsCount,
-  workoutCoachNudgeKey,
-} from "@/lib/coachPresenceCopy";
 import type { MessageKey } from "@/lib/i18n";
 import type { WorkoutVoiceCommand } from "@/lib/workout/voiceParser";
 import { logButtonClick } from "@/lib/uiInteractionDebug";
@@ -26,7 +21,7 @@ import { getExerciseById } from "@/lib/training/exercises";
 import { getSwapTargetsForExercise } from "@/lib/training/exerciseOverrides";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 export type WorkoutViewSet = {
   reps: string;
@@ -61,17 +56,11 @@ type ExerciseRow = Omit<WorkoutViewExercise, "sets"> & { sets: SetRow[] };
 
 type Props = {
   exercises?: WorkoutViewExercise[];
-  /** Päivän tiivis kuvaus (generaattori) — korvaa oletuskuvauksen kun annettu */
-  sessionSummary?: string | null;
   dataFallbackKey?: MessageKey | null;
   showVoiceWorkout?: boolean;
   showHelpVideos?: boolean;
-  /** Valmentajan runkoviiva (moottori) */
-  coachFrameLine?: string | null;
   /** Lokidatasta: viimeisin volyymi / trendi per liike (locale jo valittu) */
   exercisePerformanceHints?: { exerciseId: string; line: string }[];
-  /** Brändi: yhtenäinen identity-linja näkymän alussa */
-  showBrandIdentity?: boolean;
   /** Sallittu liikevaihto (katalogin vaihtoehdot) */
   enableExerciseSwap?: boolean;
   onSwapExercise?: (canonicalId: string, targetId: string | null) => void;
@@ -152,20 +141,20 @@ function MicIcon({ className }: { className?: string }) {
  */
 export function WorkoutView({
   exercises,
-  sessionSummary,
   dataFallbackKey,
   showVoiceWorkout = true,
   showHelpVideos = true,
-  coachFrameLine,
   exercisePerformanceHints,
-  showBrandIdentity = false,
   enableExerciseSwap = false,
   onSwapExercise,
 }: Props) {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const list = exercises ?? [];
-  const desc = sessionSummary?.trim() || t("workout.description");
+  const headerSubtitle =
+    list.length > 0
+      ? t("workout.exerciseCountShort", { count: list.length })
+      : undefined;
 
   const initialRows = useMemo(() => cloneExercises(list), [list]);
 
@@ -178,56 +167,10 @@ export function WorkoutView({
   const activeSetIndexRef = useRef(activeSetIndex);
   activeExerciseIndexRef.current = activeExerciseIndex;
   activeSetIndexRef.current = activeSetIndex;
-  const activeExerciseSectionRef = useRef<HTMLElement | null>(null);
   const [feedbackLine, setFeedbackLine] = useState<string | null>(null);
-  const [coachNudgeLine, setCoachNudgeLine] = useState<string | null>(null);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
   /** Modaalissa vaihdettava rivi (ei vain aktiivinen iso kortti). */
   const [swapFocusIndex, setSwapFocusIndex] = useState<number | null>(null);
-  const coachNudgePhase = useRef(0);
-  const coachNudgeTimeout = useRef<number | null>(null);
-
-  useEffect(() => {
-    const c = countCompletedSets(rows);
-    const total = totalSetsCount(rows);
-    if (total === 0) return;
-    const mid = Math.max(2, Math.ceil(total * 0.55));
-    if (coachNudgePhase.current >= 2) return;
-
-    if (c === 1 && coachNudgePhase.current === 0) {
-      coachNudgePhase.current = 1;
-      setCoachNudgeLine(t(workoutCoachNudgeKey(1, activeExerciseIndex)));
-      if (coachNudgeTimeout.current) clearTimeout(coachNudgeTimeout.current);
-      coachNudgeTimeout.current = window.setTimeout(() => {
-        setCoachNudgeLine(null);
-        coachNudgeTimeout.current = null;
-      }, 5200);
-      return;
-    }
-    if (coachNudgePhase.current === 1 && c >= mid && total > 1) {
-      coachNudgePhase.current = 2;
-      setCoachNudgeLine(t(workoutCoachNudgeKey(c, activeExerciseIndex + 2)));
-      if (coachNudgeTimeout.current) clearTimeout(coachNudgeTimeout.current);
-      coachNudgeTimeout.current = window.setTimeout(() => {
-        setCoachNudgeLine(null);
-        coachNudgeTimeout.current = null;
-      }, 5200);
-    }
-  }, [rows, activeExerciseIndex, t]);
-
-  useEffect(
-    () => () => {
-      if (coachNudgeTimeout.current) clearTimeout(coachNudgeTimeout.current);
-    },
-    [],
-  );
-
-  useEffect(() => {
-    activeExerciseSectionRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, [activeExerciseIndex]);
 
   const saveSessionAndGoApp = useCallback(() => {
     const log = serializeWorkoutSession(
@@ -381,13 +324,6 @@ export function WorkoutView({
     return { setsDone: done, setsTotal: total };
   }, [rows]);
 
-  const flowPhaseKey = useMemo((): MessageKey => {
-    if (setsTotal === 0) return "workout.flow.start";
-    if (setsDone >= setsTotal) return "workout.flow.done";
-    if (setsDone === 0) return "workout.flow.start";
-    return "workout.flow.continue";
-  }, [setsDone, setsTotal]);
-
   const activePerfHint = useMemo(() => {
     const ex = rows[activeExerciseIndex];
     if (!ex || !exercisePerformanceHints?.length) return null;
@@ -450,8 +386,8 @@ export function WorkoutView({
       <Container size="phone" className="px-5">
         <CoachScreenHeader
           eyebrow={t("workout.eyebrow")}
-          title={t("workout.title")}
-          description={desc}
+          title={list.length > 0 ? t("workout.todayTitle") : t("workout.title")}
+          description={headerSubtitle}
           action={
             <button
               type="button"
@@ -466,22 +402,9 @@ export function WorkoutView({
           }
         />
 
-        {showBrandIdentity ? (
-          <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
-            {t("brand.identityLine")}
-          </p>
-        ) : null}
-
-        {coachFrameLine ? (
-          <p className="mt-3 max-w-[26rem] text-[12px] font-semibold leading-snug text-muted">
-            {coachFrameLine}
-          </p>
-        ) : null}
-
         {list.length > 0 && rows[activeExerciseIndex] ? (
           <section
-            ref={activeExerciseSectionRef}
-            className="mt-4 scroll-mt-24 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.1] bg-white/[0.03] px-4 py-4 sm:px-5"
+            className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.1] bg-white/[0.03] px-4 py-4 sm:px-5"
             aria-labelledby="active-ex-heading"
           >
             <p
@@ -584,84 +507,32 @@ export function WorkoutView({
             </ul>
             <details className="mt-4 border-t border-white/[0.08] pt-3">
               <summary className="cursor-pointer list-none text-[12px] font-semibold text-accent marker:content-none [&::-webkit-details-marker]:hidden">
-                {t("swipe.panelCoach")}
+                {t("workout.foldTechniqueVideo")}
               </summary>
-              <div className="mt-2">
-                <ExerciseCoachTipsPanel exercise={rows[activeExerciseIndex]} />
-              </div>
-            </details>
-            <details className="mt-2">
-              <summary className="cursor-pointer list-none text-[12px] font-semibold text-muted marker:content-none [&::-webkit-details-marker]:hidden">
-                {t("swipe.panelMedia")}
-              </summary>
-              <div className="mt-2">
-                <ExerciseMediaVideoSlot exercise={rows[activeExerciseIndex]} />
+              <div className="mt-3 space-y-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                    {t("swipe.panelCoach")}
+                  </p>
+                  <div className="mt-2">
+                    <ExerciseCoachTipsPanel exercise={rows[activeExerciseIndex]} />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                    {t("swipe.panelMedia")}
+                  </p>
+                  <div className="mt-2">
+                    <ExerciseMediaVideoSlot exercise={rows[activeExerciseIndex]} />
+                  </div>
+                </div>
               </div>
             </details>
           </section>
-        ) : null}
-
-        {list.length > 0 &&
-        enableExerciseSwap &&
-        onSwapExercise &&
-        rows.length > 0 ? (
-          <section
-            className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.02] px-4 py-3 sm:px-5"
-            aria-labelledby="workout-roster-heading"
-          >
-            <p
-              id="workout-roster-heading"
-              className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2"
-            >
-              {t("workout.exerciseRosterEyebrow")}
-            </p>
-            <ul className="mt-2 divide-y divide-white/[0.06]">
-              {rows.map((ex, idx) => {
-                const sid = ex.canonicalExerciseId ?? ex.id;
-                const rosterOpts = getSwapTargetsForExercise(sid);
-                const isRosterActive = idx === activeExerciseIndex;
-                return (
-                  <li
-                    key={`roster-${ex.id}-${idx}`}
-                    className={`flex min-h-[44px] items-center justify-between gap-3 py-2.5 ${
-                      isRosterActive ? "rounded-lg bg-accent/[0.08] -mx-1 px-1" : ""
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-semibold leading-snug text-foreground">
-                        {ex.name}
-                      </p>
-                      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-2">
-                        {idx + 1}/{rows.length}
-                      </p>
-                    </div>
-                    {rosterOpts.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => openSwapModal(idx)}
-                        className="shrink-0 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-accent transition hover:border-accent/60 hover:bg-accent/15"
-                      >
-                        {t("workout.swapCta")}
-                      </button>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ) : null}
-
-        {list.length > 0 && setsTotal > 0 ? (
-          <p
-            className="mt-4 rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.1] px-4 py-3 text-center text-[13px] font-semibold leading-snug text-foreground"
-            role="status"
-          >
-            {t(flowPhaseKey)}
-          </p>
         ) : null}
 
         {list.length > 0 && setsTotal > 0 && setsDone < setsTotal ? (
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-3">
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:gap-3">
             <button
               type="button"
               onClick={() => {
@@ -669,11 +540,11 @@ export function WorkoutView({
                 setFeedbackLine(t("workout.voice.feedback.complete"));
                 applyCommand({ type: "complete_set" });
               }}
-              className="min-h-[48px] flex-1 rounded-[var(--radius-lg)] bg-accent px-4 text-[13px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99]"
+              className="min-h-[52px] flex-1 rounded-[var(--radius-lg)] bg-accent px-4 text-[15px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99]"
             >
               {t("workout.tapCompleteSetCta")}
             </button>
-            {rows.length > 1 ? (
+            {rows.length > 1 && activeExerciseIndex < rows.length - 1 ? (
               <button
                 type="button"
                 onClick={() => {
@@ -681,9 +552,11 @@ export function WorkoutView({
                   setFeedbackLine(t("workout.voice.feedback.nextExercise"));
                   applyCommand({ type: "next_exercise" });
                 }}
-                className="min-h-[48px] flex-1 rounded-[var(--radius-lg)] border border-border/80 bg-white/[0.06] px-4 text-[13px] font-semibold text-foreground transition hover:border-accent/35 active:scale-[0.99]"
+                className="min-h-[52px] flex-1 rounded-[var(--radius-lg)] border-2 border-accent/45 bg-white/[0.04] px-4 text-[15px] font-semibold text-foreground transition hover:border-accent/70 hover:bg-accent/[0.08] active:scale-[0.99]"
               >
-                {t("workout.tapNextExerciseCta")}
+                {t("workout.nextExerciseNamed", {
+                  name: rows[activeExerciseIndex + 1]!.name,
+                })}
               </button>
             ) : null}
           </div>
@@ -704,100 +577,90 @@ export function WorkoutView({
           </div>
         ) : null}
 
-        <HelpVideoCard
-          pageId="workout"
-          enabled={showHelpVideos}
-          className="mt-4 opacity-90"
-        />
-
         {list.length > 0 ? (
-          <>
-            {showVoiceWorkout ? (
-              <>
-            <div
-              className="mt-4 flex items-center gap-3 rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.03] px-3 py-2.5"
-              role="status"
-              aria-live="polite"
-            >
-              <button
-                type="button"
-                disabled={!voice.supported}
-                onClick={() => {
-                  if (voice.isListening) voice.stopListening();
-                  else voice.startListening();
-                }}
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
-                  voice.supported
-                    ? voice.isListening
-                      ? "bg-accent text-[var(--coach-bg)] shadow-[0_0_0_3px_rgba(255,255,255,0.12)]"
-                      : "bg-white/[0.08] text-foreground hover:bg-white/[0.12]"
-                    : "cursor-not-allowed bg-white/[0.04] text-muted-2"
-                }`}
-                aria-pressed={voice.isListening}
-                aria-label={t("workout.voice.pushToTalkHint")}
-                title={
-                  voice.supported
-                    ? t("workout.voice.pushToTalkHint")
-                    : t("workout.voice.unsupported")
-                }
-              >
-                <MicIcon className="h-[22px] w-[22px]" />
-              </button>
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-foreground">
-                  {stripText}
+          <details className="coach-panel-subtle group mt-6">
+            <summary className="cursor-pointer list-none px-1 py-2 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center justify-between gap-3">
+                <span>{t("workout.sessionExtrasSummary")}</span>
+                <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
+                  {t("common.show")}
+                </span>
+                <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
+                  {t("common.hide")}
+                </span>
+              </span>
+            </summary>
+            <div className="space-y-4 border-t border-border/40 pt-4">
+              {showVoiceWorkout ? (
+                <div
+                  className="flex items-center gap-3 rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.03] px-3 py-2.5"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <button
+                    type="button"
+                    disabled={!voice.supported}
+                    onClick={() => {
+                      if (voice.isListening) voice.stopListening();
+                      else voice.startListening();
+                    }}
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
+                      voice.supported
+                        ? voice.isListening
+                          ? "bg-accent text-[var(--coach-bg)] shadow-[0_0_0_3px_rgba(255,255,255,0.12)]"
+                          : "bg-white/[0.08] text-foreground hover:bg-white/[0.12]"
+                        : "cursor-not-allowed bg-white/[0.04] text-muted-2"
+                    }`}
+                    aria-pressed={voice.isListening}
+                    aria-label={t("workout.voice.pushToTalkHint")}
+                    title={
+                      voice.supported
+                        ? t("workout.voice.pushToTalkHint")
+                        : t("workout.voice.unsupported")
+                    }
+                  >
+                    <MicIcon className="h-[22px] w-[22px]" />
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-medium leading-snug text-foreground">
+                      {stripText}
+                    </p>
+                    {voice.lastRawTranscript.trim() ? (
+                      <p className="mt-0.5 truncate text-[11px] text-muted-2">
+                        {voice.lastRawTranscript}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+              {!showVoiceWorkout || voice.supported ? null : (
+                <p className="text-[12px] text-muted-2">
+                  {t("workout.voice.unsupported")}
                 </p>
-                {voice.lastRawTranscript.trim() ? (
-                  <p className="mt-0.5 truncate text-[11px] text-muted-2">
-                    {voice.lastRawTranscript}
-                  </p>
-                ) : null}
-              </div>
+              )}
+              <HelpVideoCard
+                pageId="workout"
+                enabled={showHelpVideos}
+                className="opacity-90"
+              />
+              {dataFallbackKey ? (
+                <p className="text-[11px] leading-relaxed text-muted-2" role="status">
+                  {t(dataFallbackKey)}
+                </p>
+              ) : null}
+              <CoachAppShortcuts
+                compact
+                omit={["/workout"]}
+                eyebrowKey="workout.afterSessionHint"
+                className="mt-0"
+              />
             </div>
-
-            {!voice.supported ? (
-              <p className="mt-2 text-[12px] text-muted-2">
-                {t("workout.voice.unsupported")}
-              </p>
-            ) : null}
-
-            <p className="mt-3 text-[12px] leading-relaxed text-muted">
-              {t("workout.voice.helperLine")}
-            </p>
-              </>
-            ) : null}
-
-            {coachNudgeLine ? (
-              <p
-                className="mt-3 rounded-lg border border-accent/25 bg-accent/[0.1] px-3 py-2.5 text-[13px] font-medium leading-snug text-foreground"
-                role="status"
-                aria-live="polite"
-              >
-                {coachNudgeLine}
-              </p>
-            ) : null}
-          </>
+          </details>
         ) : (
           <p className="mt-6 text-[13px] leading-relaxed text-muted" role="status">
             {t("fallback.trendClearerWithData")}
           </p>
         )}
-
-        {dataFallbackKey ? (
-          <p
-            className="mt-8 text-[11px] leading-relaxed text-muted-2"
-            role="status"
-          >
-            {t(dataFallbackKey)}
-          </p>
-        ) : null}
-
-        <CoachAppShortcuts
-          compact
-          omit={["/workout"]}
-          eyebrowKey="workout.afterSessionHint"
-          className="mt-10"
-        />
 
         {swapModalOpen && modalSwapSourceId && onSwapExercise ? (
           <div

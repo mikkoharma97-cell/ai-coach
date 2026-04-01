@@ -381,6 +381,12 @@ export const fi = {
 
   "progress.sectionStreak": "Putki",
   "progress.pageLead": "Rytmi ja suunta — yksi näkymä.",
+  "progress.oneTruthLead":
+    "Yksi käyrä (paino), kaksi lukemaa (rytmi + putki).",
+  "progress.supportMetricsAria": "Tukiluvut",
+  "progress.supportStreakEyebrow": "Putki",
+  "progress.supportStreakHint": "Ruoka + treeni",
+  "progress.weightWindowWeeks": "Viimeiset {{n}} vk",
   "progress.emotionalSubtitle": "Merkinnät ensin. Suunta seuraa.",
   "progression.engineEyebrow": "Progressio (trendi)",
   "progression.pillarFood": "Ruoka",
@@ -647,7 +653,7 @@ export const fi = {
     "Tasapainoitus kesken — huomenna näet linjan.",
   "progress.continueReason.default":
     "Rytmi tulee toistosta — ilman ylipainetta.",
-  "progress.moreMetrics": "Lisää mittareita",
+  "progress.moreMetrics": "Lisää",
   "progress.chartsHiddenHint":
     "Käyrät on piilotettu asetuksissa — voit ottaa ne takaisin käyttöön Valinnoista.",
   "progress.combinedLabel": "Yhdistetty putki",
@@ -974,6 +980,11 @@ export const fi = {
   "workout.tapCompleteSetCta": "Merkitse sarja tehdyksi",
   "workout.tapNextExerciseCta": "Seuraava liike",
   "workout.title": "Treeni",
+  "workout.todayTitle": "Tämän päivän treeni",
+  "workout.exerciseCountShort": "{{count}} liikettä",
+  "workout.nextExerciseNamed": "Seuraava: {{name}}",
+  "workout.sessionExtrasSummary": "Lisää: ääni, video, linkit",
+  "workout.foldTechniqueVideo": "Tekniikka & video",
   "workout.description":
     "Merkitse sarjat. Huono liike — vaihda. Runko pysyy.",
   "workout.restTitle": "Lepo",
@@ -1119,6 +1130,8 @@ export const fi = {
   "food.mealsHint": "Vaihda tai kirjaa — sama linja kuin Tänään.",
   "food.suggested": "Ehdotus",
   "food.add": "Lisää",
+  "food.addMealHero": "Lisää ateria",
+  "food.dayMealsHeading": "Päivän ateriat",
   "food.swap": "Vaihda",
   "food.addFood": "Lisää ruokaa",
   "food.savedRepeat": "Tallennetut · toisto",
@@ -2664,6 +2677,12 @@ export const en: { [K in MessageKey]: string } = {
 
   "progress.sectionStreak": "Streaks",
   "progress.pageLead": "Rhythm and direction — one screen.",
+  "progress.oneTruthLead":
+    "One curve (weight), two numbers (rhythm + streak).",
+  "progress.supportMetricsAria": "Supporting metrics",
+  "progress.supportStreakEyebrow": "Streak",
+  "progress.supportStreakHint": "Food + training",
+  "progress.weightWindowWeeks": "Last {{n}} wk",
   "progress.emotionalSubtitle": "Logs first. Direction follows.",
   "progression.engineEyebrow": "Progression (trend)",
   "progression.pillarFood": "Food",
@@ -2931,7 +2950,7 @@ export const en: { [K in MessageKey]: string } = {
     "Rebalancing in motion — tomorrow you’ll see the line.",
   "progress.continueReason.default":
     "Rhythm comes from repeats — no extra pressure.",
-  "progress.moreMetrics": "More metrics",
+  "progress.moreMetrics": "More",
   "progress.chartsHiddenHint":
     "Charts are hidden in settings — turn them back on in Preferences.",
   "progress.combinedLabel": "Combined streak",
@@ -3261,6 +3280,11 @@ export const en: { [K in MessageKey]: string } = {
   "workout.tapCompleteSetCta": "Log set done",
   "workout.tapNextExerciseCta": "Next exercise",
   "workout.title": "Workout",
+  "workout.todayTitle": "Today’s workout",
+  "workout.exerciseCountShort": "{{count}} exercises",
+  "workout.nextExerciseNamed": "Next: {{name}}",
+  "workout.sessionExtrasSummary": "More: voice, video, links",
+  "workout.foldTechniqueVideo": "Technique & video",
   "workout.description":
     "Log your sets. Wrong lift — swap it. Frame stays.",
   "workout.restTitle": "Rest",
@@ -3414,6 +3438,8 @@ export const en: { [K in MessageKey]: string } = {
   "food.mealsHint": "Swap or log — same line as Today.",
   "food.suggested": "Suggested",
   "food.add": "Add",
+  "food.addMealHero": "Add a meal",
+  "food.dayMealsHeading": "Today’s meals",
   "food.swap": "Swap",
   "food.addFood": "Add food",
   "food.savedRepeat": "Saved · repeat",

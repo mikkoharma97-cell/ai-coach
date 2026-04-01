@@ -36,6 +36,8 @@ type Props = {
   isLastMealSlot?: boolean;
   /** Hours until typical next meal (rule-based, not clock math). */
   hoursToNextMeal?: number;
+  /** Softer slot CTA when a global “add meal” hero is primary. */
+  slotAddMuted?: boolean;
   t: TranslateFn;
 };
 
@@ -70,10 +72,14 @@ export function FoodMealSlotBlock({
   onRemoveLog,
   isLastMealSlot = false,
   hoursToNextMeal = 3,
+  slotAddMuted = false,
   t,
 }: Props) {
   const hasLog = logItems.length > 0;
   const sm = surfaceMod(slotWeight);
+  const slotAddClass = slotAddMuted
+    ? "min-h-[44px] w-full rounded-2xl border border-border/55 bg-surface-subtle/40 px-4 text-[13px] font-semibold text-foreground shadow-none transition hover:border-accent/40 hover:bg-surface-subtle/55 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    : "min-h-[44px] w-full rounded-2xl bg-accent px-4 text-[13px] font-semibold text-white shadow-[0_8px_24px_-6px_rgb(42_92_191/0.45)] transition hover:scale-[0.99] hover:bg-[var(--accent-hover)] active:scale-[0.98]";
 
   return (
     <div className={shellClass(slotWeight)}>
@@ -170,7 +176,7 @@ export function FoodMealSlotBlock({
             <button
               type="button"
               onClick={() => onAdd(hasLog ? null : current)}
-              className="min-h-[44px] w-full rounded-2xl bg-accent px-4 text-[13px] font-semibold text-white shadow-[0_8px_24px_-6px_rgb(42_92_191/0.45)] transition hover:scale-[0.99] hover:bg-[var(--accent-hover)] active:scale-[0.98]"
+              className={slotAddClass}
             >
               {hasLog ? t("food.add") : t("food.eatThis")}
             </button>
@@ -196,7 +202,7 @@ export function FoodMealSlotBlock({
           <button
             type="button"
             onClick={() => onAdd(null)}
-            className="mt-4 w-full min-h-[44px] rounded-2xl bg-accent px-4 text-[13px] font-semibold text-white shadow-[0_8px_24px_-6px_rgb(42_92_191/0.45)] transition hover:scale-[0.99] hover:bg-[var(--accent-hover)] active:scale-[0.98]"
+            className={`mt-4 w-full ${slotAddClass}`}
           >
             {t("food.add")}
           </button>

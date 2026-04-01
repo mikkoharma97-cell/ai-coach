@@ -601,6 +601,8 @@ export function FoodScreen() {
   const ratio = macroRatioBar(plan.todayMacros);
   const ft = getCoachFeatureToggles(normalizedProfile ?? profile);
   const foodOnly = isFoodOnlyMode(normalizedProfile ?? profile);
+  const primaryLogSlot: MealSlot =
+    nextMealSlot?.slot ?? slotList[0]?.slot ?? "lunch";
 
   return (
     <main className="coach-page">
@@ -616,425 +618,41 @@ export function FoodScreen() {
                 : t("food.titleGuidance")
           }
           description={plan.todayFoodTask}
-          action={
-            <p className="text-[11px] font-medium leading-snug text-muted-2">
-              {t(goalHeadlineKey(profile.goal))} ·{" "}
-              {t(structureHintKey(profile.mealStructure))}
-            </p>
-          }
         />
-
-        {!foodOnly ? (
-          <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
-            {t("brand.identityLine")}
-          </p>
-        ) : null}
-
-        {foodEngineLine ? (
-          <p className="mt-3 max-w-xl text-[12px] font-semibold leading-snug text-muted">
-            {foodEngineLine}
-          </p>
-        ) : null}
-
-        {nextMealSlot && nextMealOption ? (
-          <div
-            className="mt-5 rounded-[var(--radius-xl)] border border-accent/40 bg-gradient-to-b from-accent/[0.12] to-white/[0.02] px-4 py-4"
-            role="region"
-            aria-labelledby="food-next-meal"
-          >
-            <p
-              id="food-next-meal"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-accent"
-            >
-              {t("food.nextMealEyebrow")}
-            </p>
-            <p className="mt-2 text-[1.0625rem] font-semibold leading-tight text-foreground">
-              {nextMealSlot.label} · {nextMealOption.name}
-            </p>
-            <p className="mt-1.5 text-[12px] leading-snug text-muted">
-              {t("food.eatThisNowLine")}
-            </p>
-            <button
-              type="button"
-              className="mt-4 flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-lg)] bg-accent px-4 text-[13px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)]"
-              onClick={() => openAdd(nextMealSlot.slot, nextMealOption)}
-            >
-              {t("food.eatThisNowCta")}
-            </button>
-          </div>
-        ) : null}
 
         {foodFallbackKey ? (
           <p
-            className="mt-4 text-[11px] leading-relaxed text-muted-2"
+            className="mt-3 text-[11px] leading-relaxed text-muted-2"
             role="status"
           >
             {t(foodFallbackKey)}
           </p>
         ) : null}
 
-        {!foodOnly ? (
-          <HelpVideoCard
-            pageId="food"
-            enabled={ft.showHelpVideos}
-            className="mt-4"
-          />
-        ) : null}
-
-        <FoodTodayStrip
-          todaySummary={plan.todayFoodTask}
-          consumedKcal={consumed}
-          targetKcal={target}
-          rebalanceLine={
-            plan.rebalancePlan && ft.showNutritionCorrections
-              ? getRebalanceMessage(plan.rebalancePlan, locale)
-              : null
-          }
-          shoppingTeaser={
-            weeklyShopping
-              ? locale === "fi"
-                ? `${weeklyShopping.items.length} riviä ostoslistalla`
-                : `${weeklyShopping.items.length} lines on your list`
-              : null
-          }
-          showRebalanceUi={Boolean(
-            ft.showNutritionCorrections && plan.rebalancePlan,
-          )}
-        />
-
-        {profile ? (
-          foodOnly ? (
-            <details className="mt-6 rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.02]">
-              <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
-                {t("food.screen.moreTools")}
-              </summary>
-              <div className="border-t border-border/40 px-3 pb-4 pt-2">
-                <SupplementStackEditor
-                  profile={profile}
-                  onSaved={() => {
-                    setProfileReloadSeq((s) => s + 1);
-                    refresh();
-                  }}
-                />
-                <SupplementCoachRecommendations
-                  picks={supplementPicks}
-                  className="mt-5"
-                />
-                <FeaturedProductsStrip />
-              </div>
-            </details>
-          ) : (
-            <>
-              <SupplementStackEditor
-                profile={profile}
-                onSaved={() => {
-                  setProfileReloadSeq((s) => s + 1);
-                  refresh();
-                }}
-              />
-              <SupplementCoachRecommendations
-                picks={supplementPicks}
-                className="mt-5"
-              />
-              <FeaturedProductsStrip />
-            </>
-          )
-        ) : null}
-
-        {kcalRangeHintText ? (
-          <p
-            className="mt-3 max-w-[26rem] text-[11px] leading-relaxed text-muted-2"
-            role="status"
-          >
-            {kcalRangeHintText}
-          </p>
-        ) : null}
-
-        <FoodLibraryQuickBlock
-          locale={locale}
-          t={t}
-          onPick={onLibraryPick}
-        />
-
-        {ft.showCoachLines ? (
-          <p className="mt-4 max-w-[26rem] border-l-2 border-accent/40 pl-3 text-[14px] font-semibold leading-snug text-foreground">
-            {t(
-              foodCoachLineKey({
-                rebalanceActive: Boolean(plan.rebalancePlan),
-                dayKey: dayKeyFood,
-              }),
-            )}
-          </p>
-        ) : null}
-
-        {ft.showVoiceWorkout ? (
-          <FoodVoiceQuickBlock referenceDate={now} onAfter={() => refresh()} />
-        ) : null}
-
-        {ft.showNutritionCorrections && plan.rebalancePlan ? (
-          <div
-            className="mt-4 rounded-[var(--radius-lg)] border border-accent/25 bg-white/[0.04] px-4 py-3.5"
-            role="region"
-            aria-labelledby="food-rebalance-label"
-          >
-            <p
-              id="food-rebalance-label"
-              className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent"
-            >
-              {t("food.rebalanceTitle")}
-            </p>
-            <p className="mt-2 text-[12px] leading-snug text-muted">
-              {getRebalanceMessage(plan.rebalancePlan, locale)}
-            </p>
-            <p className="mt-2 text-[13px] font-medium leading-snug text-foreground">
-              {t("rebalance.noPunishLine")}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[12px]">
-              <Link
-                href="/progress"
-                className="font-semibold text-accent underline-offset-[3px] hover:underline"
-              >
-                {t("food.linkSeeProgress")}
-              </Link>
-              <Link
-                href="/adjustments"
-                className="font-semibold text-accent underline-offset-[3px] hover:underline"
-              >
-                {t("food.linkAdjustCoach")}
-              </Link>
-            </div>
-          </div>
-        ) : null}
-
-        {exceptionGuidanceFood ? (
-          <div
-            className="mt-4 rounded-[var(--radius-lg)] border border-accent/30 bg-white/[0.04] px-4 py-3.5"
-            role="region"
-            aria-labelledby="food-exception-label"
-          >
-            <p
-              id="food-exception-label"
-              className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent"
-            >
-              {t("exception.foodEyebrow")}
-            </p>
-            <p className="mt-2 text-[13px] font-medium leading-snug text-foreground">
-              {exceptionGuidanceFood.food}
-            </p>
-            <p className="mt-2 text-[12px] leading-snug text-muted">
-              {exceptionGuidanceFood.recovery}
-            </p>
-            <p className="mt-2 text-[10px] leading-snug text-muted-2">
-              {t("exception.safetyFooter")}
-            </p>
-          </div>
-        ) : null}
-
-        {ft.showNutritionCorrections && showDerailedQuick ? (
-          <FoodOffPlanQuickBlock
-            referenceDate={now}
-            onAddOffPlan={(m) => {
-              setOffPlanMeals((prev) => {
-                const next = [...prev, m];
-                saveOffPlanMealsForDay(now, next);
-                return next;
-              });
-            }}
-            onMissedMeal={() =>
-              setMissedMeals((n) => Math.min(4, n + 1))
-            }
-            onAfter={bump}
-            t={t}
-          />
-        ) : null}
-
-        <p className="mt-4 max-w-[22rem] text-[11px] font-medium leading-snug text-muted-2">
-          {t("food.rhythmLeadLine")}
+        <button
+          type="button"
+          onClick={() => openAdd(primaryLogSlot, nextMealOption)}
+          className="mt-4 flex min-h-[56px] w-full items-center justify-center rounded-[var(--radius-xl)] bg-accent px-5 text-[16px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99]"
+        >
+          {t("food.addMealHero")}
+        </button>
+        <p
+          className="mt-2 text-center text-[13px] tabular-nums text-muted"
+          role="status"
+        >
+          {consumed.toLocaleString(dateLocaleForUi(locale))} /{" "}
+          {target.toLocaleString(dateLocaleForUi(locale))}{" "}
+          {t("food.kcalUnit")}
         </p>
 
-        <div className="flex flex-col justify-center sm:justify-start">
-          <CoachSystemStatus text={t("systemStatus.food")} />
-          {packageRhythmLine ? (
-            <p className="mt-2 max-w-[22rem] text-[11px] font-medium leading-snug text-muted-2">
-              {packageRhythmLine}
-            </p>
-          ) : null}
-        </div>
-
-        <section
-          className="coach-panel-food-hero relative isolate mt-6 overflow-hidden px-5 pb-6 pt-7 ring-1 ring-white/[0.05] opacity-[0.97]"
-          aria-labelledby="cal-target"
-        >
-          <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_100%_-10%,var(--panel-glow),transparent_55%)]"
-            aria-hidden
-          />
-          <div className="coach-topline" aria-hidden />
-          <div className="relative flex items-start justify-between gap-4">
-            <div>
-              <p id="cal-target" className="coach-section-label-sm">
-                {t("food.todayEnergy")}
-              </p>
-              <p className="mt-2 text-[1.85rem] font-semibold tabular-nums leading-none tracking-tight text-foreground sm:text-[2rem]">
-                {target.toLocaleString(dateLocaleForUi(locale))}
-                <span className="ml-1 text-[1rem] font-semibold text-muted-2">
-                  {t("food.kcalUnit")}
-                </span>
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="coach-section-label-sm">{t("food.logged")}</p>
-              <p
-                className={`mt-2 text-[1.25rem] font-semibold tabular-nums leading-none ${over ? "text-accent" : "text-foreground"}`}
-              >
-                {consumed.toLocaleString(dateLocaleForUi(locale))}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className="relative mt-5 h-2 overflow-hidden rounded-full bg-surface-muted"
-            role="presentation"
-          >
-            <div
-              className={`h-full rounded-full transition-[width] duration-300 ${
-                over ? "bg-accent/85" : "bg-accent/55"
-              }`}
-              style={{ width: `${fillPct}%` }}
-            />
-          </div>
-          <p className="mt-3 text-[12px] leading-snug text-muted">
-            {consumed === 0
-              ? t("food.logHintZero")
-              : over
-                ? t("food.logHintOver", {
-                    over: (consumed - target).toLocaleString(
-                      dateLocaleForUi(locale),
-                    ),
-                  })
-                : t("food.logHintRemain", {
-                    n: remaining.toLocaleString(dateLocaleForUi(locale)),
-                  })}
-          </p>
-
-          <div className="mt-5 border-t border-border/45 pt-5">
-            <p id="macro-shape" className="sr-only">
-              {t("food.macroShape")}
-            </p>
-            <div
-              className="flex h-1.5 overflow-hidden rounded-full bg-surface-muted"
-              role="img"
-              aria-labelledby="macro-shape"
-            >
-              <div className="bg-accent/80" style={{ width: `${ratio.p}%` }} />
-              <div className="bg-accent/45" style={{ width: `${ratio.c}%` }} />
-              <div className="bg-foreground/18" style={{ width: `${ratio.f}%` }} />
-            </div>
-            <p className="mt-2 text-[11px] tabular-nums text-muted">
-              <span className="font-semibold text-foreground">{p}g P</span>
-              <span className="mx-1.5 text-border-strong">·</span>
-              <span className="font-semibold text-foreground">{c}g C</span>
-              <span className="mx-1.5 text-border-strong">·</span>
-              <span className="font-semibold text-foreground">{f}g F</span>
-            </p>
-            <p
-              className="mt-2 text-[10px] font-medium leading-snug text-muted-2"
-              role="status"
-            >
-              {t(energyStatusKey)}
-            </p>
-          </div>
-        </section>
-
-        {ft.showNutritionCorrections && plan.foodAdjustmentNote ? (
-          <div className="mt-5 rounded-[var(--radius-lg)] border border-accent/30 bg-[rgba(41,92,255,0.12)] px-4 py-3.5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">
-              {t("food.dayChangedTitle")}
-            </p>
-            <p className="mt-1 text-[12px] font-medium leading-snug text-muted">
-              {t("food.balanceRestLine")}
-            </p>
-            <p
-              className="mt-2.5 text-[15px] font-semibold leading-snug tracking-[-0.02em] text-foreground"
-              role="status"
-            >
-              {plan.foodAdjustmentNote}
-            </p>
-          </div>
-        ) : null}
-
         <section className="mt-8" aria-labelledby="meals-heading">
-          <div className="flex items-end justify-between gap-3">
-            <h2
-              id="meals-heading"
-              className="text-[1.0625rem] font-semibold leading-tight tracking-[-0.03em] text-foreground"
-            >
-              {t("food.recommendedSection")}
-            </h2>
-          </div>
+          <h2
+            id="meals-heading"
+            className="text-[1.0625rem] font-semibold leading-tight tracking-[-0.03em] text-foreground"
+          >
+            {t("food.dayMealsHeading")}
+          </h2>
           <p className="sr-only">{t("food.mealsHint")}</p>
-          <div
-            className="mt-4 flex flex-wrap items-center gap-2"
-            role="status"
-            aria-label={t("food.proofTitle")}
-          >
-            <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
-              {t("ui.builtFromPrefs")}
-            </span>
-            {plan.foodAdjustmentNote || plan.systemLine ? (
-              <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
-                {t("ui.adjustedToday")}
-              </span>
-            ) : null}
-            {profile.flexibility === "flexible" ? (
-              <span className="rounded-full border border-accent/30 bg-accent-soft/40 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
-                {t("food.chipFlexibleDinner")}
-              </span>
-            ) : null}
-          </div>
-          <div
-            className="mt-4 rounded-[var(--radius-lg)] border border-border/40 bg-surface-subtle/55 px-3.5 py-4"
-            role="status"
-          >
-            <p className="text-[12px] font-semibold leading-snug text-foreground">
-              {t("food.goalSupportIntro")}
-            </p>
-            <ul className="mt-2 space-y-1 text-[12px] font-medium leading-snug text-muted">
-              <li className="flex gap-2">
-                <span className="shrink-0 font-semibold text-accent">+</span>
-                <span>{t("food.goalSupportProtein")}</span>
-              </li>
-              <li className="flex gap-2">
-                <span className="shrink-0 font-semibold text-accent">+</span>
-                <span>{t(goalSupportEnergyKey)}</span>
-              </li>
-            </ul>
-            <div className="mt-4 border-t border-border/35 pt-4">
-              <p className="text-[12px] font-semibold leading-snug text-foreground">
-                {t("food.concreteNowTitle")}
-              </p>
-              <p className="mt-1 text-[11px] leading-snug text-muted-2">
-                {t("food.concreteNowLead")}
-              </p>
-              <ul className="mt-3 space-y-2.5 text-[13px] font-medium leading-snug text-foreground/95">
-                {concreteIdeas.map((idea) => (
-                  <li key={idea.fi} className="flex gap-2">
-                    <span
-                      className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent/80"
-                      aria-hidden
-                    />
-                    <span>{locale === "en" ? idea.en : idea.fi}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <p className="mt-3 text-[10px] leading-snug text-muted-2">
-            <span>{t("food.scanInline")}</span>{" "}
-            <Link href="/scan" className="font-semibold text-accent hover:underline">
-              {t("nav.scan")}
-            </Link>
-          </p>
           <div className="mt-5 flex flex-col gap-3">
             {slots.map(({ slot, label }, i) => {
               const items = log.filter((x) => x.slot === slot);
@@ -1081,6 +699,7 @@ export function FoodScreen() {
                   }}
                   isLastMealSlot={isLastMealSlot}
                   hoursToNextMeal={hoursToNextMeal}
+                  slotAddMuted
                   t={t}
                 />
               );
@@ -1088,50 +707,401 @@ export function FoodScreen() {
           </div>
         </section>
 
-        {ft.showNutritionCorrections ? (
-          <FoodIntelligenceBlock
-            profile={profile}
-            plan={plan}
-            referenceDate={now}
-            hasTrainingToday={hasTrainingToday}
-            consumedFromLog={estimateConsumedFromKcalLog(
-              consumed,
-              plan.todayMacros,
-            )}
-            offPlanMeals={offPlanMeals}
-            onAddOffPlan={(m) => {
-              setOffPlanMeals((prev) => {
-                const next = [...prev, m];
-                saveOffPlanMealsForDay(now, next);
-                return next;
-              });
-              bump();
-            }}
-            missedMeals={missedMeals}
-            onAddMissedMeal={() =>
-              setMissedMeals((n) => Math.min(4, n + 1))
-            }
-            remainingMealSlots={remainingMealSlots}
-            locale={locale}
-            t={t}
-          />
-        ) : null}
-
-        <div className="mt-6 flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => openAdd("lunch")}
-            className="flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border/55 bg-transparent px-4 text-[14px] font-semibold text-muted transition hover:border-accent/35 hover:text-foreground active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            {t("food.addYourOwn")}
-          </button>
-          <Link
-            href="/adjustments"
-            className="flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border/40 bg-surface-subtle/30 px-4 text-[13px] font-medium text-muted-2 transition hover:border-accent/35 hover:text-foreground"
-          >
-            {t("food.addEventShort")}
-          </Link>
-        </div>
+        <details className="coach-panel-subtle group mt-8">
+          <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden sm:px-5">
+            <span className="flex items-center justify-between gap-3">
+              <span>{t("food.screen.moreTools")}</span>
+              <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
+                {t("common.show")}
+              </span>
+              <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
+                {t("common.hide")}
+              </span>
+            </span>
+          </summary>
+          <div className="space-y-6 border-t border-border/45 px-3 pb-5 pt-5 sm:px-4">
+            {!foodOnly ? (
+              <p className="brand-identity-lead max-w-[26rem] text-balance">
+                {t("brand.identityLine")}
+              </p>
+            ) : null}
+            {foodEngineLine ? (
+              <p className="max-w-xl text-[12px] font-semibold leading-snug text-muted">
+                {foodEngineLine}
+              </p>
+            ) : null}
+            {!foodOnly ? (
+              <HelpVideoCard
+                pageId="food"
+                enabled={ft.showHelpVideos}
+                className="opacity-95"
+              />
+            ) : null}
+            <FoodTodayStrip
+              todaySummary={plan.todayFoodTask}
+              consumedKcal={consumed}
+              targetKcal={target}
+              rebalanceLine={
+                plan.rebalancePlan && ft.showNutritionCorrections
+                  ? getRebalanceMessage(plan.rebalancePlan, locale)
+                  : null
+              }
+              shoppingTeaser={
+                weeklyShopping
+                  ? locale === "fi"
+                    ? `${weeklyShopping.items.length} riviä ostoslistalla`
+                    : `${weeklyShopping.items.length} lines on your list`
+                  : null
+              }
+              showRebalanceUi={Boolean(
+                ft.showNutritionCorrections && plan.rebalancePlan,
+              )}
+            />
+            {profile ? (
+              foodOnly ? (
+                <div className="rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.02] px-3 py-3">
+                  <SupplementStackEditor
+                    profile={profile}
+                    onSaved={() => {
+                      setProfileReloadSeq((s) => s + 1);
+                      refresh();
+                    }}
+                  />
+                  <SupplementCoachRecommendations
+                    picks={supplementPicks}
+                    className="mt-5"
+                  />
+                  <FeaturedProductsStrip />
+                </div>
+              ) : (
+                <>
+                  <SupplementStackEditor
+                    profile={profile}
+                    onSaved={() => {
+                      setProfileReloadSeq((s) => s + 1);
+                      refresh();
+                    }}
+                  />
+                  <SupplementCoachRecommendations
+                    picks={supplementPicks}
+                    className="mt-5"
+                  />
+                  <FeaturedProductsStrip />
+                </>
+              )
+            ) : null}
+            {kcalRangeHintText ? (
+              <p
+                className="max-w-[26rem] text-[11px] leading-relaxed text-muted-2"
+                role="status"
+              >
+                {kcalRangeHintText}
+              </p>
+            ) : null}
+            <FoodLibraryQuickBlock
+              locale={locale}
+              t={t}
+              onPick={onLibraryPick}
+            />
+            {ft.showCoachLines ? (
+              <p className="max-w-[26rem] border-l-2 border-accent/40 pl-3 text-[14px] font-semibold leading-snug text-foreground">
+                {t(
+                  foodCoachLineKey({
+                    rebalanceActive: Boolean(plan.rebalancePlan),
+                    dayKey: dayKeyFood,
+                  }),
+                )}
+              </p>
+            ) : null}
+            {ft.showVoiceWorkout ? (
+              <FoodVoiceQuickBlock referenceDate={now} onAfter={() => refresh()} />
+            ) : null}
+            {ft.showNutritionCorrections && plan.rebalancePlan ? (
+              <div
+                className="rounded-[var(--radius-lg)] border border-accent/25 bg-white/[0.04] px-4 py-3.5"
+                role="region"
+                aria-labelledby="food-rebalance-label"
+              >
+                <p
+                  id="food-rebalance-label"
+                  className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent"
+                >
+                  {t("food.rebalanceTitle")}
+                </p>
+                <p className="mt-2 text-[12px] leading-snug text-muted">
+                  {getRebalanceMessage(plan.rebalancePlan, locale)}
+                </p>
+                <p className="mt-2 text-[13px] font-medium leading-snug text-foreground">
+                  {t("rebalance.noPunishLine")}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[12px]">
+                  <Link
+                    href="/progress"
+                    className="font-semibold text-accent underline-offset-[3px] hover:underline"
+                  >
+                    {t("food.linkSeeProgress")}
+                  </Link>
+                  <Link
+                    href="/adjustments"
+                    className="font-semibold text-accent underline-offset-[3px] hover:underline"
+                  >
+                    {t("food.linkAdjustCoach")}
+                  </Link>
+                </div>
+              </div>
+            ) : null}
+            {exceptionGuidanceFood ? (
+              <div
+                className="rounded-[var(--radius-lg)] border border-accent/30 bg-white/[0.04] px-4 py-3.5"
+                role="region"
+                aria-labelledby="food-exception-label"
+              >
+                <p
+                  id="food-exception-label"
+                  className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent"
+                >
+                  {t("exception.foodEyebrow")}
+                </p>
+                <p className="mt-2 text-[13px] font-medium leading-snug text-foreground">
+                  {exceptionGuidanceFood.food}
+                </p>
+                <p className="mt-2 text-[12px] leading-snug text-muted">
+                  {exceptionGuidanceFood.recovery}
+                </p>
+                <p className="mt-2 text-[10px] leading-snug text-muted-2">
+                  {t("exception.safetyFooter")}
+                </p>
+              </div>
+            ) : null}
+            {ft.showNutritionCorrections && showDerailedQuick ? (
+              <FoodOffPlanQuickBlock
+                referenceDate={now}
+                onAddOffPlan={(m) => {
+                  setOffPlanMeals((prev) => {
+                    const next = [...prev, m];
+                    saveOffPlanMealsForDay(now, next);
+                    return next;
+                  });
+                }}
+                onMissedMeal={() =>
+                  setMissedMeals((n) => Math.min(4, n + 1))
+                }
+                onAfter={bump}
+                t={t}
+              />
+            ) : null}
+            <p className="max-w-[22rem] text-[11px] font-medium leading-snug text-muted-2">
+              {t("food.rhythmLeadLine")}
+            </p>
+            <div className="flex flex-col justify-center sm:justify-start">
+              <CoachSystemStatus text={t("systemStatus.food")} />
+              {packageRhythmLine ? (
+                <p className="mt-2 max-w-[22rem] text-[11px] font-medium leading-snug text-muted-2">
+                  {packageRhythmLine}
+                </p>
+              ) : null}
+            </div>
+            <section
+              className="coach-panel-food-hero relative isolate overflow-hidden px-5 pb-6 pt-7 ring-1 ring-white/[0.05] opacity-[0.97]"
+              aria-labelledby="cal-target"
+            >
+              <div
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_100%_-10%,var(--panel-glow),transparent_55%)]"
+                aria-hidden
+              />
+              <div className="coach-topline" aria-hidden />
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <p id="cal-target" className="coach-section-label-sm">
+                    {t("food.todayEnergy")}
+                  </p>
+                  <p className="mt-2 text-[1.85rem] font-semibold tabular-nums leading-none tracking-tight text-foreground sm:text-[2rem]">
+                    {target.toLocaleString(dateLocaleForUi(locale))}
+                    <span className="ml-1 text-[1rem] font-semibold text-muted-2">
+                      {t("food.kcalUnit")}
+                    </span>
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="coach-section-label-sm">{t("food.logged")}</p>
+                  <p
+                    className={`mt-2 text-[1.25rem] font-semibold tabular-nums leading-none ${over ? "text-accent" : "text-foreground"}`}
+                  >
+                    {consumed.toLocaleString(dateLocaleForUi(locale))}
+                  </p>
+                </div>
+              </div>
+              <div
+                className="relative mt-5 h-2 overflow-hidden rounded-full bg-surface-muted"
+                role="presentation"
+              >
+                <div
+                  className={`h-full rounded-full transition-[width] duration-300 ${
+                    over ? "bg-accent/85" : "bg-accent/55"
+                  }`}
+                  style={{ width: `${fillPct}%` }}
+                />
+              </div>
+              <p className="mt-3 text-[12px] leading-snug text-muted">
+                {consumed === 0
+                  ? t("food.logHintZero")
+                  : over
+                    ? t("food.logHintOver", {
+                        over: (consumed - target).toLocaleString(
+                          dateLocaleForUi(locale),
+                        ),
+                      })
+                    : t("food.logHintRemain", {
+                        n: remaining.toLocaleString(dateLocaleForUi(locale)),
+                      })}
+              </p>
+              <div className="mt-5 border-t border-border/45 pt-5">
+                <p id="macro-shape-fold" className="sr-only">
+                  {t("food.macroShape")}
+                </p>
+                <div
+                  className="flex h-1.5 overflow-hidden rounded-full bg-surface-muted"
+                  role="img"
+                  aria-labelledby="macro-shape-fold"
+                >
+                  <div className="bg-accent/80" style={{ width: `${ratio.p}%` }} />
+                  <div className="bg-accent/45" style={{ width: `${ratio.c}%` }} />
+                  <div
+                    className="bg-foreground/18"
+                    style={{ width: `${ratio.f}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-[11px] tabular-nums text-muted">
+                  <span className="font-semibold text-foreground">{p}g P</span>
+                  <span className="mx-1.5 text-border-strong">·</span>
+                  <span className="font-semibold text-foreground">{c}g C</span>
+                  <span className="mx-1.5 text-border-strong">·</span>
+                  <span className="font-semibold text-foreground">{f}g F</span>
+                </p>
+                <p
+                  className="mt-2 text-[10px] font-medium leading-snug text-muted-2"
+                  role="status"
+                >
+                  {t(energyStatusKey)}
+                </p>
+              </div>
+            </section>
+            {ft.showNutritionCorrections && plan.foodAdjustmentNote ? (
+              <div className="rounded-[var(--radius-lg)] border border-accent/30 bg-[rgba(41,92,255,0.12)] px-4 py-3.5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent">
+                  {t("food.dayChangedTitle")}
+                </p>
+                <p className="mt-1 text-[12px] font-medium leading-snug text-muted">
+                  {t("food.balanceRestLine")}
+                </p>
+                <p
+                  className="mt-2.5 text-[15px] font-semibold leading-snug tracking-[-0.02em] text-foreground"
+                  role="status"
+                >
+                  {plan.foodAdjustmentNote}
+                </p>
+              </div>
+            ) : null}
+            <div
+              className="flex flex-wrap items-center gap-2"
+              role="status"
+              aria-label={t("food.proofTitle")}
+            >
+              <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
+                {t("ui.builtFromPrefs")}
+              </span>
+              {plan.foodAdjustmentNote || plan.systemLine ? (
+                <span className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
+                  {t("ui.adjustedToday")}
+                </span>
+              ) : null}
+              {profile.flexibility === "flexible" ? (
+                <span className="rounded-full border border-accent/30 bg-accent-soft/40 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
+                  {t("food.chipFlexibleDinner")}
+                </span>
+              ) : null}
+            </div>
+            <div
+              className="rounded-[var(--radius-lg)] border border-border/40 bg-surface-subtle/55 px-3.5 py-4"
+              role="status"
+            >
+              <p className="text-[12px] font-semibold leading-snug text-foreground">
+                {t("food.goalSupportIntro")}
+              </p>
+              <ul className="mt-2 space-y-1 text-[12px] font-medium leading-snug text-muted">
+                <li className="flex gap-2">
+                  <span className="shrink-0 font-semibold text-accent">+</span>
+                  <span>{t("food.goalSupportProtein")}</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="shrink-0 font-semibold text-accent">+</span>
+                  <span>{t(goalSupportEnergyKey)}</span>
+                </li>
+              </ul>
+              <div className="mt-4 border-t border-border/35 pt-4">
+                <p className="text-[12px] font-semibold leading-snug text-foreground">
+                  {t("food.concreteNowTitle")}
+                </p>
+                <p className="mt-1 text-[11px] leading-snug text-muted-2">
+                  {t("food.concreteNowLead")}
+                </p>
+                <ul className="mt-3 space-y-2.5 text-[13px] font-medium leading-snug text-foreground/95">
+                  {concreteIdeas.map((idea) => (
+                    <li key={idea.fi} className="flex gap-2">
+                      <span
+                        className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent/80"
+                        aria-hidden
+                      />
+                      <span>{locale === "en" ? idea.en : idea.fi}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <p className="text-[10px] leading-snug text-muted-2">
+              <span>{t("food.scanInline")}</span>{" "}
+              <Link href="/scan" className="font-semibold text-accent hover:underline">
+                {t("nav.scan")}
+              </Link>
+            </p>
+            {ft.showNutritionCorrections ? (
+              <FoodIntelligenceBlock
+                profile={profile}
+                plan={plan}
+                referenceDate={now}
+                hasTrainingToday={hasTrainingToday}
+                consumedFromLog={estimateConsumedFromKcalLog(
+                  consumed,
+                  plan.todayMacros,
+                )}
+                offPlanMeals={offPlanMeals}
+                onAddOffPlan={(m) => {
+                  setOffPlanMeals((prev) => {
+                    const next = [...prev, m];
+                    saveOffPlanMealsForDay(now, next);
+                    return next;
+                  });
+                  bump();
+                }}
+                missedMeals={missedMeals}
+                onAddMissedMeal={() =>
+                  setMissedMeals((n) => Math.min(4, n + 1))
+                }
+                remainingMealSlots={remainingMealSlots}
+                locale={locale}
+                t={t}
+              />
+            ) : null}
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/adjustments"
+                className="flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border/40 bg-surface-subtle/30 px-4 text-[13px] font-medium text-muted-2 transition hover:border-accent/35 hover:text-foreground"
+              >
+                {t("food.addEventShort")}
+              </Link>
+            </div>
+          </div>
+        </details>
 
         {weeklyShopping ? (
           <div id="food-shopping" className="scroll-mt-6">
