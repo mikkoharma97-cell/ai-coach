@@ -14,7 +14,7 @@ import {
   recommendNutritionForProfile,
 } from "@/lib/nutritionLibrary";
 import type { ProgramLibraryEntry } from "@/types/programLibrary";
-import type { OnboardingAnswers, LifeSchedule } from "@/types/coach";
+import type { DaysPerWeek, Goal, OnboardingAnswers, LifeSchedule } from "@/types/coach";
 import type { IntensifierPolicyId } from "@/types/intensifierRules";
 
 const SPLIT_FI: Record<WeeklyStructureType, string> = {
@@ -280,23 +280,29 @@ const RAW_PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
   },
   {
     id: "fat_loss_busy_3",
-    nameFi: "Kiire — 3 päivää viikossa",
-    nameEn: "Busy — 3 days a week",
+    nameFi: "Laihdutus — 3× kiireinen",
+    nameEn: "Fat loss — 3× busy",
     goal: "lose_weight",
-    trainingVenue: "any",
+    trainingVenue: "gym",
     weeklyDays: { min: 2, max: 3 },
     shortDescriptionFi: "Vähän sessioita, selkeä linja.",
     shortDescriptionEn: "Few sessions, a clear line.",
-    whyItFitsFi: "Kun viikossa mahtuu korkeintaan kolme treeniä.",
-    whyItFitsEn: "When you can fit at most three sessions.",
+    whyItFitsFi: "Kiireinen arki — korkeintaan kolme salikertaa.",
+    whyItFitsEn: "Busy life — at most three gym visits.",
     styleTag: "kiire",
     styleTags: ["busy", "fat_loss", "minimal"],
     level: "beginner",
-    venueUi: "mixed",
+    venueUi: "gym",
     recommendedFor: { busy: true },
     presetId: "busy_life_reset",
     linkedPackageId: "light_cut",
     programTrackId: "daily_rhythm",
+    weeklyRhythmFi: "2–3 salipäivää; muutoin kävely tai kevyt liike.",
+    weeklyRhythmEn: "2–3 gym days; otherwise walking or light movement.",
+    exampleDayFi:
+      "40–50 min koko keho tai kevyt jako. Syke kohtuullinen — ei joka setissä loppuun asti.",
+    exampleDayEn:
+      "40–50 min full body or light split. Moderate effort — not all-out every set.",
   },
   {
     id: "fat_loss_home_3",
@@ -319,41 +325,53 @@ const RAW_PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
   },
   {
     id: "beginner_foundation_2",
-    nameFi: "Perusta — 2 päivää",
-    nameEn: "Foundation — 2 days",
+    nameFi: "Aloitus — 2× viikko",
+    nameEn: "Start — 2× week",
     goal: "improve_fitness",
-    trainingVenue: "any",
+    trainingVenue: "gym",
     weeklyDays: { min: 2, max: 2 },
-    shortDescriptionFi: "Kevyt aloitus kahdella päivällä.",
-    shortDescriptionEn: "A light start with two days.",
-    whyItFitsFi: "Kun haluat pienen mutta säännöllisen rytmin.",
-    whyItFitsEn: "When you want a small but steady rhythm.",
+    shortDescriptionFi: "Kevyt aloitus kahdella salipäivällä.",
+    shortDescriptionEn: "A light start with two gym days.",
+    whyItFitsFi: "Uusi salille tai paluu jälkeen pitkän tauon.",
+    whyItFitsEn: "New to the gym or returning after a long break.",
     styleTag: "aloitus",
     styleTags: ["foundation", "minimal"],
     level: "beginner",
-    venueUi: "mixed",
+    venueUi: "gym",
     presetId: "beginner_foundation",
     linkedPackageId: "steady_start",
     programTrackId: "daily_rhythm",
+    weeklyRhythmFi: "2 salipäivää (esim. ti + pe). Muut päivät kävelyä tai kevyttä.",
+    weeklyRhythmEn: "2 gym days (e.g. Tue + Fri). Other days walking or easy.",
+    exampleDayFi:
+      "Lämmittely 10 min. Koko keho: 3–4 liikettä, 2–3 sarjaa. Lopuksi venyttely.",
+    exampleDayEn:
+      "10 min warm-up. Full body: 3–4 moves, 2–3 sets. Light stretch to finish.",
   },
   {
     id: "beginner_foundation_3",
-    nameFi: "Perusta — 3 päivää",
-    nameEn: "Foundation — 3 days",
+    nameFi: "Perus — 3× viikko",
+    nameEn: "Basics — 3× week",
     goal: "improve_fitness",
-    trainingVenue: "any",
+    trainingVenue: "gym",
     weeklyDays: { min: 3, max: 3 },
-    shortDescriptionFi: "Kolme päivää — tekniikka ja toisto.",
-    shortDescriptionEn: "Three days — technique and reps.",
-    whyItFitsFi: "Kun kolme päivää sopii kalenteriin tarkasti.",
-    whyItFitsEn: "When three days fits your calendar cleanly.",
+    shortDescriptionFi: "Kolme salipäivää — tekniikka ja toisto.",
+    shortDescriptionEn: "Three gym days — technique and reps.",
+    whyItFitsFi: "Kun kolme päivää sopii viikkoon ja haluat rutiinin.",
+    whyItFitsEn: "When three days fit the week and you want a routine.",
     styleTag: "aloitus",
     styleTags: ["foundation"],
     level: "beginner",
-    venueUi: "mixed",
+    venueUi: "gym",
     presetId: "beginner_foundation",
     linkedPackageId: "steady_start",
     programTrackId: "daily_rhythm",
+    weeklyRhythmFi: "Esim. ma–ke–pe tai ma–to–la — väliin lepo.",
+    weeklyRhythmEn: "e.g. Mon–Wed–Fri or Mon–Thu–Sat — rest between.",
+    exampleDayFi:
+      "45–55 min: lämmittely, perusliikkeet (jalka, työntö, veto), loppu coresta kevyesti.",
+    exampleDayEn:
+      "45–55 min: warm-up, basics (leg, push, pull), light core to finish.",
   },
   {
     id: "performance_block_4",
@@ -478,6 +496,144 @@ const RAW_PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
     programTrackId: "muscle_growth",
     intensifierPolicyId: "shift_friendly",
   },
+  {
+    id: "fat_loss_active_4",
+    nameFi: "Laihdutus — 4× aktiivinen (sali)",
+    nameEn: "Fat loss — 4× active (gym)",
+    goal: "lose_weight",
+    trainingVenue: "gym",
+    weeklyDays: { min: 4, max: 4 },
+    shortDescriptionFi: "Neljä salipäivää, energia ja proteiini linjassa.",
+    shortDescriptionEn: "Four gym days with aligned energy and protein.",
+    whyItFitsFi: "Kun ehdit salille useasti ja haluat tukea laihtumiselle.",
+    whyItFitsEn: "When you can train often and want fat-loss support.",
+    styleTag: "aktiivinen",
+    styleTags: ["fat_loss", "sali"],
+    level: "intermediate",
+    venueUi: "gym",
+    presetId: "fat_loss_rhythm",
+    linkedPackageId: "light_cut",
+    programTrackId: "light_fat_loss",
+    weeklyRhythmFi:
+      "Ma–su: neljä kovaa salipäivää, välipäivät kävelyä tai kevyttä.",
+    weeklyRhythmEn: "Mon–Sun: four hard gym days; other days walking or easy work.",
+    exampleDayFi:
+      "Aamiainen tasainen. Treeni 50–70 min (koko keho tai jako). Illalla proteiini + kasvikset, hiilarit maltillisesti.",
+    exampleDayEn:
+      "Steady breakfast. Session 50–70 min (full body or split). Evening: protein + veg, moderate carbs.",
+  },
+  {
+    id: "muscle_hypertrophy_3x_gym",
+    nameFi: "Massa — 3× hypertrofia (sali)",
+    nameEn: "Mass — 3× hypertrophy (gym)",
+    goal: "build_muscle",
+    trainingVenue: "gym",
+    weeklyDays: { min: 3, max: 3 },
+    shortDescriptionFi: "Kolme täyttä salipäivää, palautuminen välissä.",
+    shortDescriptionEn: "Three full gym days with recovery between.",
+    whyItFitsFi: "Kun kolme kovaa päivää viikossa riittää kasvuun.",
+    whyItFitsEn: "When three hard days per week are enough for growth.",
+    styleTag: "3×",
+    styleTags: ["hypertrophy", "sali"],
+    level: "intermediate",
+    venueUi: "gym",
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "muscle_rhythm",
+    programTrackId: "muscle_growth",
+    weeklyRhythmFi: "Esim. ma–ke–pe sali; ti ja to kevyempi arki.",
+    weeklyRhythmEn: "e.g. Mon–Wed–Fri gym; Tue and Thu lighter days.",
+    exampleDayFi:
+      "Treeni: lämmittely, pääliikkeet 4×8–12, yksi apuliike. Päivän proteiini jakautuu 3–4 ateriaan.",
+    exampleDayEn:
+      "Session: warm-up, main lifts 4×8–12, one accessory. Protein across 3–4 meals.",
+  },
+  {
+    id: "mass_upper_lower_4",
+    nameFi: "Massa — 4× ylä / ala",
+    nameEn: "Mass — 4× upper / lower",
+    goal: "build_muscle",
+    trainingVenue: "gym",
+    weeklyDays: { min: 4, max: 4 },
+    shortDescriptionFi: "Kaksi ylä- ja kaksi alapäivää viikossa.",
+    shortDescriptionEn: "Two upper and two lower days per week.",
+    whyItFitsFi: "Kun haluat jakaa treenin selkeästi ylä- ja alavartaloon.",
+    whyItFitsEn: "When you want a clear upper / lower split.",
+    styleTag: "ylä/ala",
+    styleTags: ["hypertrophy", "split"],
+    level: "intermediate",
+    venueUi: "gym",
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "muscle_rhythm",
+    programTrackId: "muscle_growth",
+    weeklyRhythmFi: "Esim. ma ylä, ti ala, to ylä, pe ala.",
+    weeklyRhythmEn: "e.g. Mon upper, Tue lower, Thu upper, Fri lower.",
+    exampleDayFi:
+      "Yläpäivä: työntö/veto + olkapäät. Alapäivä: kyykky + pakarat/kinkut. Päätä rauhassa.",
+    exampleDayEn:
+      "Upper: push/pull + shoulders. Lower: squat + glutes/hams. Finish calmly.",
+  },
+  {
+    id: "mass_push_pull_legs_5",
+    nameFi: "Massa — 5× veto / työntö / jalat",
+    nameEn: "Mass — 5× pull / push / legs",
+    goal: "build_muscle",
+    trainingVenue: "gym",
+    weeklyDays: { min: 5, max: 5 },
+    shortDescriptionFi: "Viisi salipäivää: veto, työntö ja jalat kiertäen.",
+    shortDescriptionEn: "Five gym days rotating pull, push, and legs.",
+    whyItFitsFi: "Kun viikko kestää viisi sessiota ja haluat volyymia.",
+    whyItFitsEn: "When your week can take five sessions and you want volume.",
+    styleTag: "PPL",
+    styleTags: ["hypertrophy", "split"],
+    level: "advanced",
+    venueUi: "gym",
+    presetId: "muscle_growth_structure",
+    linkedPackageId: "performance_block",
+    programTrackId: "muscle_growth",
+    weeklyRhythmFi: "5 päivää / 7: veto–työntö–jalat -kierto + toisto.",
+    weeklyRhythmEn: "5 of 7: rotating pull–push–legs pattern.",
+    exampleDayFi:
+      "Yksi pääliike raskaana, 2–3 täydennystä. Pidä uni ja proteiini kunnossa.",
+    exampleDayEn:
+      "One heavy main lift, 2–3 accessories. Protect sleep and protein.",
+  },
+  {
+    id: "performance_strength_3x",
+    nameFi: "Suoritus — voima 3× (sali)",
+    nameEn: "Performance — strength 3× (gym)",
+    goal: "improve_fitness",
+    trainingVenue: "gym",
+    weeklyDays: { min: 3, max: 3 },
+    shortDescriptionFi: "Kolme päivää: perusliikkeet, sarjat ja progressio.",
+    shortDescriptionEn: "Three days: basics, sets, and progression.",
+    whyItFitsFi: "Kun haluat nostaa voimaa ilman joka päivän salia.",
+    whyItFitsEn: "When you want strength without living at the gym.",
+    styleTag: "voima",
+    styleTags: ["performance", "sali"],
+    level: "intermediate",
+    venueUi: "gym",
+    presetId: "performance_block",
+    linkedPackageId: "performance_block",
+    programTrackId: "performance",
+    weeklyRhythmFi: "Esim. ma–ke–pe: akseli + apuliikkeet, välipäivät kevyesti.",
+    weeklyRhythmEn: "e.g. Mon–Wed–Fri: main lifts + accessories; off days easy.",
+    exampleDayFi:
+      "Lämmittely, 3–5 sarjaa pääliikkeessä, sitten tarkkaa tekniikkaa. Ei tankkausta loppuun asti joka setissä.",
+    exampleDayEn:
+      "Warm-up, 3–5 sets on mains, crisp technique — not grinding every rep.",
+  },
+];
+
+/** Kuraattu salikirjasto — valinta ei riipu profiilin päivistä. */
+export const GYM_COACHING_PROGRAM_IDS: readonly string[] = [
+  "beginner_foundation_2",
+  "beginner_foundation_3",
+  "fat_loss_busy_3",
+  "fat_loss_active_4",
+  "muscle_hypertrophy_3x_gym",
+  "mass_upper_lower_4",
+  "mass_push_pull_legs_5",
+  "performance_strength_3x",
 ];
 
 export const PROGRAM_LIBRARY: ProgramLibraryEntry[] =
@@ -485,6 +641,25 @@ export const PROGRAM_LIBRARY: ProgramLibraryEntry[] =
 
 export function getProgramLibraryEntry(id: string): ProgramLibraryEntry | undefined {
   return PROGRAM_LIBRARY.find((e) => e.id === id);
+}
+
+/** Salikirjasto — tavoitteen mukaan; ei suodata päivien/salin mukaan (käyttäjä valitsee). */
+export function listGymCoachingPrograms(goal: Goal | "all"): ProgramLibraryEntry[] {
+  const byId = new Map(PROGRAM_LIBRARY.map((e) => [e.id, e]));
+  const list: ProgramLibraryEntry[] = [];
+  for (const id of GYM_COACHING_PROGRAM_IDS) {
+    const e = byId.get(id);
+    if (e && (goal === "all" || e.goal === goal)) list.push(e);
+  }
+  return list;
+}
+
+function clampDaysForProgram(
+  base: DaysPerWeek,
+  w: { min: number; max: number },
+): DaysPerWeek {
+  const n = Math.min(w.max, Math.max(w.min, base));
+  return n as DaysPerWeek;
 }
 
 function entryVisible(e: ProgramLibraryEntry, profile: OnboardingAnswers): boolean {
@@ -532,11 +707,20 @@ export function applyProgramLibraryEntry(
   const life: Partial<{ lifeSchedule: LifeSchedule }> = entry.suggestShiftLife
     ? { lifeSchedule: "shift_work" }
     : {};
+  const nextDays = clampDaysForProgram(base.daysPerWeek, entry.weeklyDays);
+  const venuePatch: Partial<OnboardingAnswers> =
+    entry.trainingVenue === "gym"
+      ? { trainingVenue: "gym" }
+      : entry.trainingVenue === "home"
+        ? { trainingVenue: "home" }
+        : {};
   const programPatch: Partial<OnboardingAnswers> = {
     forcedPresetId: entry.presetId,
     selectedProgramLibraryId: entry.id,
     selectedPackageId: entry.linkedPackageId,
     programTrackId: entry.programTrackId,
+    daysPerWeek: nextDays,
+    ...venuePatch,
     ...life,
   };
   const merged = { ...base, ...programPatch } as OnboardingAnswers;

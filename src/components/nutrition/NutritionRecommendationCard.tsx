@@ -48,7 +48,27 @@ export function NutritionRecommendationCard({
           <p className="mt-2 text-[12px] leading-snug text-muted-2">
             {fi ? entry.idealForFi : entry.idealForEn}
           </p>
-          <p className="mt-1.5 text-[11px] text-muted-2">
+          {entry.weeklyRhythmFi ? (
+            <>
+              <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                {t("programCard.weeklyRhythm")}
+              </p>
+              <p className="mt-1.5 text-[12px] leading-snug text-muted">
+                {fi ? entry.weeklyRhythmFi : entry.weeklyRhythmEn}
+              </p>
+            </>
+          ) : null}
+          {entry.exampleDayFi ? (
+            <>
+              <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                {t("programCard.exampleDay")}
+              </p>
+              <p className="mt-1.5 text-[12px] leading-snug text-foreground/90">
+                {fi ? entry.exampleDayFi : entry.exampleDayEn}
+              </p>
+            </>
+          ) : null}
+          <p className="mt-2 text-[11px] text-muted-2">
             {fi
               ? `${entry.mealsPerDay} ateriaa · ${entry.shiftCompatible ? "vuoro ok" : "ei vuoroa"}`
               : `${entry.mealsPerDay} meals · ${entry.shiftCompatible ? "shift ok" : "no shift focus"}`}

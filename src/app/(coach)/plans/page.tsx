@@ -8,9 +8,8 @@ import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import {
-  PROGRAM_LIBRARY,
   applyProgramLibraryEntry,
-  listProgramsForProfile,
+  listGymCoachingPrograms,
   recommendProgramForProfile,
 } from "@/lib/coachProgramCatalog";
 import type { Goal } from "@/types/coach";
@@ -18,92 +17,38 @@ import { useMemo, useState } from "react";
 import { saveProfile } from "@/lib/storage";
 import { useRouter } from "next/navigation";
 
-type VenueFilter = "all" | "gym" | "home" | "mixed";
-type LevelFilter = "all" | "beginner" | "intermediate" | "advanced";
-type LifestyleFilter = "all" | "busy" | "shift" | "comeback";
-
 export default function PlansPage() {
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const router = useRouter();
   const [goalFilter, setGoalFilter] = useState<Goal | "all">("all");
-  const [venueFilter, setVenueFilter] = useState<VenueFilter>("all");
-  const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
-  const [lifestyleFilter, setLifestyleFilter] = useState<LifestyleFilter>("all");
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [showAllPrograms, setShowAllPrograms] = useState(false);
 
   useBodyScrollLock(confirmId != null || previewId != null);
 
-  const recommended = useMemo(
-    () => (profile ? recommendProgramForProfile(profile) : null),
-    [profile],
-  );
+  const coachingPool = useMemo(() => {
+    const g = goalFilter === "all" ? (profile?.goal ?? "improve_fitness") : goalFilter;
+    return listGymCoachingPrograms(g);
+  }, [profile?.goal, goalFilter]);
 
-  const pool = useMemo(() => {
-    if (!profile) return PROGRAM_LIBRARY;
-    const g = goalFilter === "all" ? profile.goal : goalFilter;
-    const useProfileFit = goalFilter === "all" || g === profile.goal;
-    let list = useProfileFit
-      ? listProgramsForProfile(profile).filter((e) => e.goal === g)
-      : PROGRAM_LIBRARY.filter((e) => e.goal === g);
-
-    if (venueFilter !== "all") {
-      list = list.filter((e) => {
-        if (venueFilter === "mixed") return e.trainingVenue === "any";
-        if (e.trainingVenue === "any") return true;
-        return e.trainingVenue === venueFilter;
-      });
-    }
-
-    if (levelFilter !== "all") {
-      list = list.filter((e) => {
-        const lv = e.level ?? "intermediate";
-        if (lv === "any") return true;
-        return lv === levelFilter;
-      });
-    }
-
-    if (lifestyleFilter === "busy") {
-      list = list.filter(
-        (e) =>
-          e.recommendedFor?.busy ||
-          e.styleTags?.includes("busy") ||
-          e.styleTag === "kiire",
-      );
-    } else if (lifestyleFilter === "shift") {
-      list = list.filter(
-        (e) =>
-          e.recommendedFor?.shiftWork ||
-          e.styleTags?.includes("shift_friendly"),
-      );
-    } else if (lifestyleFilter === "comeback") {
-      list = list.filter(
-        (e) =>
-          e.recommendedFor?.comeback ||
-          e.styleTags?.includes("comeback") ||
-          e.id.includes("comeback"),
-      );
-    }
-
-    const orderIndex = new Map(
-      PROGRAM_LIBRARY.map((e, idx) => [e.id, idx] as const),
-    );
-    list.sort(
-      (a, b) => (orderIndex.get(a.id) ?? 0) - (orderIndex.get(b.id) ?? 0),
-    );
-    return list;
-  }, [profile, goalFilter, venueFilter, levelFilter, lifestyleFilter]);
+  const recommended = useMemo(() => {
+    if (!profile || coachingPool.length === 0) return null;
+    const rec = recommendProgramForProfile(profile);
+    if (coachingPool.some((e) => e.id === rec.id)) return rec;
+    return coachingPool[0] ?? null;
+  }, [profile, coachingPool]);
 
   const restOfPool = useMemo(() => {
-    if (!recommended) return pool;
-    return pool.filter((e) => e.id !== recommended.id);
-  }, [pool, recommended]);
+    if (!recommended) return coachingPool;
+    return coachingPool.filter((e) => e.id !== recommended.id);
+  }, [coachingPool, recommended]);
 
   const previewEntry = useMemo(
-    () => (previewId ? PROGRAM_LIBRARY.find((e) => e.id === previewId) : undefined),
-    [previewId],
+    () =>
+      previewId ? coachingPool.find((e) => e.id === previewId) : undefined,
+    [previewId, coachingPool],
   );
 
   /** Ei pitkää listaa — max 10 muuta, oletuksena 6 näkyvissä */
@@ -135,9 +80,9 @@ export default function PlansPage() {
     <main className="coach-page pb-28">
       <Container size="phone" className="px-5 py-8">
         <h1 className="text-[1.375rem] font-semibold tracking-[-0.03em] text-foreground">
-          {t("plans.title")}
+          {t("plans.selectCoachingTitle")}
         </h1>
-        <p className="mt-2 text-[14px] text-muted">{t("plans.browseHint")}</p>
+        <p className="mt-2 text-[14px] text-muted">{t("plans.browseHintGym")}</p>
 
         <div className="mt-6 flex flex-wrap gap-2">
           {(["all", "lose_weight", "build_muscle", "improve_fitness"] as const).map((g) => (
@@ -164,102 +109,7 @@ export default function PlansPage() {
           ))}
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
-            {fi ? "Paikka" : "Venue"}
-          </span>
-          {(["all", "gym", "home", "mixed"] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setVenueFilter(v)}
-              className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
-                venueFilter === v
-                  ? "border-accent bg-accent-soft text-accent"
-                  : "border-border/80 text-muted"
-              }`}
-            >
-              {v === "all"
-                ? fi
-                  ? "Kaikki"
-                  : "All"
-                : v === "gym"
-                  ? fi
-                    ? "Sali"
-                    : "Gym"
-                  : v === "home"
-                    ? fi
-                      ? "Koti"
-                      : "Home"
-                    : fi
-                      ? "Sekä"
-                      : "Mixed"}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
-            {fi ? "Taso" : "Level"}
-          </span>
-          {(["all", "beginner", "intermediate", "advanced"] as const).map((lv) => (
-            <button
-              key={lv}
-              type="button"
-              onClick={() => setLevelFilter(lv)}
-              className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
-                levelFilter === lv
-                  ? "border-accent bg-accent-soft text-accent"
-                  : "border-border/80 text-muted"
-              }`}
-            >
-              {lv === "all"
-                ? fi
-                  ? "Kaikki"
-                  : "All"
-                : lv === "beginner"
-                  ? fi
-                    ? "Aloitus"
-                    : "Beginner"
-                  : lv === "intermediate"
-                    ? fi
-                      ? "Keskitaso"
-                      : "Intermediate"
-                    : fi
-                      ? "Kova"
-                      : "Advanced"}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
-            {fi ? "Arki" : "Life"}
-          </span>
-          {(
-            [
-              ["all", fi ? "Kaikki" : "All"],
-              ["busy", fi ? "Kiire" : "Busy"],
-              ["shift", fi ? "Vuoro" : "Shift"],
-              ["comeback", fi ? "Paluu" : "Comeback"],
-            ] as const
-          ).map(([v, label]) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => setLifestyleFilter(v)}
-              className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold ${
-                lifestyleFilter === v
-                  ? "border-accent bg-accent-soft text-accent"
-                  : "border-border/80 text-muted"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {recommended && pool.some((e) => e.id === recommended.id) ? (
+        {recommended && coachingPool.some((e) => e.id === recommended.id) ? (
           <div className="mt-8">
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
               {t("plans.recommendedEyebrow")}

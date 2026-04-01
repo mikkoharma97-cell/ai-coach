@@ -75,4 +75,10 @@ export type ProgramLibraryEntry = {
   requiresProMode?: boolean;
   /** Kirjastoasetus: vihjaa vuorotyöprofiilia (applyProgramLibraryEntry) */
   suggestShiftLife?: boolean;
+  /** Viikkorytmi (kortti / esikatselu) */
+  weeklyRhythmFi?: string;
+  weeklyRhythmEn?: string;
+  /** Esimerkkipäivä — ei reseptiä, vain rakenne */
+  exampleDayFi?: string;
+  exampleDayEn?: string;
 };

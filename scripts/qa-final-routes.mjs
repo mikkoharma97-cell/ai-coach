@@ -9,7 +9,16 @@
 import { chromium } from "playwright";
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:3020";
-const ROUTES = ["/start", "/app", "/workout", "/food", "/progress", "/paywall"];
+const ROUTES = [
+  "/home",
+  "/compare",
+  "/start",
+  "/app",
+  "/workout",
+  "/food",
+  "/progress",
+  "/paywall",
+];
 
 async function httpCheck(path) {
   const url = `${BASE}${path}`;

@@ -397,7 +397,130 @@ export const NUTRITION_LIBRARY: NutritionLibraryEntry[] = [
     mealStructure: "snack_forward",
     tags: ["weekend", "flex"],
   },
+  {
+    id: "coaching_fat_loss",
+    nameFi: "Rasvanpoltto",
+    nameEn: "Fat loss",
+    goal: "any",
+    mealsPerDay: 4,
+    rhythmType: "cut",
+    shortDescriptionFi: "Proteiini kantaa, energia maltillisesti.",
+    shortDescriptionEn: "Protein leads; energy stays controlled.",
+    idealForFi: "Kun haluat keventää ja pitää nälkä kurissa.",
+    idealForEn: "When you want to lean out and manage hunger.",
+    styleTag: "poltto",
+    proteinBias: "very_high",
+    flexibilityLevel: "balanced",
+    shiftCompatible: true,
+    nutritionBlueprintId: "light_cut_meal",
+    mealStructure: "lighter_evening",
+    weeklyRhythmFi:
+      "Neljä ateriaa, sama runko arkena. Treenipäivä: välipala ennen tai jälkeen.",
+    weeklyRhythmEn:
+      "Four meals, same weekday frame. Training day: snack before or after.",
+    exampleDayFi:
+      "Aamiainen: proteiini + kuitu. Lounas: lämmin lautanen. Välipala: rahka tai jogurtti. Illallinen: proteiini + kasvikset.",
+    exampleDayEn:
+      "Breakfast: protein + fiber. Lunch: warm plate. Snack: quark or yogurt. Dinner: protein + vegetables.",
+    tags: ["coaching", "core"],
+  },
+  {
+    id: "coaching_lean_bulk",
+    nameFi: "Lean bulk",
+    nameEn: "Lean bulk",
+    goal: "any",
+    mealsPerDay: 4,
+    rhythmType: "growth",
+    shortDescriptionFi: "Hieman ylijäämää, proteiini kohillaan.",
+    shortDescriptionEn: "Slight surplus with protein on point.",
+    idealForFi: "Kun rakennat lihasta ilman turhaa rasvaa.",
+    idealForEn: "When you build muscle without extra fluff.",
+    styleTag: "bulk",
+    proteinBias: "very_high",
+    flexibilityLevel: "structured",
+    shiftCompatible: true,
+    nutritionBlueprintId: "muscle_fuel",
+    mealStructure: "snack_forward",
+    weeklyRhythmFi: "Treenipäivinä hiilarit treenin ympärille; lepopäivinä tasaisemmin.",
+    weeklyRhythmEn: "Training days: carbs around sessions; rest days steadier.",
+    exampleDayFi:
+      "Aamiainen täyteläs. Lounas proteiini + hiilarit. Ennen treeniä kevyt välipala. Illalla proteiini + kasvikset.",
+    exampleDayEn:
+      "Hearty breakfast. Lunch: protein + carbs. Light pre-workout snack. Evening: protein + veg.",
+    tags: ["coaching", "core"],
+  },
+  {
+    id: "coaching_maintenance",
+    nameFi: "Ylläpito",
+    nameEn: "Maintenance",
+    goal: "any",
+    mealsPerDay: 4,
+    rhythmType: "four_normal",
+    shortDescriptionFi: "Tasainen energia, joustoa viikkoon.",
+    shortDescriptionEn: "Steady energy with room to flex.",
+    idealForFi: "Kun paino ja suorituskyky pysyvät suunnilleen samana.",
+    idealForEn: "When weight and performance stay roughly stable.",
+    styleTag: "taso",
+    proteinBias: "high",
+    flexibilityLevel: "balanced",
+    shiftCompatible: true,
+    nutritionBlueprintId: "steady_meals",
+    mealStructure: "snack_forward",
+    weeklyRhythmFi: "Neljä ateriaa; viikonloppuun voi jättää yhden joustavan aterian.",
+    weeklyRhythmEn: "Four meals; leave one flexible meal on the weekend if needed.",
+    exampleDayFi:
+      "Aamiainen, lounas, välipala, illallinen — proteiinia jokaisessa.",
+    exampleDayEn:
+      "Breakfast, lunch, snack, dinner — protein in each.",
+    tags: ["coaching", "core"],
+  },
+  {
+    id: "coaching_easy_start",
+    nameFi: "Helppo aloitus",
+    nameEn: "Easy start",
+    goal: "any",
+    mealsPerDay: 3,
+    rhythmType: "three_easy",
+    shortDescriptionFi: "Kolme selkeää ateriaa — ei välipalakiirettä.",
+    shortDescriptionEn: "Three clear meals — no snack rush.",
+    idealForFi: "Kun haluat yksinkertaisen ateriapohjan ensin.",
+    idealForEn: "When you want a simple meal frame first.",
+    styleTag: "aloitus",
+    proteinBias: "standard",
+    flexibilityLevel: "balanced",
+    shiftCompatible: true,
+    nutritionBlueprintId: "easy_daily",
+    mealStructure: "three_meals",
+    weeklyRhythmFi: "Aamiainen–lounas–illallinen; treenipäivänä välipala voidaan lisätä.",
+    weeklyRhythmEn: "Breakfast–lunch–dinner; add a snack on training days if needed.",
+    exampleDayFi:
+      "Aamiainen: proteiini + hedelmä/kaura. Lounas: lämmin ruoka. Illallinen: proteiini + kasvikset.",
+    exampleDayEn:
+      "Breakfast: protein + fruit/oats. Lunch: warm meal. Dinner: protein + vegetables.",
+    tags: ["coaching", "core", "mealplan"],
+  },
 ];
+
+/** Neljä päävalintaa — ruokavalinnat-näkymän ydin. */
+export const NUTRITION_COACHING_CORE_IDS: readonly string[] = [
+  "coaching_fat_loss",
+  "coaching_lean_bulk",
+  "coaching_maintenance",
+  "coaching_easy_start",
+];
+
+export function listNutritionCoachingCore(
+  goal: Goal | "all",
+): NutritionLibraryEntry[] {
+  const byId = new Map(NUTRITION_LIBRARY.map((e) => [e.id, e]));
+  const out: NutritionLibraryEntry[] = [];
+  for (const id of NUTRITION_COACHING_CORE_IDS) {
+    const e = byId.get(id);
+    if (!e) continue;
+    if (goal === "all" || e.goal === "any" || e.goal === goal) out.push(e);
+  }
+  return out;
+}
 
 export function getNutritionLibraryEntry(id: string): NutritionLibraryEntry | undefined {
   return NUTRITION_LIBRARY.find((e) => e.id === id);

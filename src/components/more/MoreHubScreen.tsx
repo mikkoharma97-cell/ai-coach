@@ -7,7 +7,7 @@ import { loadProfile, saveProfile } from "@/lib/storage";
 import { getAppUsageMode } from "@/lib/appUsageMode";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 
 type HubLink = { href: string; label: string };
 
@@ -28,6 +28,28 @@ function LinkList({ items }: { items: HubLink[] }) {
   );
 }
 
+function Section({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="mt-10" aria-labelledby={id}>
+      <h2
+        id={id}
+        className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2"
+      >
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
 export function MoreHubScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -35,21 +57,33 @@ export function MoreHubScreen() {
     getAppUsageMode(loadProfile()),
   );
 
-  /** HÄRMÄ39: yksi selkeä lista — sama kuin bottom-navin “Lisää” -lupaus. */
-  const primaryLinks = useMemo(
+  const coachingLinks = useMemo(
     (): HubLink[] => [
       { href: "/plans", label: t("more.linkChangeProgram") as string },
       { href: "/nutrition-plans", label: t("more.linkChangeNutrition") as string },
-      { href: "/settings", label: t("nav.settings") as string },
-      { href: "/review", label: t("more.linkReview") as string },
     ],
     [t],
   );
 
-  const advancedLinks = useMemo(
+  const trackingLinks = useMemo(
+    (): HubLink[] => [
+      { href: "/review", label: t("more.linkReview") as string },
+      { href: "/progress", label: t("nav.progress") as string },
+    ],
+    [t],
+  );
+
+  const settingsLinks = useMemo(
+    (): HubLink[] => [
+      { href: "/preferences", label: t("ui.preferences") as string },
+      { href: "/settings", label: t("nav.settings") as string },
+    ],
+    [t],
+  );
+
+  const toolsLinks = useMemo(
     (): HubLink[] => [
       { href: "/adjustments", label: t("nav.adjustments") as string },
-      { href: "/preferences", label: t("ui.preferences") as string },
       { href: "/food-library", label: t("foodLibrary.pageTitle") as string },
       { href: "/paywall", label: t("paywall.linkPremium") as string },
     ],
@@ -76,30 +110,11 @@ export function MoreHubScreen() {
         <h1 className="coach-page-headline">{t("more.title")}</h1>
         <p className="coach-page-body-soft mt-2 max-w-md">{t("more.intro")}</p>
 
-        <section className="mt-8" aria-labelledby="more-primary">
-          <h2 id="more-primary" className="sr-only">
-            {t("more.title")}
-          </h2>
-          <LinkList items={primaryLinks} />
-        </section>
+        <Section id="more-coaching" title={t("more.sectionCoaching") as string}>
+          <LinkList items={coachingLinks} />
+        </Section>
 
-        <section className="mt-10" aria-labelledby="more-advanced">
-          <h2
-            id="more-advanced"
-            className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2"
-          >
-            {t("more.sectionAdvanced")}
-          </h2>
-          <LinkList items={advancedLinks} />
-        </section>
-
-        <section className="mt-10" aria-labelledby="more-mode">
-          <h2
-            id="more-mode"
-            className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2"
-          >
-            {t("more.sectionMode")}
-          </h2>
+        <Section id="more-mode" title={t("more.sectionMode") as string}>
           <p className="mt-2 text-[12px] leading-snug text-muted">
             {t("appMode.hintFoodOnly")}
           </p>
@@ -128,7 +143,19 @@ export function MoreHubScreen() {
             </button>
             <p className="text-[11px] text-muted-2">{t("appMode.maintenanceLater")}</p>
           </div>
-        </section>
+        </Section>
+
+        <Section id="more-tracking" title={t("more.sectionTracking") as string}>
+          <LinkList items={trackingLinks} />
+        </Section>
+
+        <Section id="more-settings" title={t("more.sectionSettings") as string}>
+          <LinkList items={settingsLinks} />
+        </Section>
+
+        <Section id="more-tools" title={t("more.sectionTools") as string}>
+          <LinkList items={toolsLinks} />
+        </Section>
       </Container>
     </main>
   );

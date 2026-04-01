@@ -42,4 +42,8 @@ export type NutritionLibraryEntry = {
   mealStructure: MealStructurePreference;
   /** Hakufiltterit / näyttö */
   tags?: string[];
+  weeklyRhythmFi?: string;
+  weeklyRhythmEn?: string;
+  exampleDayFi?: string;
+  exampleDayEn?: string;
 };

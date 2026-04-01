@@ -9,6 +9,8 @@ import { useClientProfile } from "@/hooks/useClientProfile";
 import {
   NUTRITION_LIBRARY,
   applyNutritionLibraryEntry,
+  listNutritionCoachingCore,
+  NUTRITION_COACHING_CORE_IDS,
 } from "@/lib/nutritionLibrary";
 import type { Goal } from "@/types/coach";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -34,6 +36,18 @@ export default function NutritionPlansPage() {
     );
   }, [profile, goalFilter]);
 
+  const coachingCore = useMemo(() => {
+    if (!profile) return [];
+    return listNutritionCoachingCore(
+      goalFilter === "all" ? profile.goal : goalFilter,
+    );
+  }, [profile, goalFilter]);
+
+  const poolRest = useMemo(
+    () => pool.filter((e) => !NUTRITION_COACHING_CORE_IDS.includes(e.id)),
+    [pool],
+  );
+
   const previewEntry = useMemo(
     () => (previewId ? NUTRITION_LIBRARY.find((e) => e.id === previewId) : undefined),
     [previewId],
@@ -52,9 +66,9 @@ export default function NutritionPlansPage() {
     <main className="coach-page">
       <Container size="phone" className="px-5 py-8">
         <h1 className="text-[1.375rem] font-semibold tracking-[-0.03em] text-foreground">
-          {t("nutritionPlans.title")}
+          {t("nutritionPlans.selectCoachingTitle")}
         </h1>
-        <p className="mt-2 text-[14px] text-muted">{t("nutritionPlans.browseHint")}</p>
+        <p className="mt-2 text-[14px] text-muted">{t("nutritionPlans.browseHintCore")}</p>
 
         <div className="mt-6 flex flex-wrap gap-2">
           {(["all", "lose_weight", "build_muscle", "improve_fitness"] as const).map(
@@ -84,7 +98,7 @@ export default function NutritionPlansPage() {
         </div>
 
         <div className="mt-8 flex flex-col gap-3">
-          {pool.map((e) => (
+          {coachingCore.map((e) => (
             <NutritionRecommendationCard
               key={e.id}
               entry={e}
@@ -94,6 +108,33 @@ export default function NutritionPlansPage() {
             />
           ))}
         </div>
+
+        {poolRest.length > 0 ? (
+          <details className="coach-panel-subtle group mt-10">
+            <summary className="cursor-pointer list-none py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center justify-between gap-3">
+                <span>{t("nutritionPlans.moreStructures")}</span>
+                <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
+                  {t("common.show")}
+                </span>
+                <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
+                  {t("common.hide")}
+                </span>
+              </span>
+            </summary>
+            <div className="flex flex-col gap-3 border-t border-border/40 pt-4">
+              {poolRest.map((e) => (
+                <NutritionRecommendationCard
+                  key={e.id}
+                  entry={e}
+                  showMeta
+                  onPreview={() => setPreviewId(e.id)}
+                  onSelect={() => setConfirmId(e.id)}
+                />
+              ))}
+            </div>
+          </details>
+        ) : null}
       </Container>
 
       {previewEntry ? (

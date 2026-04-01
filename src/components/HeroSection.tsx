@@ -2,6 +2,7 @@
 
 import { CTAButton } from "@/components/CTAButton";
 import { HeroFocusCard } from "@/components/landing/HeroFocusCard";
+import { LandingComparisonStrip } from "@/components/landing/LandingComparisonStrip";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 import { appendBuildQuery } from "@/lib/buildInfo";
@@ -40,6 +41,9 @@ export function HeroSection() {
               >
                 {t("landing.heroCta")}
               </CTAButton>
+            </div>
+            <div className="relative z-[1] mx-auto mt-12 w-full sm:mt-14">
+              <LandingComparisonStrip />
             </div>
           </div>
           <div className="flex w-full justify-center">

@@ -48,6 +48,26 @@ export function ProgramRecommendationCard({
       <p className="mt-1.5 text-[13px] leading-snug text-foreground/95">
         {fi ? entry.whyItFitsFi : entry.whyItFitsEn}
       </p>
+      {entry.weeklyRhythmFi ? (
+        <>
+          <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+            {t("programCard.weeklyRhythm")}
+          </p>
+          <p className="mt-1.5 text-[12px] leading-snug text-muted">
+            {fi ? entry.weeklyRhythmFi : entry.weeklyRhythmEn}
+          </p>
+        </>
+      ) : null}
+      {entry.exampleDayFi ? (
+        <>
+          <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+            {t("programCard.exampleDay")}
+          </p>
+          <p className="mt-1.5 text-[12px] leading-snug text-foreground/90">
+            {fi ? entry.exampleDayFi : entry.exampleDayEn}
+          </p>
+        </>
+      ) : null}
       {entry.splitType ? (
         <p className="mt-3 text-[11px] leading-snug text-muted-2">
           <span className="font-semibold text-muted">{t("programPreview.split")}: </span>
