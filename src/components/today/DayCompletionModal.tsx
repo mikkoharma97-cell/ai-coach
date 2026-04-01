@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { useOverlayLayer } from "@/hooks/useOverlayLayer";
 import type { DayExecutionChecklist } from "@/lib/dayExecutionStorage";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
@@ -29,14 +30,7 @@ export function DayCompletionModal({ open, onClose, onCommit }: Props) {
     }
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  useOverlayLayer(open, onClose);
 
   const submit = useCallback(() => {
     onCommit({ workout, eaten, rhythm });
@@ -47,7 +41,7 @@ export function DayCompletionModal({ open, onClose, onCommit }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-12 sm:items-center sm:pb-8"
+      className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center sm:pb-8"
       role="presentation"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();

@@ -4,7 +4,7 @@ import { ProgramContentPreviewSheet } from "@/components/programs/ProgramContent
 import { ProgramRecommendationCard } from "@/components/programs/ProgramRecommendationCard";
 import { Container } from "@/components/ui/Container";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { useOverlayLayer } from "@/hooks/useOverlayLayer";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import {
@@ -13,7 +13,7 @@ import {
   recommendProgramForProfile,
 } from "@/lib/coachProgramCatalog";
 import type { Goal } from "@/types/coach";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { saveProfile } from "@/lib/storage";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +26,11 @@ export default function PlansPage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [showAllPrograms, setShowAllPrograms] = useState(false);
 
-  useBodyScrollLock(confirmId != null || previewId != null);
+  const closePlanOverlays = useCallback(() => {
+    setConfirmId(null);
+    setPreviewId(null);
+  }, []);
+  useOverlayLayer(confirmId != null || previewId != null, closePlanOverlays);
 
   const coachingPool = useMemo(() => {
     const g = goalFilter === "all" ? (profile?.goal ?? "improve_fitness") : goalFilter;
@@ -160,7 +164,7 @@ export default function PlansPage() {
       {confirmId ? (
         <div
           role="presentation"
-          className="fixed inset-0 z-[200] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-12 sm:items-center"
+          className="fixed inset-0 z-[280] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center"
           onClick={() => setConfirmId(null)}
           onKeyDown={(e) => {
             if (e.key === "Escape") setConfirmId(null);

@@ -1241,7 +1241,7 @@ export function FoodScreen() {
       {portalReady && sheetOpen
         ? createPortal(
             <div
-              className="fixed inset-0 z-[200] flex touch-manipulation flex-col justify-end"
+              className="fixed inset-0 z-[280] flex touch-manipulation flex-col justify-end"
               role="presentation"
             >
               <button
@@ -1252,7 +1252,7 @@ export function FoodScreen() {
                 onClick={closeSheet}
               />
               <div
-                className="relative z-[210] mt-auto w-full max-h-[85dvh] overscroll-contain overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
+                className="relative z-[281] mt-auto w-full max-h-[85dvh] overscroll-contain overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="add-food-title"

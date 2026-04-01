@@ -13,6 +13,7 @@ import { useWorkoutVoiceCommands } from "@/hooks/useWorkoutVoiceCommands";
 import type { MessageKey } from "@/lib/i18n";
 import type { WorkoutVoiceCommand } from "@/lib/workout/voiceParser";
 import { logButtonClick } from "@/lib/uiInteractionDebug";
+import { useOverlayLayer } from "@/hooks/useOverlayLayer";
 import {
   saveWorkoutSession,
   serializeWorkoutSession,
@@ -189,6 +190,14 @@ export function WorkoutView({
 
   const logMetaEffective: WorkoutSessionSerializeMeta | undefined =
     sessionLogMeta;
+
+  const closeAllOverlays = useCallback(() => {
+    setSwapModalOpen(false);
+    setSwapFocusIndex(null);
+    setCustomizeOpen(false);
+  }, []);
+
+  useOverlayLayer(customizeOpen || swapModalOpen, closeAllOverlays);
 
   const saveSessionAndGoApp = useCallback(() => {
     const log = serializeWorkoutSession(
@@ -412,7 +421,7 @@ export function WorkoutView({
   }, []);
 
   return (
-    <main className="coach-page pb-10">
+    <main className="coach-page">
       <Container size="phone" className="px-5">
         <CoachScreenHeader
           eyebrow={t("workout.eyebrow")}
@@ -715,7 +724,7 @@ export function WorkoutView({
         {customizeOpen && onSessionModeChange ? (
           <div
             role="presentation"
-            className="fixed inset-0 z-[210] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-16 sm:items-center"
+            className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2.5rem)] sm:items-center"
             onClick={() => setCustomizeOpen(false)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setCustomizeOpen(false);
@@ -804,7 +813,7 @@ export function WorkoutView({
         {swapModalOpen && modalSwapSourceId && onSwapExercise ? (
           <div
             role="presentation"
-            className="fixed inset-0 z-[220] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-16 sm:items-center"
+            className="fixed inset-0 z-[290] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2.5rem)] sm:items-center"
             onClick={closeSwapModal}
             onKeyDown={(e) => {
               if (e.key === "Escape") closeSwapModal();

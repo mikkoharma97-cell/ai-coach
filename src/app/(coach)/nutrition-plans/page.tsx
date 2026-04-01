@@ -13,8 +13,8 @@ import {
   NUTRITION_COACHING_CORE_IDS,
 } from "@/lib/nutritionLibrary";
 import type { Goal } from "@/types/coach";
-import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import { useMemo, useState } from "react";
+import { useOverlayLayer } from "@/hooks/useOverlayLayer";
+import { useCallback, useMemo, useState } from "react";
 import { saveProfile } from "@/lib/storage";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +26,11 @@ export default function NutritionPlansPage() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  useBodyScrollLock(confirmId != null || previewId != null);
+  const closeNutritionOverlays = useCallback(() => {
+    setConfirmId(null);
+    setPreviewId(null);
+  }, []);
+  useOverlayLayer(confirmId != null || previewId != null, closeNutritionOverlays);
 
   const pool = useMemo(() => {
     if (!profile) return NUTRITION_LIBRARY;
@@ -145,11 +149,19 @@ export default function NutritionPlansPage() {
       ) : null}
 
       {confirmId ? (
-        <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-12 sm:items-center">
+        <div
+          role="presentation"
+          className="fixed inset-0 z-[280] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center"
+          onClick={() => setConfirmId(null)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setConfirmId(null);
+          }}
+        >
           <div
             role="dialog"
             aria-modal="true"
             className="w-full max-w-md rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-6 shadow-[var(--shadow-float)] sm:rounded-[var(--radius-xl)]"
+            onClick={(e) => e.stopPropagation()}
           >
             <p className="text-[16px] font-semibold text-foreground">
               {t("nutritionChange.confirmTitle")}

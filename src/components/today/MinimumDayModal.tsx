@@ -3,6 +3,7 @@
 import { useTranslation } from "@/hooks/useTranslation";
 import { clearMinimumDay, saveMinimumDayForDay } from "@/lib/minimumDayStorage";
 import { trackEvent } from "@/lib/analytics";
+import { useOverlayLayer } from "@/hooks/useOverlayLayer";
 import { useCallback, useEffect, useId, useState } from "react";
 
 type Props = {
@@ -30,14 +31,7 @@ export function MinimumDayModal({
     setStep(active ? "content" : "intro");
   }, [open, active]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  useOverlayLayer(open, onClose);
 
   const activate = useCallback(() => {
     saveMinimumDayForDay(dayKey);
@@ -56,7 +50,7 @@ export function MinimumDayModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-12 sm:items-center sm:pb-8"
+      className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3rem,env(safe-area-inset-top,0px)+2rem)] sm:items-center sm:pb-8"
       role="presentation"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();

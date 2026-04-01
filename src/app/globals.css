@@ -9,7 +9,7 @@ html {
  * - Tokenit: niputa toistuvat arbitrary-koot (text-[17px], rounded-[14px]) näihin CSS-muuttujiin → yksi typografia- ja radius-skaala.
  * - Dark / high-contrast: toinen :root-blokki tai data-theme; tänään accent on kovakoodattu siniseen.
  * - Landing vs coach-app: pidä nämä --panel-*, --coach-* synkassa landing-komponenttien kanssa (drift-riski).
- * - Z-index: header z-40, bottom nav z-30, modal backdrop z-50, modal sheet z-60 (FoodScreen portal → body).
+ * - Z-index: coach header/nav ~50; modal backdrop ~280; sheet ~281; workout swap ~290 (FoodScreen portal → body).
  * - Motion: vähennä varjojen määrää samalla näytöllä (Today + Food + Plan) jos tuntuu “koristeelta”.
  */
 /* —— AI Coach: angry black + electric blue (valmennusjärjestelmä, kova kontrasti) —— */
@@ -462,8 +462,10 @@ body {
       0 0 22px -6px var(--accent-glow-soft);
   }
 
+  /* Bottom nav ~52px + home indicator — ei peitä viimeisiä rivejä */
   .coach-page {
-    @apply pt-6 pb-12 sm:pb-14;
+    @apply pt-6 sm:pb-16;
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   /* Mobiili: fokus ei jää näppäimistön / navin alle */

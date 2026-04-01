@@ -1,7 +1,6 @@
 /**
- * Capacitor-native wrapper — ei vielä sync / iOS–Android -projekteja.
- * Web: tuota staattinen export `out/` (tai adapter) ennen `npx cap sync`.
- * Ikoni: `public/icons/app-icon.svg` → kopioi `resources/` kun luot alustaprojektin.
+ * Capacitor-native wrapper — aja `npm run build` ennen `npx cap sync`.
+ * Web: staattinen export `out/` (ks. Next-config / mobile-build.md).
  */
 const config = {
   appId: "com.coach.dailyguidance",
@@ -9,6 +8,10 @@ const config = {
   webDir: "out",
   server: {
     androidScheme: "https",
+  },
+  ios: {
+    /** Safe area / insetit WebViewissa */
+    contentInset: "automatic",
   },
 } as const;
 

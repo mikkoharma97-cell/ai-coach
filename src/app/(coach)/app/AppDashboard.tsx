@@ -858,33 +858,14 @@ export function AppDashboard() {
           </div>
         </details>
 
-        <footer className="mt-16 border-t border-border/50 pb-12 pt-10 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2">
-            {t("dashboard.footerQuick")}
-          </p>
-          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[14px]">
-            <Link
-              href="/workout"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("ui.workout")}
-            </Link>
-            <Link
-              href="/review"
-              className="font-semibold text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("ui.review")}
-            </Link>
-          </p>
-          <p className="mt-6">
-            <Link
-              href="/more"
-              className="text-[13px] font-medium text-muted underline-offset-[3px] transition hover:text-foreground hover:underline"
-            >
-              {t("dashboard.footerSeeMore")}
-            </Link>
-          </p>
-          <p className="mt-8 text-[13px]">
+        <footer className="mt-12 border-t border-border/50 pb-2 pt-8 text-center">
+          <Link
+            href="/more"
+            className="text-[14px] font-semibold text-accent underline-offset-[3px] hover:underline"
+          >
+            {t("dashboard.footerSeeMore")}
+          </Link>
+          <p className="mt-6 text-[13px]">
             <Link
               href="/start"
               className="font-medium text-muted underline-offset-[4px] transition hover:text-foreground hover:underline"
