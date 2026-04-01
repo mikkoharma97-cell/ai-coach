@@ -1,5 +1,5 @@
 /**
- * Tuoteversio — HÄRMÄ67: build-päivä ja -aika tulevat `buildInfo.generated.ts`istä
+ * Tuoteversio — HÄRMÄ68: build-päivä ja -aika tulevat `buildInfo.generated.ts`istä
  * (kirjoitetaan `npm run build` → write-build-info.mjs, sama hetki kuin BUILD_TIME_ISO).
  * `BUILD_SYNC_FINGERPRINT`: cache-bypass / ForceRefreshGuard.
  */
@@ -8,10 +8,10 @@ import {
   BUILD_TIME_DISPLAY,
 } from "@/lib/buildInfo.generated";
 
-export const APP_VERSION = "HÄRMÄ67";
+export const APP_VERSION = "HÄRMÄ68";
 
 /** Juokseva build-numero — käytä fingerprintissä */
-export const HARMÄ_BUILD = 67;
+export const HARMÄ_BUILD = 68;
 
 /** Generoitu jokaisessa buildissa — ei manuaalista päivitystä */
 export const BUILD_DATE = BUILD_DATE_DISPLAY;
