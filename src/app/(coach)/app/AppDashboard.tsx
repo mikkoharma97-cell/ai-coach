@@ -92,6 +92,7 @@ import { WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
 import { CoachingInsightsSection } from "@/components/coach/CoachingInsightsSection";
 import { FoodOnlyTodayPanel } from "@/components/today/FoodOnlyTodayPanel";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
+import { shouldShowTodayProgressHint } from "@/lib/firstUserProgressUi";
 import { estimateConsumedFromKcalLog } from "@/lib/food/dayMacros";
 import { loadFoodLog } from "@/lib/foodStorage";
 import Link from "next/link";
@@ -789,6 +790,7 @@ export function AppDashboard() {
             shiftBadgeKey={plan.shiftToday?.badgeKey ?? null}
             shiftRationaleKey={plan.shiftToday?.rationaleKey ?? null}
             dataFallbackKey={dataFallbackKey}
+            exampleProgressHint={shouldShowTodayProgressHint(streaks?.combined ?? 0)}
             realityScore={realityScore}
             streakSummary={streaks ?? undefined}
             streakTone={streakTone}

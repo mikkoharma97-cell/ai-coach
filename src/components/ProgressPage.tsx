@@ -8,6 +8,7 @@ import { Container } from "@/components/ui/Container";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { ProgressHeroInsightCard } from "@/components/progress/ProgressHeroInsightCard";
 import { ProgressMetricsRow } from "@/components/progress/ProgressMetricsRow";
+import { FirstUserProgressPreview } from "@/components/progress/FirstUserProgressPreview";
 import { WeightTrendCard } from "@/components/progress/WeightTrendCard";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { useClientProfile } from "@/hooks/useClientProfile";
@@ -32,6 +33,7 @@ import { computeStreakSummary } from "@/lib/streaks";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { generateDailyPlan } from "@/lib/dailyEngine";
+import { shouldShowProgressExamples } from "@/lib/firstUserProgressUi";
 
 export function ProgressPage() {
   const router = useRouter();
@@ -103,6 +105,20 @@ export function ProgressPage() {
     });
   }, [streaks, consistency, rebalanceActive]);
 
+  const planPreview = useMemo(
+    () => (profile ? generateDailyPlan(profile, ref, locale) : null),
+    [profile, ref, locale],
+  );
+  const weightForExamples = useMemo(
+    () => (profile ? loadWeightSeries(6, profile) : { points: [], synthetic: true }),
+    [profile, weightTick],
+  );
+  const showProgressExamples = shouldShowProgressExamples(
+    streaks?.combined ?? 0,
+    ref,
+    weightForExamples.points.length >= 2,
+  );
+
   useEffect(() => {
     if (profile === undefined) return;
     if (!profile) {
@@ -166,6 +182,16 @@ export function ProgressPage() {
           >
             {t(progressFallbackKey)}
           </p>
+        ) : null}
+
+        {showProgressExamples ? (
+          <div className="mt-6">
+            <FirstUserProgressPreview
+              plan={planPreview}
+              compact={profile.mode === "pro"}
+              showKcalChart={ft.showProgressCharts}
+            />
+          </div>
         ) : null}
 
         {ft.showProgressCharts ? (

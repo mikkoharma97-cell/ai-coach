@@ -136,6 +136,8 @@ type Props = {
   coachPresenceLine?: string | null;
   /** Kun dataa on vähän — yksi fallback-lause */
   dataFallbackKey?: MessageKey | null;
+  /** Tiivis vihje Kehitys-välilehdestä (uusi käyttäjä) */
+  exampleProgressHint?: boolean;
   /** Real life match — compact strip under system status */
   realityScore?: RealityScore | null;
   streakSummary?: StreakSummary | null;
@@ -200,6 +202,7 @@ export function TodayCard({
   shiftRationaleKey,
   coachPresenceLine,
   dataFallbackKey,
+  exampleProgressHint = false,
   realityScore,
   streakSummary,
   streakTone,
@@ -308,6 +311,14 @@ export function TodayCard({
                 role="status"
               >
                 {t(dataFallbackKey)}
+              </p>
+            ) : null}
+            {exampleProgressHint ? (
+              <p
+                className="mt-3 rounded-lg border border-dashed border-accent/25 bg-accent/[0.05] px-3 py-2.5 text-[11px] leading-snug text-muted-2"
+                role="status"
+              >
+                {t("today.exampleProgressHint")}
               </p>
             ) : null}
           </div>

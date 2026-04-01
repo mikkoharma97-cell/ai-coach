@@ -32,11 +32,13 @@ import { FoodIntelligenceBlock } from "@/components/food/FoodIntelligenceBlock";
 import { FoodMealSlotBlock } from "@/components/food/FoodMealSlotBlock";
 import { MealSubstituteSheet } from "@/components/food/MealSubstituteSheet";
 import { FoodShoppingListBlock } from "@/components/food/FoodShoppingListBlock";
+import { FoodMacroExampleStrip } from "@/components/food/FoodMacroExampleStrip";
 import { FoodTodayStrip } from "@/components/food/FoodTodayStrip";
 import { SupplementCoachRecommendations } from "@/components/coach/SupplementCoachRecommendations";
 import { SupplementStackEditor } from "@/components/supplements/SupplementStackEditor";
 import { FeaturedProductsStrip } from "@/components/marketplace/FeaturedProductsStrip";
 import { foodDataFallbackKey } from "@/lib/dataConfidence";
+import { shouldShowFoodMacroExample } from "@/lib/firstUserProgressUi";
 import { generateWeeklyShoppingListForProfile } from "@/lib/food/shoppingList";
 import {
   foodEnergyStatusKey,
@@ -897,6 +899,7 @@ export function FoodScreen() {
             <p className="max-w-[22rem] text-[11px] font-medium leading-snug text-muted-2">
               {t("food.rhythmLeadLine")}
             </p>
+            {shouldShowFoodMacroExample(now) ? <FoodMacroExampleStrip /> : null}
             <div className="flex flex-col justify-center sm:justify-start">
               <CoachSystemStatus text={t("systemStatus.food")} />
               {packageRhythmLine ? (

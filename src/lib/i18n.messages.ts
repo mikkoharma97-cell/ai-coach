@@ -403,6 +403,29 @@ export const fi = {
   "progress.pageLead": "Rytmi ja suunta — yksi näkymä.",
   "progress.oneTruthLead":
     "Yksi käyrä (paino), kaksi lukemaa (rytmi + putki).",
+  "progress.exampleBadge": "Esimerkki",
+  "progress.exampleTitle": "Miltä näkymät täyttyvät",
+  "progress.exampleKcalCaption": "Energia viikolla (kuvitteellinen käyrä)",
+  "progress.exampleMacroCaption": "Makrojako (esimerkki)",
+  "progress.exampleMacroFoot":
+    "P / C / F suhde — ei kirjattua toteumaa, vain malli.",
+  "progress.exampleWeekCaption": "Tämän viikon tavoite (suunnitelmastasi)",
+  "progress.exampleWeekTrainingDays":
+    "{{n}} treenipäivää tällä viikolla — ohjelmasi mukainen viikko.",
+  "progress.exampleWeekAllRest":
+    "Tämä viikko on rakennettu lepoon tai kevyempään rytmiin suunnitelmasi mukaan.",
+  "progress.exampleFillsLine":
+    "Kun kirjaat ruokaa ja painoa, käyrät korvautuvat omalla datallasi.",
+  "progress.exampleProCompact":
+    "Pro-tilassa nostokuorma ja treeniloki täydentävät tätä näkymää myöhemmin.",
+  "progress.exampleKcalTargetLabel": "Päivän energiaviite",
+  "today.exampleProgressHint":
+    "Kehitys-välilehdellä näet käyrät ja yhteenvedon, kun merkintöjä kertyy.",
+  "food.exampleMacroBadge": "Esimerkki",
+  "food.exampleMacroIntro":
+    "Alla näet oman päivätavoitteesi. Tämä rivi näyttää mallin makrojen suhteesta ennen kuin kirjauksia kertyy.",
+  "food.exampleMacroDisclaimer":
+    "Täyttyy omalla datallasi, kun lisäät aterioita.",
   "progress.supportMetricsAria": "Tukiluvut",
   "progress.supportStreakEyebrow": "Putki",
   "progress.supportStreakHint": "Ruoka + treeni",
@@ -2779,6 +2802,29 @@ export const en: { [K in MessageKey]: string } = {
   "progress.pageLead": "Rhythm and direction — one screen.",
   "progress.oneTruthLead":
     "One curve (weight), two numbers (rhythm + streak).",
+  "progress.exampleBadge": "Sample",
+  "progress.exampleTitle": "How these views fill in",
+  "progress.exampleKcalCaption": "Energy over the week (illustrative curve)",
+  "progress.exampleMacroCaption": "Macro split (sample)",
+  "progress.exampleMacroFoot":
+    "P / C / F ratio — not your logged intake, just a shape.",
+  "progress.exampleWeekCaption": "This week’s focus (from your plan)",
+  "progress.exampleWeekTrainingDays":
+    "{{n}} training sessions this week — matching your program layout.",
+  "progress.exampleWeekAllRest":
+    "This week is built for recovery or lighter rhythm per your plan.",
+  "progress.exampleFillsLine":
+    "As you log food and weight, charts switch to your own data.",
+  "progress.exampleProCompact":
+    "In Pro mode, loads and training logs extend this view later.",
+  "progress.exampleKcalTargetLabel": "Daily energy target",
+  "today.exampleProgressHint":
+    "Open Progress to see curves and summaries as your logs grow.",
+  "food.exampleMacroBadge": "Sample",
+  "food.exampleMacroIntro":
+    "Below you’ll see your real day targets. This row shows what macro balance looks like before you’ve logged meals.",
+  "food.exampleMacroDisclaimer":
+    "Fills in with your data as you add meals.",
   "progress.supportMetricsAria": "Supporting metrics",
   "progress.supportStreakEyebrow": "Streak",
   "progress.supportStreakHint": "Food + training",
