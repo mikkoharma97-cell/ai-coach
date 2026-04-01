@@ -45,6 +45,7 @@ function enrichProgramLibraryEntry(e: ProgramLibraryEntry): ProgramLibraryEntry 
   return {
     ...e,
     splitType,
+    expectedDurationWeeks: e.expectedDurationWeeks ?? { min: 6, max: 10 },
     progressionStyle: e.progressionStyle ?? bp.progressionStyle,
     intensifierPolicyId: e.intensifierPolicyId ?? defaultIntensifierPolicy(e),
     programBlueprintId: e.programBlueprintId ?? def.programBlueprintId,
@@ -516,7 +517,7 @@ export function recommendProgramForProfile(
 export function alternativeProgramsForProfile(
   profile: OnboardingAnswers,
   recommended: ProgramLibraryEntry,
-  limit = 5,
+  limit = 8,
 ): ProgramLibraryEntry[] {
   const pool = listProgramsForProfile(profile).filter((e) => e.id !== recommended.id);
   return pool.slice(0, limit);

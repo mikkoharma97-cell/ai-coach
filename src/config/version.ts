@@ -1,11 +1,27 @@
 /**
- * Tuoteversio — yksi lähde näkyvälle HÄRMÄ-merkille (badge, build-rivi).
- * Tekninen semver: `src/lib/buildInfo.generated.ts` (buildInfo).
+ * Tuoteversio — HÄRMÄ48: build-päivä ja -aika tulevat `buildInfo.generated.ts`istä
+ * (kirjoitetaan `npm run build` → write-build-info.mjs, sama hetki kuin BUILD_TIME_ISO).
+ * `BUILD_SYNC_FINGERPRINT`: cache-bypass / ForceRefreshGuard.
  */
-export const APP_VERSION = "HÄRMÄ31";
+import {
+  BUILD_DATE_DISPLAY,
+  BUILD_TIME_DISPLAY,
+} from "@/lib/buildInfo.generated";
 
-/** Juokseva HÄRMÄ-numero — cache-bypass ?ver=31 ym. */
-export const HARMÄ_BUILD = 31;
+export const APP_VERSION = "HÄRMÄ48";
+
+/** Juokseva build-numero — käytä fingerprintissä */
+export const HARMÄ_BUILD = 48;
+
+/** Generoitu jokaisessa buildissa — ei manuaalista päivitystä */
+export const BUILD_DATE = BUILD_DATE_DISPLAY;
+
+export const BUILD_TIME = BUILD_TIME_DISPLAY;
+
+/** Näkyvä toinen rivi build-markerissa */
+export const BUILD_DISPLAY_LINE = `${BUILD_DATE} · ${BUILD_TIME}`;
+
+export const BUILD_SYNC_FINGERPRINT = `${APP_VERSION}|${HARMÄ_BUILD}`;
 
 export const COACH_RELEASE_LABEL = APP_VERSION;
 

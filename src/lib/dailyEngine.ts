@@ -7,7 +7,10 @@ import {
 } from "@/lib/adaptive";
 import { buildRebalancePlan } from "@/lib/nutrition/rebalance";
 import { collectOvereatingEventsForLast7Days } from "@/lib/nutrition/rebalanceCollect";
+import { mergeExceptionIntoDailyPlan } from "@/lib/coach/exceptionEngine";
+import { mergeMinimumDayIntoDailyPlan } from "@/lib/coach/minimumDayPlan";
 import type { CoachDailyPlan, OnboardingAnswers } from "@/types/coach";
+import type { ActiveExceptionState } from "@/types/exceptions";
 import type { Locale, TranslateFn } from "@/lib/i18n";
 import { hasEverMarkedDayDone } from "@/lib/storage";
 
@@ -43,4 +46,33 @@ export function generateDailyPlan(
     rebalance = buildRebalancePlan(events);
   }
   return composeCoachDailyPlan(state, locale, rebalance);
+}
+
+/**
+ * Yksi polku: `generateDailyPlan` + käyttäjän päiväkerrokset (poikkeus, minimipäivä).
+ * Käytä Today / Food -näkymissä — älä toista mergeä UI:ssa.
+ */
+export function buildCoachDailyPlanForSession(input: {
+  profile: OnboardingAnswers;
+  now: Date;
+  locale: Locale;
+  activeException: ActiveExceptionState | null;
+  minimumDayActive: boolean;
+}): CoachDailyPlan | null {
+  try {
+    const base = generateDailyPlan(input.profile, input.now, input.locale);
+    let merged = input.activeException
+      ? mergeExceptionIntoDailyPlan(
+          base,
+          input.activeException,
+          input.locale,
+        )
+      : base;
+    if (input.minimumDayActive) {
+      merged = mergeMinimumDayIntoDailyPlan(merged, input.locale);
+    }
+    return merged;
+  } catch {
+    return null;
+  }
 }

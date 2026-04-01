@@ -1,5 +1,6 @@
 "use client";
 
+import { NutritionContentPreviewSheet } from "@/components/nutrition/NutritionContentPreviewSheet";
 import { NutritionRecommendationCard } from "@/components/nutrition/NutritionRecommendationCard";
 import { Container } from "@/components/ui/Container";
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
@@ -10,6 +11,7 @@ import {
   applyNutritionLibraryEntry,
 } from "@/lib/nutritionLibrary";
 import type { Goal } from "@/types/coach";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useMemo, useState } from "react";
 import { saveProfile } from "@/lib/storage";
 import { useRouter } from "next/navigation";
@@ -20,6 +22,9 @@ export default function NutritionPlansPage() {
   const router = useRouter();
   const [goalFilter, setGoalFilter] = useState<Goal | "all">("all");
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+
+  useBodyScrollLock(confirmId != null || previewId != null);
 
   const pool = useMemo(() => {
     if (!profile) return NUTRITION_LIBRARY;
@@ -28,6 +33,11 @@ export default function NutritionPlansPage() {
       (e) => e.goal === "any" || e.goal === g,
     );
   }, [profile, goalFilter]);
+
+  const previewEntry = useMemo(
+    () => (previewId ? NUTRITION_LIBRARY.find((e) => e.id === previewId) : undefined),
+    [previewId],
+  );
 
   if (profile === undefined) {
     return (
@@ -79,11 +89,19 @@ export default function NutritionPlansPage() {
               key={e.id}
               entry={e}
               showMeta
+              onPreview={() => setPreviewId(e.id)}
               onSelect={() => setConfirmId(e.id)}
             />
           ))}
         </div>
       </Container>
+
+      {previewEntry ? (
+        <NutritionContentPreviewSheet
+          entry={previewEntry}
+          onClose={() => setPreviewId(null)}
+        />
+      ) : null}
 
       {confirmId ? (
         <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-12 sm:items-center">

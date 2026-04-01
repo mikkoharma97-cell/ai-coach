@@ -20,13 +20,13 @@ import { BuildMarkerLine } from "@/components/build/BuildMarkerLine";
 import { LocaleProvider } from "@/hooks/useTranslation";
 
 export const metadata: Metadata = {
-  title: "Coach — Ohjaus, ei seurantaa",
+  title: "Coach — Tämä ei ole treenisovellus",
   description:
-    "Treeni, ruoka ja rytmi rakennetaan puolestasi joka päivä. Ei seurantaa — ohjausta.",
+    "Valmennus, joka mukautuu sinuun. Perustuu oikeaan treeni- ja ravintologikkaan.",
   openGraph: {
-    title: "Coach — Ohjaus, ei seurantaa",
+    title: "Coach — Tämä ei ole treenisovellus",
     description:
-      "Treeni, ruoka ja rytmi rakennetaan puolestasi joka päivä. Arki mukana.",
+      "Valmennus, joka mukautuu sinuun. Ei geneerisiä ohjelmia.",
   },
 };
 

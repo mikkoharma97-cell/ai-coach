@@ -238,7 +238,7 @@ export function WeeklyReviewScreen() {
   const ft = features;
 
   return (
-    <main className="coach-page">
+    <main className="coach-page pb-40">
       <Container size="phone" className="px-5">
         <CoachScreenHeader
           eyebrow={t("review.eyebrow")}
@@ -445,41 +445,44 @@ export function WeeklyReviewScreen() {
           {t("review.footer")}
         </p>
 
-        <div className="mt-8 border-t border-border/60 pt-8">
+        <p className="mt-8 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+          {t("review.footerMore")}
+        </p>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 pb-4 text-[13px] text-muted">
+          <Link
+            href="/progress"
+            className="font-medium text-accent underline-offset-[3px] hover:underline"
+          >
+            {t("nav.progress")}
+          </Link>
+          <span className="text-muted-2" aria-hidden>
+            ·
+          </span>
+          <Link
+            href="/paywall"
+            className="font-medium text-muted underline-offset-[3px] transition hover:text-foreground hover:underline"
+          >
+            {t("paywall.linkPremium")}
+          </Link>
+        </div>
+      </Container>
+
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))] z-[60] border-t border-white/[0.08] bg-[rgba(5,6,10,0.92)] px-4 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.45)] backdrop-blur-md">
+        <div className="pointer-events-auto mx-auto flex max-w-md flex-col gap-2">
           <Link
             href="/app"
-            className="flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-lg)] bg-accent px-4 text-[15px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)]"
+            className="flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-lg)] bg-accent px-4 text-[15px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)]"
           >
-            {t("review.ctaBackToday")}
+            {t("review.ctaShortContinue")}
           </Link>
           <Link
             href="/adjustments"
-            className="mt-3 flex min-h-[48px] w-full items-center justify-center rounded-[var(--radius-lg)] border border-border/70 bg-card/60 px-4 text-[14px] font-semibold text-accent transition hover:border-accent/35 hover:bg-accent-soft/40"
+            className="flex min-h-[44px] w-full items-center justify-center rounded-[var(--radius-lg)] border border-border/70 bg-card/80 px-4 text-[14px] font-semibold text-accent transition hover:border-accent/35 hover:bg-accent-soft/30"
           >
-            {t("review.ctaCarryWeek")}
+            {t("review.ctaShortUpdate")}
           </Link>
-          <p className="mt-8 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-            {t("review.footerMore")}
-          </p>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[13px] text-muted">
-            <Link
-              href="/progress"
-              className="font-medium text-accent underline-offset-[3px] hover:underline"
-            >
-              {t("nav.progress")}
-            </Link>
-            <span className="text-muted-2" aria-hidden>
-              ·
-            </span>
-            <Link
-              href="/paywall"
-              className="font-medium text-muted underline-offset-[3px] transition hover:text-foreground hover:underline"
-            >
-              {t("paywall.linkPremium")}
-            </Link>
-          </div>
         </div>
-      </Container>
+      </div>
     </main>
   );
 }

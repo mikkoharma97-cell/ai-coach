@@ -22,6 +22,8 @@ import {
   saveWorkoutSession,
   serializeWorkoutSession,
 } from "@/lib/workoutLogStorage";
+import { getExerciseById } from "@/lib/training/exercises";
+import { getSwapTargetsForExercise } from "@/lib/training/exerciseOverrides";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -35,6 +37,8 @@ export type WorkoutViewSet = {
 
 export type WorkoutViewExercise = {
   id: string;
+  /** Generaattorin liike-id ennen käyttäjän vaihtoa */
+  canonicalExerciseId?: string;
   name: string;
   target: string;
   sets: WorkoutViewSet[];
@@ -68,6 +72,9 @@ type Props = {
   exercisePerformanceHints?: { exerciseId: string; line: string }[];
   /** Brändi: yhtenäinen identity-linja näkymän alussa */
   showBrandIdentity?: boolean;
+  /** Sallittu liikevaihto (katalogin vaihtoehdot) */
+  enableExerciseSwap?: boolean;
+  onSwapExercise?: (canonicalId: string, targetId: string | null) => void;
 };
 
 function exerciseRowsToSerializable(rows: ExerciseRow[]) {
@@ -152,6 +159,8 @@ export function WorkoutView({
   coachFrameLine,
   exercisePerformanceHints,
   showBrandIdentity = false,
+  enableExerciseSwap = false,
+  onSwapExercise,
 }: Props) {
   const { t, locale } = useTranslation();
   const router = useRouter();
@@ -165,8 +174,16 @@ export function WorkoutView({
   rowsRef.current = rows;
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [activeSetIndex, setActiveSetIndex] = useState(0);
+  const activeExerciseIndexRef = useRef(activeExerciseIndex);
+  const activeSetIndexRef = useRef(activeSetIndex);
+  activeExerciseIndexRef.current = activeExerciseIndex;
+  activeSetIndexRef.current = activeSetIndex;
+  const activeExerciseSectionRef = useRef<HTMLElement | null>(null);
   const [feedbackLine, setFeedbackLine] = useState<string | null>(null);
   const [coachNudgeLine, setCoachNudgeLine] = useState<string | null>(null);
+  const [swapModalOpen, setSwapModalOpen] = useState(false);
+  /** Modaalissa vaihdettava rivi (ei vain aktiivinen iso kortti). */
+  const [swapFocusIndex, setSwapFocusIndex] = useState<number | null>(null);
   const coachNudgePhase = useRef(0);
   const coachNudgeTimeout = useRef<number | null>(null);
 
@@ -205,6 +222,13 @@ export function WorkoutView({
     [],
   );
 
+  useEffect(() => {
+    activeExerciseSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [activeExerciseIndex]);
+
   const saveSessionAndGoApp = useCallback(() => {
     const log = serializeWorkoutSession(
       exerciseRowsToSerializable(rowsRef.current),
@@ -215,6 +239,9 @@ export function WorkoutView({
 
   const applyCommand = useCallback(
     (cmd: WorkoutVoiceCommand) => {
+      const ae = activeExerciseIndexRef.current;
+      const as = activeSetIndexRef.current;
+
       setRows((prev) => {
         const next = prev.map((ex) => ({
           ...ex,
@@ -222,18 +249,18 @@ export function WorkoutView({
         }));
 
         const markActive = () => {
-          const ex = next[activeExerciseIndex];
-          if (!ex?.sets[activeSetIndex]) return;
-          ex.sets[activeSetIndex].completed = true;
+          const ex = next[ae];
+          if (!ex?.sets[as]) return;
+          ex.sets[as].completed = true;
         };
 
         const advanceAfterComplete = () => {
-          const ex = next[activeExerciseIndex];
+          const ex = next[ae];
           if (!ex) return;
-          if (activeSetIndex < ex.sets.length - 1) {
-            setActiveSetIndex((i) => i + 1);
-          } else if (activeExerciseIndex < next.length - 1) {
-            setActiveExerciseIndex((i) => i + 1);
+          if (as < ex.sets.length - 1) {
+            setActiveSetIndex(as + 1);
+          } else if (ae < next.length - 1) {
+            setActiveExerciseIndex(ae + 1);
             setActiveSetIndex(0);
           }
         };
@@ -245,24 +272,24 @@ export function WorkoutView({
             return next;
           }
           case "next_exercise": {
-            if (activeExerciseIndex < next.length - 1) {
-              setActiveExerciseIndex((i) => i + 1);
+            if (ae < next.length - 1) {
+              setActiveExerciseIndex(ae + 1);
               setActiveSetIndex(0);
             }
             return next;
           }
           case "skip_exercise": {
-            if (activeExerciseIndex < next.length - 1) {
-              setActiveExerciseIndex((i) => i + 1);
+            if (ae < next.length - 1) {
+              setActiveExerciseIndex(ae + 1);
               setActiveSetIndex(0);
             }
             return next;
           }
           case "previous": {
-            if (activeSetIndex > 0) {
-              setActiveSetIndex((i) => i - 1);
-            } else if (activeExerciseIndex > 0) {
-              const pi = activeExerciseIndex - 1;
+            if (as > 0) {
+              setActiveSetIndex(as - 1);
+            } else if (ae > 0) {
+              const pi = ae - 1;
               const plen = next[pi].sets.length;
               setActiveExerciseIndex(pi);
               setActiveSetIndex(Math.max(0, plen - 1));
@@ -270,31 +297,31 @@ export function WorkoutView({
             return next;
           }
           case "set_weight": {
-            const ex = next[activeExerciseIndex];
-            if (ex?.sets[activeSetIndex]) {
-              ex.sets[activeSetIndex].weight = String(cmd.kg);
+            const ex = next[ae];
+            if (ex?.sets[as]) {
+              ex.sets[as].weight = String(cmd.kg);
             }
             return next;
           }
           case "set_reps": {
-            const ex = next[activeExerciseIndex];
-            if (ex?.sets[activeSetIndex]) {
-              ex.sets[activeSetIndex].reps = String(cmd.reps);
+            const ex = next[ae];
+            if (ex?.sets[as]) {
+              ex.sets[as].reps = String(cmd.reps);
             }
             return next;
           }
           case "set_rpe": {
-            const ex = next[activeExerciseIndex];
-            if (ex?.sets[activeSetIndex]) {
-              ex.sets[activeSetIndex].rpe = String(cmd.rpe);
+            const ex = next[ae];
+            if (ex?.sets[as]) {
+              ex.sets[as].rpe = String(cmd.rpe);
             }
             return next;
           }
           case "set_weight_and_reps": {
-            const ex = next[activeExerciseIndex];
-            if (ex?.sets[activeSetIndex]) {
-              ex.sets[activeSetIndex].weight = String(cmd.weight);
-              ex.sets[activeSetIndex].reps = String(cmd.reps);
+            const ex = next[ae];
+            if (ex?.sets[as]) {
+              ex.sets[as].weight = String(cmd.weight);
+              ex.sets[as].reps = String(cmd.reps);
             }
             return next;
           }
@@ -311,7 +338,7 @@ export function WorkoutView({
         }
       });
     },
-    [activeExerciseIndex, activeSetIndex, router],
+    [router],
   );
 
   const onVoiceCommand = useCallback(
@@ -370,6 +397,54 @@ export function WorkoutView({
     );
   }, [rows, activeExerciseIndex, exercisePerformanceHints]);
 
+  const activeSwapSourceId = useMemo(() => {
+    const ex = rows[activeExerciseIndex];
+    if (!ex) return null;
+    return ex.canonicalExerciseId ?? ex.id;
+  }, [rows, activeExerciseIndex]);
+
+  const activeSwapOptions = useMemo(() => {
+    if (!activeSwapSourceId) return [];
+    return getSwapTargetsForExercise(activeSwapSourceId);
+  }, [activeSwapSourceId]);
+
+  const modalExerciseIndex = swapModalOpen
+    ? (swapFocusIndex ?? activeExerciseIndex)
+    : activeExerciseIndex;
+
+  const modalSwapSourceId = useMemo(() => {
+    if (!swapModalOpen) return null;
+    const ex = rows[modalExerciseIndex];
+    if (!ex) return null;
+    return ex.canonicalExerciseId ?? ex.id;
+  }, [rows, modalExerciseIndex, swapModalOpen]);
+
+  const modalSwapOptions = useMemo(() => {
+    if (!modalSwapSourceId) return [];
+    return getSwapTargetsForExercise(modalSwapSourceId);
+  }, [modalSwapSourceId]);
+
+  const modalCategoryKey = useMemo((): MessageKey | null => {
+    if (!modalSwapSourceId) return null;
+    const cat = getExerciseById(modalSwapSourceId)?.category;
+    if (!cat) return null;
+    return `workout.exerciseCategory.${cat}` as MessageKey;
+  }, [modalSwapSourceId]);
+
+  const modalRow = rows[modalExerciseIndex];
+
+  const openSwapModal = useCallback((exerciseIndex: number) => {
+    setSwapFocusIndex(exerciseIndex);
+    setActiveExerciseIndex(exerciseIndex);
+    setSwapModalOpen(true);
+    logButtonClick("WorkoutView", "openSwapExercise");
+  }, []);
+
+  const closeSwapModal = useCallback(() => {
+    setSwapModalOpen(false);
+    setSwapFocusIndex(null);
+  }, []);
+
   return (
     <main className="coach-page pb-10">
       <Container size="phone" className="px-5">
@@ -405,7 +480,8 @@ export function WorkoutView({
 
         {list.length > 0 && rows[activeExerciseIndex] ? (
           <section
-            className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.1] bg-white/[0.03] px-4 py-4 sm:px-5"
+            ref={activeExerciseSectionRef}
+            className="mt-4 scroll-mt-24 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.1] bg-white/[0.03] px-4 py-4 sm:px-5"
             aria-labelledby="active-ex-heading"
           >
             <p
@@ -420,6 +496,18 @@ export function WorkoutView({
             <h3 className="mt-1 text-[1.15rem] font-semibold leading-tight tracking-[-0.03em] text-foreground">
               {rows[activeExerciseIndex].name}
             </h3>
+            {enableExerciseSwap &&
+            onSwapExercise &&
+            activeSwapSourceId &&
+            activeSwapOptions.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => openSwapModal(activeExerciseIndex)}
+                className="mt-2 text-left text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
+              >
+                {t("workout.swapCta")}
+              </button>
+            ) : null}
             <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
               {rows[activeExerciseIndex].target}
             </p>
@@ -510,6 +598,56 @@ export function WorkoutView({
                 <ExerciseMediaVideoSlot exercise={rows[activeExerciseIndex]} />
               </div>
             </details>
+          </section>
+        ) : null}
+
+        {list.length > 0 &&
+        enableExerciseSwap &&
+        onSwapExercise &&
+        rows.length > 0 ? (
+          <section
+            className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.02] px-4 py-3 sm:px-5"
+            aria-labelledby="workout-roster-heading"
+          >
+            <p
+              id="workout-roster-heading"
+              className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-2"
+            >
+              {t("workout.exerciseRosterEyebrow")}
+            </p>
+            <ul className="mt-2 divide-y divide-white/[0.06]">
+              {rows.map((ex, idx) => {
+                const sid = ex.canonicalExerciseId ?? ex.id;
+                const rosterOpts = getSwapTargetsForExercise(sid);
+                const isRosterActive = idx === activeExerciseIndex;
+                return (
+                  <li
+                    key={`roster-${ex.id}-${idx}`}
+                    className={`flex min-h-[44px] items-center justify-between gap-3 py-2.5 ${
+                      isRosterActive ? "rounded-lg bg-accent/[0.08] -mx-1 px-1" : ""
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13px] font-semibold leading-snug text-foreground">
+                        {ex.name}
+                      </p>
+                      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-2">
+                        {idx + 1}/{rows.length}
+                      </p>
+                    </div>
+                    {rosterOpts.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => openSwapModal(idx)}
+                        className="shrink-0 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-accent transition hover:border-accent/60 hover:bg-accent/15"
+                      >
+                        {t("workout.swapCta")}
+                      </button>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         ) : null}
 
@@ -660,6 +798,93 @@ export function WorkoutView({
           eyebrowKey="workout.afterSessionHint"
           className="mt-10"
         />
+
+        {swapModalOpen && modalSwapSourceId && onSwapExercise ? (
+          <div
+            role="presentation"
+            className="fixed inset-0 z-[220] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-16 sm:items-center"
+            onClick={closeSwapModal}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") closeSwapModal();
+            }}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="swap-ex-title"
+              className="w-full max-w-md rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-5 shadow-[var(--shadow-float)] sm:rounded-[var(--radius-xl)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p
+                id="swap-ex-title"
+                className="text-[15px] font-semibold leading-snug text-foreground"
+              >
+                {t("workout.swapExercise")}
+              </p>
+              {modalCategoryKey ? (
+                <p className="mt-1 text-[12px] font-medium text-accent/90">
+                  {t(modalCategoryKey)}
+                </p>
+              ) : null}
+              <p className="mt-2 text-[11px] leading-snug text-muted-2">
+                {t("workout.swapSameCategoryOnly")}
+              </p>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted">
+                {t("workout.swapExerciseHint")}
+              </p>
+              <ul className="mt-4 max-h-[40vh] space-y-2 overflow-y-auto">
+                {modalSwapOptions.map((opt) => {
+                  const label = locale === "en" ? opt.nameEn : opt.nameFi;
+                  const isCurrent = opt.id === modalRow?.id;
+                  return (
+                    <li key={opt.id}>
+                      <button
+                        type="button"
+                        disabled={isCurrent}
+                        onClick={() => {
+                          onSwapExercise(modalSwapSourceId, opt.id);
+                          closeSwapModal();
+                        }}
+                        className={`flex min-h-[48px] w-full items-center rounded-[var(--radius-lg)] border px-4 py-3 text-left text-[14px] font-semibold transition ${
+                          isCurrent
+                            ? "border-accent/40 bg-accent/10 text-foreground"
+                            : "border-border/70 bg-white/[0.04] text-foreground hover:border-accent/35"
+                        }`}
+                      >
+                        {label}
+                        {isCurrent ? (
+                          <span className="ml-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                            {t("workout.swapCurrent")}
+                          </span>
+                        ) : null}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {modalRow?.canonicalExerciseId &&
+              modalRow.id !== modalRow.canonicalExerciseId ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSwapExercise(modalRow.canonicalExerciseId!, null);
+                    closeSwapModal();
+                  }}
+                  className="mt-4 min-h-[48px] w-full rounded-[var(--radius-lg)] border border-border/80 px-4 text-[13px] font-semibold text-muted transition hover:border-accent/35 hover:text-foreground"
+                >
+                  {t("workout.swapReset")}
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={closeSwapModal}
+                className="mt-3 min-h-[44px] w-full rounded-[var(--radius-lg)] px-4 text-[13px] font-semibold text-muted-2 hover:text-foreground"
+              >
+                {t("food.cancel")}
+              </button>
+            </div>
+          </div>
+        ) : null}
       </Container>
     </main>
   );

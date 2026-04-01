@@ -107,6 +107,9 @@ export type TargetReason =
 /**
  * Ohjelmasuunta — engine-kerros (rytmi, copy, kevyet kertoimet), ei erillinen kirjasto.
  */
+/** Päivittäinen käyttötila — vaikuttaa navigaatioon ja Today-näkymään. */
+export type AppUsageMode = "full_coach" | "food_only" | "maintenance";
+
 export type ProgramTrackId =
   | "basic_strength"
   | "muscle_growth"
@@ -179,12 +182,19 @@ export interface OnboardingAnswers {
   lifeSchedule?: LifeSchedule;
   /** Oma valmentaja — mitä näytetään (oletus täydet). */
   coachFeatureToggles?: CoachFeatureToggles;
+  /** HÄRMÄ32 — täysi valmennus vs. ruoka/paino-painotus */
+  appUsageMode?: AppUsageMode;
   /** Vuorotyö — käyttäjä on aktivoinut vuorosuunnittelun (synkassa workShiftStorage) */
   shiftMode?: boolean;
   /** Valinnainen peilaus / export; lähde: `workShiftStorage` */
   workShifts?: WorkShiftEntry[];
   /** Lisäravinteet — proteiinilisät vähentävät ruoasta tarvittavaa proteiinia */
   supplementStack?: UserSupplementEntry[];
+  /**
+   * Generoidun liikkeen id → käyttäjän valitsema vaihtoehto (vain sallitut katalogin kautta).
+   * Avain = moottorin antama liike-id ennen vaihtoa.
+   */
+  exerciseIdOverrides?: Record<string, string>;
 }
 
 export interface WeekDayEntry {

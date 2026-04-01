@@ -82,7 +82,7 @@ export function PaywallScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const profile = useClientProfile();
-  const [billing, setBilling] = useState<"monthly" | "yearly">("yearly");
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
 
   const showHelpVideos = useMemo(
     () => getCoachFeatureToggles(profile ?? null).showHelpVideos,
@@ -121,6 +121,13 @@ export function PaywallScreen() {
 
   const payCtaLabel =
     billing === "yearly" ? t("paywall.ctaPayYearly") : t("paywall.ctaPayMonthly");
+
+  const monthlyNum = Number(t("paywall.price")) || 29;
+  const yearlyNum = Number(t("paywall.yearlyPrice")) || 249;
+  const yearlySavePct = Math.max(
+    0,
+    Math.round((1 - yearlyNum / (monthlyNum * 12)) * 100),
+  );
 
   return (
     <main className="min-h-dvh bg-gradient-to-b from-card/40 via-background to-background pb-12 pt-10 sm:pt-14">
@@ -310,52 +317,55 @@ export function PaywallScreen() {
         <div className="mx-auto mt-10 flex max-w-md flex-col gap-3">
           <button
             type="button"
-            onClick={() => setBilling("yearly")}
+            onClick={() => setBilling("monthly")}
             className={`relative order-1 rounded-[var(--radius-xl)] border px-5 py-6 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring ${
-              billing === "yearly"
+              billing === "monthly"
                 ? "border-accent bg-accent-soft shadow-[0_16px_48px_-20px_rgb(47_95_255/0.55)] ring-2 ring-accent/30"
                 : "border-border/80 bg-card/60 hover:border-accent/30"
             }`}
           >
-            <span className="absolute -top-2.5 right-4 rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-              {t("paywall.yearlyBadge")}
-            </span>
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-              {t("paywall.yearlyTitle")}
+              {t("paywall.monthlyTitle")}
             </p>
             <p className="mt-2 text-[1.65rem] font-semibold tabular-nums text-foreground">
-              €{t("paywall.yearlyPrice")}
+              €{t("paywall.price")}
               <span className="text-[1rem] font-semibold text-muted-2">
-                {t("paywall.perYear")}
+                {t("paywall.perMonth")}
               </span>
             </p>
             <p className="mt-2 text-[13px] leading-snug text-muted">
-              {t("paywall.yearlyBullets")}
+              {t("paywall.monthlyBullets")}
+            </p>
+            <p className="mt-3 text-[12px] leading-snug text-muted-2">
+              {t("paywall.yearlySecondaryLine", {
+                yearly: yearlyNum,
+                pct: yearlySavePct,
+              })}
             </p>
           </button>
 
           <button
             type="button"
-            onClick={() => setBilling("monthly")}
+            onClick={() => setBilling("yearly")}
             className={`order-2 rounded-[var(--radius-lg)] border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring ${
-              billing === "monthly"
+              billing === "yearly"
                 ? "border-accent/80 bg-accent-soft/80"
-                : "border-border/60 bg-card/40 opacity-[0.88] hover:border-accent/25"
+                : "border-border/60 bg-card/40 opacity-[0.92] hover:border-accent/25"
             }`}
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
-                {t("paywall.monthlyTitle")}
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
+                {t("paywall.yearlyBadge")}
               </p>
               <p className="text-[1.1rem] font-semibold tabular-nums text-foreground">
-                €{t("paywall.price")}
+                €{t("paywall.yearlyPrice")}
                 <span className="text-[0.85rem] font-medium text-muted-2">
-                  {t("paywall.perMonth")}
+                  {t("paywall.perYear")}
                 </span>
               </p>
             </div>
             <p className="mt-1.5 text-[11px] leading-snug text-muted">
-              {t("paywall.monthlyBullets")}
+              {t("paywall.yearlyBullets")}
             </p>
           </button>
         </div>

@@ -6,7 +6,9 @@ import { useTranslation } from "@/hooks/useTranslation";
 type Props = {
   entry: NutritionLibraryEntry;
   selected?: boolean;
-  onSelect: () => void;
+  onSelect?: () => void;
+  onPreview?: () => void;
+  selectActionLabel?: string;
   recommended?: boolean;
   showMeta?: boolean;
 };
@@ -15,19 +17,19 @@ export function NutritionRecommendationCard({
   entry,
   selected,
   onSelect,
+  onPreview,
+  selectActionLabel,
   recommended,
   showMeta = false,
 }: Props) {
-  const { locale } = useTranslation();
+  const { t, locale } = useTranslation();
   const fi = locale === "fi";
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`w-full rounded-[var(--radius-xl)] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring ${
+    <div
+      className={`w-full rounded-[var(--radius-xl)] border px-4 py-4 text-left transition ${
         selected
           ? "border-accent bg-accent-soft shadow-[0_0_0_1px_rgb(42_92_191/0.12)]"
-          : "border-border/80 bg-card/90 hover:border-accent/35"
+          : "border-border/80 bg-card/90"
       }`}
     >
       {recommended ? (
@@ -56,6 +58,29 @@ export function NutritionRecommendationCard({
       <span className="mt-3 inline-block rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">
         {entry.styleTag}
       </span>
-    </button>
+
+      {onPreview || onSelect ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {onPreview ? (
+            <button
+              type="button"
+              onClick={onPreview}
+              className="min-h-[44px] flex-1 rounded-[var(--radius-lg)] border border-border/80 bg-white/[0.04] px-3 text-[13px] font-semibold text-foreground transition hover:border-accent/35"
+            >
+              {t("programPreview.viewContent")}
+            </button>
+          ) : null}
+          {onSelect ? (
+            <button
+              type="button"
+              onClick={onSelect}
+              className="min-h-[44px] flex-1 rounded-[var(--radius-lg)] bg-accent px-3 text-[13px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)]"
+            >
+              {selectActionLabel ?? t("nutritionPreview.chooseStructure")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
   );
 }

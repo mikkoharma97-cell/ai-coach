@@ -6,15 +6,14 @@ import { Container } from "@/components/ui/Container";
 import { CoachSystemStatus } from "@/components/ui/CoachSystemStatus";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
+  buildCoachDailyPlanForSession,
   buildCoachEngineBundle,
-  mergeExceptionIntoDailyPlan,
   normalizeProfileForEngine,
   resolveExceptionGuidance,
+  resolveWeeklyPlanHasTrainingToday,
 } from "@/lib/coach";
-import { mergeMinimumDayIntoDailyPlan } from "@/lib/coach/minimumDayPlan";
 import { trackEvent } from "@/lib/analytics";
 import { dayKeyFromDate } from "@/lib/dateKey";
-import { generateDailyPlan } from "@/lib/dailyEngine";
 import { getRebalanceMessage } from "@/lib/nutrition/rebalance";
 import {
   EXCEPTION_STATE_CHANGED,
@@ -73,10 +72,10 @@ import { useAsyncButtonState } from "@/hooks/useAsyncButtonState";
 import { useOverlayLayer } from "@/hooks/useOverlayLayer";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { foodCoachLineKey } from "@/lib/coachPresenceCopy";
+import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { loadOutcomeHint, loadProfile } from "@/lib/storage";
 import { WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
-import { getMondayBasedIndex } from "@/lib/plan";
 import Link from "next/link";
 import type { FoodLibraryItem } from "@/lib/foodLibrary";
 import type {
@@ -273,18 +272,13 @@ export function FoodScreen() {
 
   const plan = useMemo(() => {
     if (!normalizedProfile) return null;
-    try {
-      const base = generateDailyPlan(normalizedProfile, now, locale);
-      let merged = activeException
-        ? mergeExceptionIntoDailyPlan(base, activeException, locale)
-        : base;
-      if (minimumDayActive) {
-        merged = mergeMinimumDayIntoDailyPlan(merged, locale);
-      }
-      return merged;
-    } catch {
-      return null;
-    }
+    return buildCoachDailyPlanForSession({
+      profile: normalizedProfile,
+      now,
+      locale,
+      activeException,
+      minimumDayActive,
+    });
   }, [normalizedProfile, now, locale, activeException, minimumDayActive]);
 
   const coachEngine = useMemo(() => {
@@ -357,12 +351,7 @@ export function FoodScreen() {
     return foodGoalSupportEnergyKey(plan);
   }, [plan]);
 
-  const todayIdxFood = useMemo(() => getMondayBasedIndex(now), [now]);
-
-  const hasTrainingToday = useMemo(() => {
-    if (!plan) return false;
-    return !plan.weeklyPlan.days[todayIdxFood]?.isRest;
-  }, [plan, todayIdxFood]);
+  const hasTrainingToday = resolveWeeklyPlanHasTrainingToday(plan, now);
 
   const concreteIdeas = useMemo(() => {
     if (!profile || !plan) return [];
@@ -547,6 +536,7 @@ export function FoodScreen() {
   const slots = slotList;
   const ratio = macroRatioBar(plan.todayMacros);
   const ft = getCoachFeatureToggles(normalizedProfile ?? profile);
+  const foodOnly = isFoodOnlyMode(normalizedProfile ?? profile);
 
   return (
     <main className="coach-page">
@@ -570,9 +560,11 @@ export function FoodScreen() {
           }
         />
 
-        <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
-          {t("brand.identityLine")}
-        </p>
+        {!foodOnly ? (
+          <p className="brand-identity-lead mt-3 max-w-[26rem] text-balance">
+            {t("brand.identityLine")}
+          </p>
+        ) : null}
 
         {foodEngineLine ? (
           <p className="mt-3 max-w-xl text-[12px] font-semibold leading-snug text-muted">
@@ -617,11 +609,13 @@ export function FoodScreen() {
           </p>
         ) : null}
 
-        <HelpVideoCard
-          pageId="food"
-          enabled={ft.showHelpVideos}
-          className="mt-4"
-        />
+        {!foodOnly ? (
+          <HelpVideoCard
+            pageId="food"
+            enabled={ft.showHelpVideos}
+            className="mt-4"
+          />
+        ) : null}
 
         <FoodTodayStrip
           todaySummary={plan.todayFoodTask}
@@ -645,21 +639,43 @@ export function FoodScreen() {
         />
 
         {profile ? (
-          <SupplementStackEditor
-            profile={profile}
-            onSaved={() => {
-              setProfileReloadSeq((s) => s + 1);
-              refresh();
-            }}
-          />
+          foodOnly ? (
+            <details className="mt-6 rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.02]">
+              <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+                {t("food.screen.moreTools")}
+              </summary>
+              <div className="border-t border-border/40 px-3 pb-4 pt-2">
+                <SupplementStackEditor
+                  profile={profile}
+                  onSaved={() => {
+                    setProfileReloadSeq((s) => s + 1);
+                    refresh();
+                  }}
+                />
+                <SupplementCoachRecommendations
+                  picks={supplementPicks}
+                  className="mt-5"
+                />
+                <FeaturedProductsStrip />
+              </div>
+            </details>
+          ) : (
+            <>
+              <SupplementStackEditor
+                profile={profile}
+                onSaved={() => {
+                  setProfileReloadSeq((s) => s + 1);
+                  refresh();
+                }}
+              />
+              <SupplementCoachRecommendations
+                picks={supplementPicks}
+                className="mt-5"
+              />
+              <FeaturedProductsStrip />
+            </>
+          )
         ) : null}
-
-        <SupplementCoachRecommendations
-          picks={supplementPicks}
-          className="mt-5"
-        />
-
-        <FeaturedProductsStrip />
 
         {kcalRangeHintText ? (
           <p
@@ -1125,7 +1141,7 @@ export function FoodScreen() {
 
         <CoachAppShortcuts
           compact
-          omit={["/food"]}
+          omit={foodOnly ? ["/food", "/workout"] : ["/food"]}
           extra={[
             { href: "/food-library", labelKey: "foodLibrary.pageTitle" },
             { href: "/plans", labelKey: "plans.title" },

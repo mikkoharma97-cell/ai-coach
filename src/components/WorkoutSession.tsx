@@ -17,6 +17,9 @@ import { getMondayBasedIndex } from "@/lib/plan";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
+import { applyExerciseOverridesToProExercises } from "@/lib/training/exerciseOverrides";
+import { loadProfile, saveProfile } from "@/lib/storage";
+import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { getWorkShiftForDate, WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import { exercisePerformanceHints } from "@/lib/coach/coaching-engine";
 import { flowLog } from "@/lib/flowLog";
@@ -24,10 +27,13 @@ import { computeStreakSummary } from "@/lib/streaks";
 import type { ProExercise } from "@/types/pro";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-function mapProToView(exercises: ProExercise[]): WorkoutViewExercise[] {
-  return exercises.map((ex) => {
+function mapProToView(
+  exercises: ProExercise[],
+  canonicalIds: string[],
+): WorkoutViewExercise[] {
+  return exercises.map((ex, idx) => {
     const n = Math.max(1, ex.sets);
     const effort = ex.effort?.trim();
     const rpe =
@@ -40,6 +46,7 @@ function mapProToView(exercises: ProExercise[]): WorkoutViewExercise[] {
     }));
     return {
       id: ex.id,
+      canonicalExerciseId: canonicalIds[idx],
       name: ex.name,
       target: ex.target,
       sets,
@@ -132,17 +139,41 @@ export function WorkoutSession() {
     });
   }, [normalizedProfile, now, locale]);
 
+  const exercisesResolved = useMemo(() => {
+    if (!generated || !normalizedProfile) return null;
+    const raw = generated.exercises;
+    const withOv = applyExerciseOverridesToProExercises(
+      raw,
+      normalizedProfile.exerciseIdOverrides,
+      locale,
+    );
+    return { raw, withOv };
+  }, [generated, normalizedProfile, locale]);
+
   const perfHintsForView = useMemo(() => {
-    if (!generated || generated.exercises.length === 0) return [];
+    if (!exercisesResolved || exercisesResolved.withOv.length === 0) return [];
     const loc = locale === "en" ? "en" : "fi";
     return exercisePerformanceHints(
-      generated.exercises.map((e) => e.id),
+      exercisesResolved.withOv.map((e) => e.id),
       loc,
     ).map((h) => ({
       exerciseId: h.exerciseId,
       line: loc === "en" ? h.lineEn : h.lineFi,
     }));
-  }, [generated, locale]);
+  }, [exercisesResolved, locale]);
+
+  const onSwapExercise = useCallback(
+    (canonicalId: string, targetId: string | null) => {
+      const p = loadProfile();
+      if (!p) return;
+      const base = { ...(p.exerciseIdOverrides ?? {}) };
+      if (targetId == null) delete base[canonicalId];
+      else base[canonicalId] = targetId;
+      saveProfile({ ...p, exerciseIdOverrides: base });
+      router.refresh();
+    },
+    [router],
+  );
 
   useEffect(() => {
     if (!generated) return;
@@ -162,6 +193,41 @@ export function WorkoutSession() {
 
   if (!profile) {
     return <CoachProfileMissingFallback />;
+  }
+
+  if (isFoodOnlyMode(profile)) {
+    return (
+      <main className="coach-page pb-10">
+        <div className="mx-auto max-w-[var(--container-phone)] px-5 pt-8">
+          <h1 className="text-[1.35rem] font-semibold leading-tight tracking-[-0.03em] text-foreground">
+            {t("foodOnly.workoutTitle")}
+          </h1>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">
+            {t("foodOnly.workoutBody")}
+          </p>
+          <div className="mt-8 flex flex-col gap-3">
+            <Link
+              href="/food"
+              className="inline-flex min-h-[48px] items-center justify-center rounded-[var(--radius-lg)] bg-accent px-4 text-[15px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)]"
+            >
+              {t("foodOnly.workoutGoFood")}
+            </Link>
+            <Link
+              href="/more"
+              className="inline-flex min-h-[44px] items-center text-[14px] font-semibold text-accent underline-offset-[3px] hover:underline"
+            >
+              {t("nav.more")}
+            </Link>
+            <Link
+              href="/app"
+              className="inline-flex min-h-[44px] items-center text-[14px] font-semibold text-muted underline-offset-[3px] hover:text-foreground hover:underline"
+            >
+              {t("workout.backToday")}
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   if (!generated) {
@@ -230,7 +296,10 @@ export function WorkoutSession() {
     );
   }
 
-  const exercises = mapProToView(generated.exercises);
+  const exercises =
+    exercisesResolved != null
+      ? mapProToView(exercisesResolved.withOv, exercisesResolved.raw.map((e) => e.id))
+      : [];
 
   return (
     <WorkoutView
@@ -242,6 +311,8 @@ export function WorkoutSession() {
       coachFrameLine={coachFrameWithShift}
       exercisePerformanceHints={perfHintsForView}
       showBrandIdentity
+      enableExerciseSwap={!isFoodOnlyMode(profile)}
+      onSwapExercise={onSwapExercise}
     />
   );
 }

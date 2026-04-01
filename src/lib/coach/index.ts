@@ -38,6 +38,25 @@ export {
 } from "@/lib/coach/trainingEngine";
 export { buildNutritionEngineSnapshot } from "@/lib/coach/nutritionEngine";
 export {
+  buildNutritionProgressionResult,
+  type NutritionProgressionResult,
+} from "@/lib/coach/nutritionProgressionEngine";
+export {
+  buildActivityProgressionResult,
+  type ActivityProgressionResult,
+} from "@/lib/coach/activityProgressionEngine";
+export {
+  buildTrainingProgressionResult,
+  type TrainingProgressionResult,
+} from "@/lib/coach/trainingProgressionEngine";
+export {
+  buildFullProgressionEngineResult,
+  trainingResultToTriState,
+  type FullProgressionEngineResult,
+  type FullProgressionSignalDigest,
+  type ProgressionTriState,
+} from "@/lib/coach/fullProgressionEngine";
+export {
   buildWeeklyAdaptation,
   weeklySignalsFromReviewMetrics,
   type WeeklyAdaptation,
@@ -57,6 +76,17 @@ export {
   type CoachAiInputsEcho,
   type CoachNextAdjustment,
 } from "@/lib/coach/aiDecisionEngine";
+export {
+  buildTodayWorkoutForUi,
+  resolveProWorkoutStructureEligible,
+  resolveTodayPrimaryAnchor,
+  resolveTodayQuickDoneHref,
+  resolveTodayStartWorkoutHref,
+  resolveTodaySuppressWorkout,
+  resolveWeeklyPlanHasTrainingToday,
+  type TodayPrimaryAnchor,
+} from "@/lib/coach/todayDashboardEngine";
+export { buildCoachDailyPlanForSession } from "@/lib/dailyEngine";
 export {
   buildCoachingEngineResult,
   exercisePerformanceHints,

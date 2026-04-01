@@ -27,7 +27,7 @@ export function StreakRhythmBlock({
 
   const wrap =
     tone === "hot"
-      ? "border-accent/35 bg-accent/[0.08] shadow-[0_0_32px_-14px_rgba(59,130,246,0.55)]"
+      ? "border-accent/22 bg-accent/[0.05] shadow-[0_8px_28px_-12px_rgba(59,130,246,0.22)]"
       : tone === "broken"
         ? "border-border/50 bg-white/[0.03]"
         : "border-border/40 bg-white/[0.02]";
@@ -45,7 +45,7 @@ export function StreakRhythmBlock({
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-2">
             {t("progress.rhythmStreakTitle")}
           </p>
-          <p className="mt-2 text-[34px] font-semibold tabular-nums leading-none tracking-tight text-primary">
+          <p className="mt-2 text-[28px] font-semibold tabular-nums leading-none tracking-tight text-primary/95">
             {summary.combined}
           </p>
           <p className="mt-2 text-[12px] font-medium text-muted">

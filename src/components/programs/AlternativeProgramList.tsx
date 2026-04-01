@@ -15,7 +15,7 @@ export function AlternativeProgramList({
   selectedId,
   onSelect,
 }: Props) {
-  const { locale } = useTranslation();
+  const { locale, t } = useTranslation();
   const fi = locale === "fi";
   if (entries.length === 0) return null;
   return (
@@ -30,6 +30,7 @@ export function AlternativeProgramList({
             entry={e}
             selected={selectedId === e.id}
             onSelect={() => onSelect(e.id)}
+            selectActionLabel={t("common.select")}
           />
         ))}
       </div>

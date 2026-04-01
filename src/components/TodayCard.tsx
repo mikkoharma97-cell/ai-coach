@@ -489,7 +489,7 @@ export function TodayCard({
           </details>
         ) : null}
 
-        <header className="mt-5 text-center sm:mt-6 sm:text-left">
+        <header className="mt-6 text-center sm:mt-7 sm:text-left">
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <h2
               id="today-heading"
@@ -519,7 +519,7 @@ export function TodayCard({
 
         {hasProgressSnippet ? (
           <div
-            className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-3"
+            className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-3"
             aria-label={t("today.progressSnippetAria")}
           >
             {features.showRealityScore && realityScore ? (
@@ -539,7 +539,7 @@ export function TodayCard({
           </div>
         ) : null}
 
-        <div className="today-one-screen mt-5 space-y-6 rounded-[var(--radius-xl)] border border-white/[0.08] bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5">
+        <div className="today-one-screen mt-6 space-y-10">
         {/* 2. Pääfokus — visuaalinen paino alas kun ankkuri on treeni */}
         <div className={`relative mt-0 ${anchorWorkout ? "opacity-80" : ""}`}>
           <p
@@ -590,7 +590,7 @@ export function TodayCard({
         </div>
 
         {proStructureNote && (proExerciseNames?.length ?? 0) > 0 ? (
-          <div className="relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] px-4 py-4 sm:px-5">
+          <div className="relative mt-8 rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] px-4 py-4 sm:px-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-2">
               {proStructureNote}
             </p>
@@ -610,7 +610,7 @@ export function TodayCard({
         {/* 4. Treeni — korostus kun primaryAnchor === workout */}
         {startWorkoutHref ? (
           <div
-            className={`relative mt-5 ${anchorWorkout ? "rounded-[var(--radius-xl)] border border-accent/40 bg-gradient-to-b from-accent/[0.14] to-white/[0.02] p-4 sm:p-5" : ""}`}
+            className={`relative mt-8 ${anchorWorkout ? "rounded-[var(--radius-xl)] border border-accent/40 bg-gradient-to-b from-accent/[0.14] to-white/[0.02] p-4 sm:p-5" : ""}`}
           >
             <p
               className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${anchorWorkout ? "text-accent" : "text-muted-2"}`}
@@ -642,7 +642,7 @@ export function TodayCard({
         ) : null}
 
         {/* 5–6. Ruoka + liike — yksi toissijainen lohko */}
-        <div className="relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.07] bg-white/[0.03] px-4 py-4">
+        <div className="relative mt-8 border-t border-white/[0.06] pt-8">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-2">
             {t("today.todayRhythmBlock")}
           </p>
@@ -663,7 +663,7 @@ export function TodayCard({
 
         {features.showExceptionGuidance && exceptionGuidance ? (
           <div
-            className="relative mt-5 rounded-[var(--radius-lg)] border border-accent/28 bg-white/[0.04] px-4 py-4"
+            className="relative mt-8 rounded-[var(--radius-lg)] border border-accent/28 bg-white/[0.04] px-4 py-4"
             role="region"
             aria-labelledby="today-exception-heading"
           >
@@ -726,7 +726,7 @@ export function TodayCard({
           </div>
         ) : null}
 
-        <details className="group relative mt-5 rounded-[var(--radius-lg)] border border-white/[0.06] bg-white/[0.02]">
+        <details className="group relative mt-10 rounded-[var(--radius-lg)] border border-white/[0.04] bg-white/[0.015]">
           <summary className="cursor-pointer list-none px-4 py-3.5 text-[12px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
             <span className="flex items-center justify-between gap-2">
               <span>{t("today.quickAdjustFold")}</span>
@@ -770,7 +770,7 @@ export function TodayCard({
 
         {/* 7. Lisäliike */}
         {features.showDailyActivityInput && extraMoveSlot ? (
-          <div className="relative mt-6">
+          <div className="relative mt-8">
             <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-2">
               {t("today.extraMoveSection")}
             </p>
@@ -789,7 +789,7 @@ export function TodayCard({
         ) : null}
 
         {/* 8. Päivän sulku */}
-        <div className="mt-8 border-t border-border/50 pt-6">
+        <div className="mt-12 border-t border-border/50 pt-8">
           {!dayDone ? (
             <>
               <p className="mb-3 text-center text-[11px] font-medium leading-snug text-muted-2 sm:text-left">

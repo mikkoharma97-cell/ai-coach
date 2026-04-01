@@ -63,6 +63,8 @@ export type ProgramLibraryEntry = {
   };
   /** Jakorunko (teksti UI / audit) — täyttyy presetistä jos puuttuu */
   splitType?: string;
+  /** Tyypillinen jakson pituus ennen uudelleenarviointia (viikkoa) */
+  expectedDurationWeeks?: { min: number; max: number };
   progressionStyle?: ProgressionStyle;
   intensifierPolicyId?: IntensifierPolicyId;
   /** Vastaa `ProgramPresetId` */

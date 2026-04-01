@@ -22,7 +22,7 @@ export function ProgramPicker({ profile, onConfirm }: Props) {
     [profile],
   );
   const alternatives = useMemo(
-    () => alternativeProgramsForProfile(profile, recommended, 5),
+    () => alternativeProgramsForProfile(profile, recommended, 8),
     [profile, recommended],
   );
   const [selectedId, setSelectedId] = useState<string>(recommended.id);
@@ -34,6 +34,7 @@ export function ProgramPicker({ profile, onConfirm }: Props) {
         recommended
         selected={selectedId === recommended.id}
         onSelect={() => setSelectedId(recommended.id)}
+        selectActionLabel={t("common.select")}
       />
       <AlternativeProgramList
         entries={alternatives}

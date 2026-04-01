@@ -117,5 +117,7 @@ export function emptyAnswers(): OnboardingAnswers {
     trainingVenue: "mixed",
     recentTrainingFreq: "weekly_few",
     supplementStack: [],
+    appUsageMode: "full_coach",
+    exerciseIdOverrides: undefined,
   };
 }

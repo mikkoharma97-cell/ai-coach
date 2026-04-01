@@ -148,6 +148,9 @@ export function buildTrainingPrescription(
   if (deload) {
     fi.push("Deload-viikko: volyymi alas, sama tekniikka.");
     en.push("Deload week: lower volume, same technique.");
+  } else if (ctx.level !== "beginner") {
+    fi.push("Suurimmassa osassa sarjoja jätä 1–3 toistoa varastoon — ei jatkuvaa failureen.");
+    en.push("On most sets, leave 1–3 reps in reserve — not every set to failure.");
   }
 
   if (int.allowed.includes("failure_last_set") && ctx.level !== "beginner") {

@@ -3,9 +3,20 @@
 import { CTAButton } from "@/components/CTAButton";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useMemo } from "react";
 
 export function LandingPricingPreview() {
   const { t } = useTranslation();
+
+  const { yearlyNum, yearlySavePct } = useMemo(() => {
+    const monthlyNum = Number(t("paywall.price")) || 29;
+    const y = Number(t("paywall.yearlyPrice")) || 249;
+    const pct = Math.max(
+      0,
+      Math.round((1 - y / (monthlyNum * 12)) * 100),
+    );
+    return { yearlyNum: y, yearlySavePct: pct };
+  }, [t]);
 
   return (
     <section className="border-b border-white/[0.06] bg-[#0a0d14] py-20 sm:py-28">
@@ -20,18 +31,22 @@ export function LandingPricingPreview() {
           {t("landing.pricingBody")}
         </p>
 
-        <div className="mx-auto mt-10 max-w-md rounded-[var(--radius-2xl)] border border-white/[0.08] bg-[#0e121c]/90 p-6 shadow-[0_24px_64px_-28px_rgba(0,0,0,0.55)] backdrop-blur-sm">
-          <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.08] pb-5">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7ea3ff]">
-                {t("landing.pricingYearly")}
-              </p>
-              <p className="mt-2 text-[1.75rem] font-semibold tabular-nums tracking-tight text-zinc-50">
-                {t("landing.pricingYearlyPrice")}
-              </p>
-            </div>
-            <p className="text-right text-[13px] leading-snug text-zinc-500">
-              {t("landing.pricingMonthlyHint")}
+        <div className="mx-auto mt-10 max-w-md rounded-[var(--radius-2xl)] border border-white/[0.08] bg-[#0e121c]/90 p-6 shadow-[0_24px_64px_-28px_rgba(59,107,255,0.22)] backdrop-blur-sm">
+          <div className="border-b border-white/[0.08] pb-5 text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7ea3ff]">
+              {t("paywall.monthlyTitle")}
+            </p>
+            <p className="mt-2 text-[1.85rem] font-semibold tabular-nums tracking-tight text-zinc-50">
+              €{t("paywall.price")}
+              <span className="text-[1.05rem] font-semibold text-zinc-500">
+                {t("paywall.perMonth")}
+              </span>
+            </p>
+            <p className="mt-3 text-[13px] leading-snug text-zinc-500">
+              {t("paywall.yearlySecondaryLine", {
+                yearly: yearlyNum,
+                pct: yearlySavePct,
+              })}
             </p>
           </div>
           <div className="pt-6">

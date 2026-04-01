@@ -32,6 +32,7 @@ export function NutritionAlternativesList({
             showMeta={showMeta}
             selected={selectedId === e.id}
             onSelect={() => onSelect(e.id)}
+            selectActionLabel={t("common.select")}
           />
         ))}
       </div>

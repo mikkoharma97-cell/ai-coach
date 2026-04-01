@@ -13,10 +13,22 @@ import { normalizeNutritionBlueprintId } from "@/lib/nutritionBlueprints";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { normalizeProgramBlueprintId } from "@/lib/programBlueprints";
 import { normalizeProgramTrackId } from "@/lib/programTracks";
-import type { CoachMode, DayOutcomeHint, OnboardingAnswers } from "@/types/coach";
+import type {
+  AppUsageMode,
+  CoachMode,
+  DayOutcomeHint,
+  OnboardingAnswers,
+} from "@/types/coach";
 
 function normalizeCoachMode(m: unknown): CoachMode {
   return m === "pro" ? "pro" : "guided";
+}
+
+function normalizeAppUsageMode(m: unknown): AppUsageMode | undefined {
+  if (m === "full_coach" || m === "food_only" || m === "maintenance") {
+    return m;
+  }
+  return undefined;
 }
 
 export const PROFILE_KEY_V3 = "ai-coach-profile-v3";
@@ -71,6 +83,7 @@ export function loadProfile(): OnboardingAnswers | null {
           selectedPackageId: normalizeProgramPackageId(parsed.selectedPackageId),
           programTrackId: normalizeProgramTrackId(parsed.programTrackId),
           mode: normalizeCoachMode(parsed.mode),
+          appUsageMode: normalizeAppUsageMode(parsed.appUsageMode),
           programBlueprintId:
             normalizeProgramBlueprintId(parsed.programBlueprintId) ?? undefined,
           nutritionBlueprintId:
@@ -103,6 +116,7 @@ export function loadProfile(): OnboardingAnswers | null {
         selectedPackageId: normalizeProgramPackageId(parsed.selectedPackageId),
         programTrackId: normalizeProgramTrackId(parsed.programTrackId),
         mode: normalizeCoachMode(parsed.mode),
+        appUsageMode: normalizeAppUsageMode(parsed.appUsageMode),
         programBlueprintId:
           normalizeProgramBlueprintId(parsed.programBlueprintId) ?? undefined,
         nutritionBlueprintId:

@@ -1,6 +1,5 @@
 "use client";
 
-import { APP_VERSION } from "@/config/version";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
@@ -24,19 +23,14 @@ function VersionBadgeInner() {
   }, [verParam]);
 
   return (
-    <>
-      <button
-        type="button"
-        aria-label="Refresh"
-        onClick={() => window.location.reload()}
-        className="fixed bottom-2 left-2 z-[100] text-[10px] opacity-50"
-      >
-        refresh
-      </button>
-      <div className="pointer-events-none fixed bottom-2 right-2 z-[100] select-none text-[10px] opacity-50">
-        {APP_VERSION}
-      </div>
-    </>
+    <button
+      type="button"
+      aria-label="Refresh"
+      onClick={() => window.location.reload()}
+      className="fixed bottom-2 left-2 z-[100] text-[10px] opacity-50"
+    >
+      refresh
+    </button>
   );
 }
 

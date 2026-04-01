@@ -1,4 +1,5 @@
-import { APP_VERSION, BUILD_TIME_ISO } from "./buildInfo.generated";
+import { APP_VERSION as COACH_APP_VERSION } from "@/config/version";
+import { BUILD_TIME_ISO } from "./buildInfo.generated";
 
 export type PublicBuildInfo = {
   /** Näkyvä versio (env tai package / generoitu) */
@@ -19,7 +20,7 @@ export function getPublicBuildInfo(): PublicBuildInfo {
 
   const buildVersion =
     envVer ||
-    (APP_VERSION && APP_VERSION.length > 0 ? APP_VERSION : "") ||
+    (COACH_APP_VERSION && COACH_APP_VERSION.length > 0 ? COACH_APP_VERSION : "") ||
     "dev";
 
   const buildTimestamp =
@@ -51,6 +52,47 @@ export function formatBuildTimestampForUi(
 }
 
 /**
+ * Build-merkin toinen rivi: `1.4.2026 · 14:32` (FI) / vastaava EN.
+ * Lähde: `BUILD_TIME_ISO` → `getPublicBuildInfo().buildTimestamp`.
+ */
+export function formatBuildDateTimeForMarker(
+  iso: string,
+  locale: "fi" | "en",
+): string {
+  if (!iso || iso === "dev") {
+    return locale === "en" ? "dev · —" : "dev · —";
+  }
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) {
+    return iso;
+  }
+  if (locale === "fi") {
+    const datePart = new Intl.DateTimeFormat("fi-FI", {
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    }).format(d);
+    const timePart = new Intl.DateTimeFormat("fi-FI", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(d);
+    return `${datePart} · ${timePart}`;
+  }
+  const datePart = new Intl.DateTimeFormat("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "numeric",
+  }).format(d);
+  const timePart = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(d);
+  return `${datePart} · ${timePart}`;
+}
+
+/**
  * Cache-bustin testilinkkeihin — ei muuta Next Link -reititystä.
  * Lisää ?b= tai &b= vain kun versio ei ole pelkkä "dev".
  */
@@ -61,9 +103,9 @@ export function appendBuildQuery(href: string): string {
   return `${href}${sep}b=${encodeURIComponent(v)}`;
 }
 
-/** package.json — sama kuin buildInfo.generated (kirjoitetaan buildissa). */
+/** Tuoteversio — `src/config/version.ts`. */
 export function getAppVersion(): string {
-  return APP_VERSION;
+  return COACH_APP_VERSION;
 }
 
 /** Näytetään devissä tai kun preview-build on käännetty (NEXT_PUBLIC_PREVIEW_BUILD=1). */

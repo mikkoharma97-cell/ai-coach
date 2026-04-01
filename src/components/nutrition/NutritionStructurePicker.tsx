@@ -38,6 +38,7 @@ export function NutritionStructurePicker({ profile, onConfirm }: Props) {
         recommended
         selected={selectedId === recommended.id}
         onSelect={() => setSelectedId(recommended.id)}
+        selectActionLabel={t("common.select")}
       />
       <NutritionAlternativesList
         entries={alternatives}

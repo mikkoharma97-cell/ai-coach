@@ -1,12 +1,12 @@
 "use client";
 
-import { getPublicBuildInfo } from "@/lib/buildInfo";
+import { BUILD_SYNC_FINGERPRINT } from "@/config/version";
 import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "coach_seen_build_version";
 
 /**
- * Vertaa tallennettua build-versiota nykyiseen.
+ * Vertaa tallennettua build-fingerprintiä nykyiseen (HÄRMÄx|n).
  * Jos deploy vaihtoi version → näytä kevyt ilmoitus (ei automaattista reloadia).
  */
 export function useBuildRefreshNotice(): {
@@ -17,12 +17,11 @@ export function useBuildRefreshNotice(): {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const { buildVersion } = getPublicBuildInfo();
     const prev = window.localStorage.getItem(STORAGE_KEY);
-    if (prev != null && prev !== buildVersion) {
+    if (prev != null && prev !== BUILD_SYNC_FINGERPRINT) {
       setShowNotice(true);
     }
-    window.localStorage.setItem(STORAGE_KEY, buildVersion);
+    window.localStorage.setItem(STORAGE_KEY, BUILD_SYNC_FINGERPRINT);
   }, []);
 
   const dismiss = useCallback(() => {

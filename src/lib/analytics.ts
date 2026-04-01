@@ -15,6 +15,7 @@ export const ANALYTICS_EVENTS = [
   "open_food",
   "open_workout",
   "open_progress",
+  "open_more",
   "open_review",
   "open_adjustments",
   "open_paywall",

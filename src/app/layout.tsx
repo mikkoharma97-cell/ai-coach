@@ -4,6 +4,9 @@ import {
   APP_DISPLAY_NAME,
   APP_SHORT_NAME,
 } from "@/config/appInfo";
+import { ForceRefreshGuard } from "@/components/build/ForceRefreshGuard";
+import { GlobalBuildMarker } from "@/components/build/BuildMarkerLine";
+import { HomeCheckButton } from "@/components/build/HomeCheckButton";
 import { VersionBadge } from "@/components/common/VersionBadge";
 import { CoachReminderNotifications } from "@/components/CoachReminderNotifications";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
@@ -72,6 +75,9 @@ export default function RootLayout({
     >
       <body className="app-page-canvas min-h-dvh overflow-x-hidden text-foreground">
         <div className="app-grain" aria-hidden />
+        <GlobalBuildMarker />
+        <HomeCheckButton />
+        <ForceRefreshGuard />
         {children}
         <PwaInstallPrompt />
         <CoachReminderNotifications />

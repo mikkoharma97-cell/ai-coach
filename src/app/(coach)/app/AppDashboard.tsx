@@ -11,15 +11,19 @@ import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { useTranslation } from "@/hooks/useTranslation";
 import {
   buildCoachAiEngineResult,
-  mergeExceptionIntoDailyPlan,
+  buildFullProgressionEngineResult,
+  buildCoachDailyPlanForSession,
+  buildTodayWorkoutForUi,
   normalizeProfileForEngine,
   resolveExceptionGuidance,
-  shouldSuppressWorkoutLink,
+  resolveProWorkoutStructureEligible,
+  resolveTodayPrimaryAnchor,
+  resolveTodayQuickDoneHref,
+  resolveTodayStartWorkoutHref,
+  resolveTodaySuppressWorkout,
 } from "@/lib/coach";
-import { mergeMinimumDayIntoDailyPlan } from "@/lib/coach/minimumDayPlan";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import { getDailyFocus } from "@/lib/dailyFocus";
-import { generateDailyPlan } from "@/lib/dailyEngine";
 import { appDataFallbackKey } from "@/lib/dataConfidence";
 import { getGoalTimeline } from "@/lib/goalTimeline";
 import {
@@ -41,9 +45,7 @@ import { resolveProgramFromProfile } from "@/lib/profileProgramResolver";
 import { getProgramLibraryEntry } from "@/lib/coachProgramCatalog";
 import { recommendSplitForProfile } from "@/lib/coach/splitRecommendationEngine";
 import { getNutritionLibraryEntry } from "@/lib/nutritionLibrary";
-import { getProgramPackage, normalizeProgramPackageId } from "@/lib/programPackages";
-import { effectiveTrainingLevel } from "@/lib/profileTraining";
-import { generateWorkoutDay } from "@/lib/training/generator";
+import { getProgramPackage } from "@/lib/programPackages";
 import {
   computeDayCloseRetentionKeys,
   computeTodaySystemStatusKey,
@@ -87,8 +89,12 @@ import {
 import { WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import { WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
 import { CoachingInsightsSection } from "@/components/coach/CoachingInsightsSection";
+import { FoodOnlyTodayPanel } from "@/components/today/FoodOnlyTodayPanel";
+import { isFoodOnlyMode } from "@/lib/appUsageMode";
+import { estimateConsumedFromKcalLog } from "@/lib/food/dayMacros";
+import { loadFoodLog } from "@/lib/foodStorage";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 function formatDateParts(
@@ -108,6 +114,7 @@ function formatDateParts(
 
 export function AppDashboard() {
   const router = useRouter();
+  const pathname = usePathname();
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
@@ -202,18 +209,13 @@ export function AppDashboard() {
 
   const plan = useMemo(() => {
     if (!normalizedProfile) return null;
-    try {
-      const base = generateDailyPlan(normalizedProfile, now, locale);
-      let merged = activeException
-        ? mergeExceptionIntoDailyPlan(base, activeException, locale)
-        : base;
-      if (minimumDayActive) {
-        merged = mergeMinimumDayIntoDailyPlan(merged, locale);
-      }
-      return merged;
-    } catch {
-      return null;
-    }
+    return buildCoachDailyPlanForSession({
+      profile: normalizedProfile,
+      now,
+      locale,
+      activeException,
+      minimumDayActive,
+    });
   }, [
     normalizedProfile,
     now,
@@ -306,9 +308,7 @@ export function AppDashboard() {
     );
   }, [activeException, locale]);
 
-  const suppressWorkout = Boolean(
-    activeException && shouldSuppressWorkoutLink(activeException),
-  );
+  const suppressWorkout = resolveTodaySuppressWorkout(activeException);
 
   const dateParts = useMemo(() => formatDateParts(now, locale), [now, locale]);
 
@@ -426,22 +426,14 @@ export function AppDashboard() {
     };
   }, [coachAi]);
 
-  const generatedWorkout = useMemo(() => {
+  const workoutForUi = useMemo(() => {
     if (!normalizedProfile) return null;
-    return generateWorkoutDay({
-      package: normalizeProgramPackageId(normalizedProfile.selectedPackageId),
-      goal: normalizedProfile.goal,
-      level: normalizedProfile.level,
-      week: 1,
-      dayIndex: todayIdx,
+    return buildTodayWorkoutForUi({
+      profile: normalizedProfile,
+      now,
       locale,
-      trainingLevel: effectiveTrainingLevel(normalizedProfile),
-      limitations: normalizedProfile.limitations,
-      coachMode: normalizedProfile.mode ?? "guided",
-      programBlueprintId: normalizedProfile.programBlueprintId,
-      sourceProfile: normalizedProfile,
     });
-  }, [normalizedProfile, todayIdx, locale]);
+  }, [normalizedProfile, now, locale]);
 
   const reopenDay = useCallback(() => {
     clearDayExecution(now);
@@ -509,19 +501,45 @@ export function AppDashboard() {
   }, [normalizedProfile, plan, now, locale]);
 
   const onQuickDone = useCallback(() => {
-    const href =
-      generatedWorkout &&
-      !generatedWorkout.isRestDay &&
-      generatedWorkout.exercises.length > 0
-        ? "/workout"
-        : "/food";
-    router.push(href);
-  }, [generatedWorkout, router]);
+    router.push(
+      resolveTodayQuickDoneHref({
+        workout: workoutForUi,
+        suppressWorkout,
+      }),
+    );
+  }, [workoutForUi, suppressWorkout, router]);
 
   const onQuickSkip = useCallback(() => {
     mergeOutcomeHint(now, { skippedWorkout: true });
     setSignalTick((x) => x + 1);
   }, [now]);
+
+  const foodOnly = Boolean(profile && isFoodOnlyMode(profile));
+
+  const nutritionProgression = useMemo(() => {
+    if (!normalizedProfile || !plan) return null;
+    return buildFullProgressionEngineResult({
+      profile: normalizedProfile,
+      locale,
+      plan,
+      now,
+    }).nutrition;
+  }, [normalizedProfile, locale, plan, now]);
+
+  const foodOnlyWeeklyInsight = useMemo(() => {
+    if (!nutritionProgression) return null;
+    const parts: string[] = [t(nutritionProgression.adjustmentReasonKey)];
+    if (features.showCoachLines && coachAi) {
+      parts.push(t(coachAi.bundle.adaptation.headlineKey));
+    }
+    return parts.filter(Boolean).join(" · ");
+  }, [nutritionProgression, features.showCoachLines, coachAi, t]);
+
+  const consumedKcalToday = useMemo(() => {
+    if (!foodOnly) return 0;
+    const log = loadFoodLog(now);
+    return log.reduce((s, x) => s + x.kcal, 0);
+  }, [foodOnly, now, pathname]);
 
   if (profile === undefined) {
     return (
@@ -566,41 +584,101 @@ export function AppDashboard() {
           Today — {dateParts.weekday}, {dateParts.calendarDate}
         </h1>
 
-        <HelpVideoCard
-          pageId="today"
-          enabled={features.showHelpVideos}
-          className="mt-2 opacity-95"
-        />
-
-        <details className="group mt-2 rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.02]">
-          <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
-            <span className="flex items-center justify-between gap-3">
-              <span>{t("today.weekPlanFold")}</span>
-              <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
-                {t("common.show")}
-              </span>
-              <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
-                {t("common.hide")}
-              </span>
-            </span>
-          </summary>
-          <div className="border-t border-border/40 px-1 pb-3 pt-1">
-            <AutopilotWeekStrip
-              enabled={autopilotEnabled}
-              onEnable={enableAutopilot}
-              onDisable={disableAutopilot}
-              days={plan.weeklyPlan.days}
-              referenceDate={now}
-              trainingDaysCount={countTrainingDays({
-                days: plan.weeklyPlan.days,
-              })}
-              mealStructureLabel={mealStructureLabel}
-              programFrameLine={programPresetLine}
-              className="!mt-0"
+        {foodOnly ? (
+          <>
+            {trialBanner ? (
+              <Link
+                href="/paywall"
+                className="mt-2 block text-center text-[12px] font-medium text-muted transition hover:text-foreground"
+              >
+                {trialBanner}
+              </Link>
+            ) : null}
+            {dataFallbackKey ? (
+              <p
+                className="mt-3 text-[11px] leading-relaxed text-muted-2"
+                role="status"
+              >
+                {t(dataFallbackKey)}
+              </p>
+            ) : null}
+            <FoodOnlyTodayPanel
+              weekday={dateParts.weekday}
+              calendarDate={dateParts.calendarDate}
+              foodLine={plan.todayFoodTask}
+              targetKcal={plan.todayCalories}
+              consumedKcal={consumedKcalToday}
+              proteinTargetG={plan.todayMacros.proteinG}
+              proteinConsumedG={
+                estimateConsumedFromKcalLog(consumedKcalToday, plan.todayMacros)
+                  .protein
+              }
+              systemStatusKey={todaySystemStatusKey}
+              systemStatusLive={
+                Boolean(plan.systemLine?.trim()) ||
+                Boolean(activeException) ||
+                minimumDayActive ||
+                autopilotEnabled
+              }
+              weeklyInsightLine={foodOnlyWeeklyInsight}
+              showFullCoachUpsell
+              minimumSlot={
+                !dayDone ? (
+                  <button
+                    type="button"
+                    onClick={() => setMinimumModalOpen(true)}
+                    className="w-full rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] px-4 py-3 text-left text-[13px] font-semibold leading-snug text-foreground transition hover:border-emerald-400/35 hover:bg-emerald-400/[0.06]"
+                  >
+                    {minimumDayActive
+                      ? t("today.minimumDayShowPanel")
+                      : t("today.minimumDayCta")}
+                  </button>
+                ) : null
+              }
+              secondaryStrip={
+                autopilotEnabled ? (
+                  <p className="text-center text-[10px] font-semibold uppercase tracking-[0.12em] text-sky-200/90 sm:text-left">
+                    {t("today.autopilotBadge")}
+                  </p>
+                ) : null
+              }
             />
-          </div>
-        </details>
-
+            {!dayDone ? (
+              <button
+                type="button"
+                onClick={() => setCompleteModalOpen(true)}
+                className="mt-6 flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-lg)] border border-accent/35 bg-accent/[0.12] px-4 text-[15px] font-semibold text-accent transition hover:border-accent/55 hover:bg-accent/[0.16]"
+              >
+                {t("ui.closeDay")}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={reopenDay}
+                className="mt-6 w-full rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.04] py-3 text-[14px] font-semibold text-foreground transition hover:bg-white/[0.07]"
+              >
+                {t("ui.reopenDay")}
+              </button>
+            )}
+            <footer className="mt-12 border-t border-border/50 pb-10 pt-8 text-center">
+              <Link
+                href="/more"
+                className="text-[14px] font-semibold text-accent underline-offset-[3px] hover:underline"
+              >
+                {t("nav.more")}
+              </Link>
+              <p className="mt-4 text-[13px]">
+                <Link
+                  href="/start"
+                  className="font-medium text-muted underline-offset-[4px] transition hover:text-foreground hover:underline"
+                >
+                  {t("dashboard.changeAnswers")}
+                </Link>
+              </p>
+            </footer>
+          </>
+        ) : (
+          <>
         <div className="relative">
           <div
             className="pointer-events-none absolute -inset-x-1 -top-2 bottom-6 -z-10 rounded-[2rem] bg-[radial-gradient(95%_75%_at_50%_-5%,rgb(59_130_246/0.18),transparent_70%)] blur-2xl"
@@ -610,26 +688,19 @@ export function AppDashboard() {
             weekday={dateParts.weekday}
             calendarDate={dateParts.calendarDate}
             packageBadge={packageBadge}
-            primaryAnchor={
-              generatedWorkout &&
-              !generatedWorkout.isRestDay &&
-              generatedWorkout.exercises.length > 0 &&
-              !suppressWorkout
-                ? "workout"
-                : "focus"
-            }
+            primaryAnchor={resolveTodayPrimaryAnchor({
+              workout: workoutForUi,
+              suppressWorkout,
+            })}
             coachHero={coachHero}
             proStructureNote={
-              profile.mode === "pro" &&
-              generatedWorkout &&
-              !generatedWorkout.isRestDay &&
-              generatedWorkout.exercises.length > 0
+              resolveProWorkoutStructureEligible(profile.mode, workoutForUi)
                 ? t("today.proStructureNote")
                 : null
             }
             proExerciseNames={
-              profile.mode === "pro" && generatedWorkout
-                ? generatedWorkout.exercises.map((e) => e.name)
+              profile.mode === "pro" && workoutForUi
+                ? workoutForUi.exercises.map((e) => e.name)
                 : undefined
             }
             focus={focus!}
@@ -645,14 +716,10 @@ export function AppDashboard() {
             minimumDayActive={minimumDayActive}
             onOpenMinimumDay={() => setMinimumModalOpen(true)}
             autopilotActive={autopilotEnabled}
-            startWorkoutHref={
-              generatedWorkout &&
-              !generatedWorkout.isRestDay &&
-              generatedWorkout.exercises.length > 0 &&
-              !suppressWorkout
-                ? "/workout"
-                : undefined
-            }
+            startWorkoutHref={resolveTodayStartWorkoutHref({
+              workout: workoutForUi,
+              suppressWorkout,
+            })}
             exceptionGuidance={exceptionGuidance}
             onClearException={
               exceptionGuidance ? () => clearActiveException() : undefined
@@ -699,6 +766,41 @@ export function AppDashboard() {
             streakTone={streakTone}
           />
         </div>
+
+        <details className="group mt-10 rounded-[var(--radius-xl)] border border-white/[0.08] bg-white/[0.02]">
+          <summary className="cursor-pointer list-none px-4 py-3 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center justify-between gap-3">
+              <span>{t("today.weekPlanFold")}</span>
+              <span className="text-[11px] font-normal text-muted-2 group-open:hidden">
+                {t("common.show")}
+              </span>
+              <span className="hidden text-[11px] font-normal text-muted-2 group-open:inline">
+                {t("common.hide")}
+              </span>
+            </span>
+          </summary>
+          <div className="border-t border-border/40 px-1 pb-3 pt-1">
+            <AutopilotWeekStrip
+              enabled={autopilotEnabled}
+              onEnable={enableAutopilot}
+              onDisable={disableAutopilot}
+              days={plan.weeklyPlan.days}
+              referenceDate={now}
+              trainingDaysCount={countTrainingDays({
+                days: plan.weeklyPlan.days,
+              })}
+              mealStructureLabel={mealStructureLabel}
+              programFrameLine={programPresetLine}
+              className="!mt-0"
+            />
+          </div>
+        </details>
+
+        <HelpVideoCard
+          pageId="today"
+          enabled={features.showHelpVideos}
+          className="mt-8 opacity-95"
+        />
 
         <details className="coach-panel-subtle mt-8 group">
           <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
@@ -796,6 +898,8 @@ export function AppDashboard() {
             </Link>
           </p>
         </footer>
+          </>
+        )}
       </Container>
     </main>
   );

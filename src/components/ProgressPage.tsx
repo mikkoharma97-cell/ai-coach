@@ -35,7 +35,11 @@ import { WeightQuickLog } from "@/components/progress/WeightQuickLog";
 import { progressDataFallbackKey } from "@/lib/dataConfidence";
 import { progressContinueReasonKey } from "@/lib/progressContinueReason";
 import { computeStreakSummary } from "@/lib/streaks";
+import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
+import { generateDailyPlan } from "@/lib/dailyEngine";
+import { buildFullProgressionEngineResult } from "@/lib/coach/fullProgressionEngine";
+import { ProgressionEngineStrip } from "@/components/progress/ProgressionEngineStrip";
 
 export function ProgressPage() {
   const router = useRouter();
@@ -107,6 +111,21 @@ export function ProgressPage() {
     });
   }, [streaks, consistency, rebalanceActive]);
 
+  const coachPlan = useMemo(
+    () => (profile ? generateDailyPlan(profile, ref, locale) : null),
+    [profile, ref, locale],
+  );
+
+  const fullProgression = useMemo(() => {
+    if (!profile || !coachPlan) return null;
+    return buildFullProgressionEngineResult({
+      profile,
+      locale,
+      plan: coachPlan,
+      now: ref,
+    });
+  }, [profile, locale, coachPlan, ref]);
+
   useEffect(() => {
     if (profile === undefined) return;
     if (!profile) {
@@ -141,15 +160,23 @@ export function ProgressPage() {
   }
 
   const ft = features;
+  const foodOnly = isFoodOnlyMode(profile);
 
   return (
     <main className="coach-page">
       <Container size="phone" className="pb-28 pt-4">
         <div className="pointer-events-none mb-2 h-px w-full bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-        <p className="brand-identity-lead mb-3 max-w-[26rem] text-balance">
-          {t("brand.identityLine")}
-        </p>
+        {!foodOnly ? (
+          <p className="brand-identity-lead mb-3 max-w-[26rem] text-balance">
+            {t("brand.identityLine")}
+          </p>
+        ) : null}
         <h1 className="coach-page-headline">{t("nav.progress")}</h1>
+        {foodOnly ? (
+          <p className="mt-2 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
+            {t("foodOnly.progressLead")}
+          </p>
+        ) : null}
         <p className="mt-3 max-w-[26rem] text-[14px] font-medium leading-snug text-muted">
           {ft.showCoachLines
             ? t(
@@ -163,9 +190,17 @@ export function ProgressPage() {
         <p className="coach-page-body-soft mt-4 max-w-[26rem]">
           {t("progress.emotionalSubtitle")}
         </p>
+        {fullProgression ? (
+          <ProgressionEngineStrip
+            className="mt-8 max-w-[26rem]"
+            food={fullProgression.food}
+            activity={fullProgression.activityState}
+            training={fullProgression.trainingState}
+          />
+        ) : null}
         <Link
           href="/app"
-          className="mt-5 inline-flex min-h-[44px] items-center text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
+          className="mt-6 inline-flex min-h-[44px] items-center text-[13px] font-semibold text-accent underline-offset-[3px] hover:underline"
         >
           {t("nav.backToToday")}
         </Link>
@@ -177,12 +212,7 @@ export function ProgressPage() {
             {t(progressFallbackKey)}
           </p>
         ) : null}
-        <HelpVideoCard
-          pageId="progress"
-          enabled={ft.showHelpVideos}
-          className="mt-6 opacity-95"
-        />
-        <div className="mt-6">
+        <div className="mt-10">
           <DevelopmentTrajectoryCard
             profile={profile}
             consistencyPct={consistency.pct}
@@ -190,8 +220,13 @@ export function ProgressPage() {
             version={weightTick}
           />
         </div>
+        <HelpVideoCard
+          pageId="progress"
+          enabled={ft.showHelpVideos}
+          className="mt-10 opacity-95"
+        />
         {ft.showProgressCharts ? (
-          <div className="mt-8">
+          <div className="mt-10">
             <WeightTrendCard profile={profile} version={weightTick} />
           </div>
         ) : null}
@@ -204,7 +239,7 @@ export function ProgressPage() {
             {t("progress.seeWeeklyReview")}
           </Link>
         </div>
-        <details className="coach-panel-subtle group mt-8">
+        <details className="coach-panel-subtle group mt-10">
           <summary className="cursor-pointer list-none px-4 py-3.5 text-[13px] font-medium text-muted marker:content-none [&::-webkit-details-marker]:hidden">
             <span className="flex items-center justify-between gap-3">
               <span>{t("progress.moreMetrics")}</span>

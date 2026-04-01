@@ -21,6 +21,7 @@ import { planMapSteerKey } from "@/lib/planMapSteer";
 import { resolveProgramFromProfile } from "@/lib/profileProgramResolver";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
+import { applyExerciseOverridesToProExercises } from "@/lib/training/exerciseOverrides";
 import type { OnboardingAnswers, PlannedEvent, WeekDayEntry } from "@/types/coach";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -101,7 +102,7 @@ export function PlanScreen() {
   const proTodayWorkout = useMemo(() => {
     if (!profile || profile.mode !== "pro") return null;
     const idx = getMondayBasedIndex(now);
-    return generateWorkoutDay({
+    const gen = generateWorkoutDay({
       package: normalizeProgramPackageId(profile.selectedPackageId),
       goal: profile.goal,
       level: profile.level,
@@ -113,6 +114,14 @@ export function PlanScreen() {
       programBlueprintId: profile.programBlueprintId,
       sourceProfile: profile,
     });
+    return {
+      ...gen,
+      exercises: applyExerciseOverridesToProExercises(
+        gen.exercises,
+        profile.exerciseIdOverrides,
+        locale,
+      ),
+    };
   }, [profile, now, locale]);
 
   const eventsThisWeek = useMemo(() => {
