@@ -1,6 +1,10 @@
 /**
  * Capacitor-native wrapper — aja `npm run build` ennen `npx cap sync`.
- * Web: staattinen export `out/` (ks. Next-config / mobile-build.md).
+ *
+ * Taulukko: docs/mobile-build.md
+ * - appId: com.coach.dailyguidance
+ * - appName: Coach
+ * - webDir: out (vaatii staattisen Next-exportin tai vastaavan — ks. mobile-build.md)
  */
 const config = {
   appId: "com.coach.dailyguidance",

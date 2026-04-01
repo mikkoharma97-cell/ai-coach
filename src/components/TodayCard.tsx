@@ -260,9 +260,12 @@ export function TodayCard({
       hasProgressSnippet,
   );
 
+  const primaryCtaId = "today-primary-cta";
+
   return (
     <section
-      className="coach-panel-today-hero"
+      id="today-main-card"
+      className="coach-panel-today-hero scroll-mt-4"
       aria-labelledby="today-heading"
     >
       <div
@@ -375,7 +378,7 @@ export function TodayCard({
               <Link
                 href="/food"
                 prefetch
-                className="mt-3 inline-flex text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
+                className="mt-3 inline-flex min-h-[44px] items-center text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
               >
                 {t("today.openFoodCta")}
               </Link>
@@ -674,6 +677,7 @@ export function TodayCard({
               <Link
                 href={startWorkoutHref}
                 prefetch
+                id={startWorkoutHref ? primaryCtaId : undefined}
                 className={
                   anchorWorkout
                     ? "group coach-today-cta-primary flex min-h-[52px] w-full items-center justify-center text-center no-underline"
@@ -894,6 +898,7 @@ export function TodayCard({
                 type="button"
                 disabled={onRequestCompleteDay ? false : isMarkingDone}
                 onClick={onRequestCompleteDay ?? onToggleDay}
+                id={!startWorkoutHref ? primaryCtaId : undefined}
                 className={`group min-h-[52px] w-full disabled:pointer-events-none disabled:opacity-70 ${
                   startWorkoutHref
                     ? "coach-today-cta-done"
