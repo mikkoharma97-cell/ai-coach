@@ -23,12 +23,22 @@ export type WorkoutLogExercise = {
   sets: WorkoutLogSet[];
 };
 
+export type WorkoutSessionMode = "normal" | "quick" | "no_equipment";
+
+export type WorkoutSessionCompletionType = "full" | "modified";
+
 /** Yksi tallennettu treenisessio */
 export type WorkoutSessionLog = {
   id: string;
   completedAt: string;
   dayKey: string;
   exercises: WorkoutLogExercise[];
+  /** HÄRMÄ61 — smart training / mukautus */
+  sessionMode?: WorkoutSessionMode;
+  usedExerciseSwaps?: boolean;
+  completionType?: WorkoutSessionCompletionType;
+  /** 1.0 = täysi volyymi; quick/no_equipment < 1 */
+  volumeModifier?: number;
 };
 
 /** Liikkeen historia — johdettu lokeista */

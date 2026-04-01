@@ -57,7 +57,36 @@ function mapAlts(
   }));
 }
 
-/** Säilyttää sarjat/toistot/lepo/ohjeet — vaihtaa identiteetin ja valmennustekstit. */
+/**
+ * Sama kuin swapProExerciseIdentity, mutta sallii minkä tahansa katalogiliikkeen
+ * (esim. no equipment -fallback, kun katalogin swap-lista ei yhdistä).
+ * Säilyttää sarjat/toistot/lepo/ohjeet — vaihtaa identiteetin ja valmennustekstit.
+ */
+export function swapProExerciseIdentityAllowAny(
+  ex: ProExercise,
+  targetId: string,
+  locale: Locale,
+): ProExercise | null {
+  const target = getExerciseById(targetId);
+  if (!target) return null;
+  const tips = coachTipsForExercise(target);
+  return {
+    ...ex,
+    id: target.id,
+    name: locale === "en" ? target.nameEn : target.nameFi,
+    target: target.primaryMuscles.join(" + "),
+    alternatives: mapAlts(target, locale),
+    coachTipFi: tips.tipFi,
+    coachTipEn: tips.tipEn,
+    coachMistakeFi: tips.mistakeFi,
+    coachMistakeEn: tips.mistakeEn,
+    coachFocusFi: tips.focusFi,
+    coachFocusEn: tips.focusEn,
+    substitutionReasonFi: undefined,
+    substitutionReasonEn: undefined,
+  };
+}
+
 export function swapProExerciseIdentity(
   ex: ProExercise,
   targetId: string,

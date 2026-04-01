@@ -1,7 +1,12 @@
 /**
  * Treenilokien tallennus — localStorage, append-only sessiot.
  */
-import type { WorkoutLogExercise, WorkoutSessionLog } from "@/types/adaptiveCoaching";
+import type {
+  WorkoutLogExercise,
+  WorkoutSessionCompletionType,
+  WorkoutSessionLog,
+  WorkoutSessionMode,
+} from "@/types/adaptiveCoaching";
 
 /** Yhteensopiva WorkoutView-rivien kanssa (completed setissä) */
 export type SerializableExercise = {
@@ -45,12 +50,20 @@ function parseReps(s: string | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+export type WorkoutSessionSerializeMeta = {
+  sessionMode: WorkoutSessionMode;
+  usedExerciseSwaps: boolean;
+  completionType: WorkoutSessionCompletionType;
+  volumeModifier: number;
+};
+
 /**
  * Muuntaa WorkoutView-rivit tallennettavaksi sessioksi (vain merkityt setit).
  */
 export function serializeWorkoutSession(
   exercises: SerializableExercise[],
   referenceDate = new Date(),
+  meta?: WorkoutSessionSerializeMeta,
 ): WorkoutSessionLog {
   const outEx: WorkoutLogExercise[] = [];
   for (const ex of exercises) {
@@ -82,6 +95,14 @@ export function serializeWorkoutSession(
     completedAt: referenceDate.toISOString(),
     dayKey: dayKey(referenceDate),
     exercises: outEx,
+    ...(meta
+      ? {
+          sessionMode: meta.sessionMode,
+          usedExerciseSwaps: meta.usedExerciseSwaps,
+          completionType: meta.completionType,
+          volumeModifier: meta.volumeModifier,
+        }
+      : {}),
   };
 }
 

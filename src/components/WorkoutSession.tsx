@@ -17,7 +17,11 @@ import { getMondayBasedIndex } from "@/lib/plan";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
 import { generateWorkoutDay } from "@/lib/training/generator";
-import { applyExerciseOverridesToProExercises } from "@/lib/training/exerciseOverrides";
+import {
+  applyExerciseOverridesToProExercises,
+} from "@/lib/training/exerciseOverrides";
+import { mapExercisesToNoEquipment } from "@/lib/training/noEquipmentFallback";
+import { pickQuickGymExercises } from "@/lib/training/quickGymEngine";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { getWorkShiftForDate, WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
@@ -28,6 +32,10 @@ import type { ProExercise } from "@/types/pro";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type {
+  WorkoutSessionCompletionType,
+  WorkoutSessionMode,
+} from "@/types/adaptiveCoaching";
 
 function mapProToView(
   exercises: ProExercise[],
@@ -71,6 +79,10 @@ export function WorkoutSession() {
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
   const [shiftTick, setShiftTick] = useState(0);
+  const [sessionMode, setSessionMode] = useState<WorkoutSessionMode>("normal");
+  const [sessionExerciseOverrides, setSessionExerciseOverrides] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     if (profile === undefined) return;
@@ -139,16 +151,35 @@ export function WorkoutSession() {
     });
   }, [normalizedProfile, now, locale]);
 
+  const mergedExerciseOverrides = useMemo(() => {
+    return {
+      ...(normalizedProfile?.exerciseIdOverrides ?? {}),
+      ...sessionExerciseOverrides,
+    };
+  }, [normalizedProfile?.exerciseIdOverrides, sessionExerciseOverrides]);
+
   const exercisesResolved = useMemo(() => {
     if (!generated || !normalizedProfile) return null;
     const raw = generated.exercises;
+    const rawCanon = raw.map((e) => e.id);
     const withOv = applyExerciseOverridesToProExercises(
       raw,
-      normalizedProfile.exerciseIdOverrides,
+      mergedExerciseOverrides,
       locale,
     );
-    return { raw, withOv };
-  }, [generated, normalizedProfile, locale]);
+    if (sessionMode === "normal") {
+      return { raw, withOv, canonicalIds: rawCanon };
+    }
+    if (sessionMode === "quick") {
+      const q = pickQuickGymExercises(withOv, rawCanon);
+      return { raw, withOv: q.exercises, canonicalIds: q.canonicalIds };
+    }
+    const n = mapExercisesToNoEquipment(withOv, rawCanon, locale);
+    if (n.exercises.length === 0) {
+      return { raw, withOv, canonicalIds: rawCanon };
+    }
+    return { raw, withOv: n.exercises, canonicalIds: n.canonicalIds };
+  }, [generated, normalizedProfile, locale, mergedExerciseOverrides, sessionMode]);
 
   const perfHintsForView = useMemo(() => {
     if (!exercisesResolved || exercisesResolved.withOv.length === 0) return [];
@@ -163,17 +194,60 @@ export function WorkoutSession() {
   }, [exercisesResolved, locale]);
 
   const onSwapExercise = useCallback(
-    (canonicalId: string, targetId: string | null) => {
+    (
+      canonicalId: string,
+      targetId: string | null,
+      scope: "session" | "profile",
+    ) => {
+      if (scope === "session") {
+        setSessionExerciseOverrides((prev) => {
+          const next = { ...prev };
+          if (targetId == null) delete next[canonicalId];
+          else next[canonicalId] = targetId;
+          return next;
+        });
+        return;
+      }
       const p = loadProfile();
       if (!p) return;
       const base = { ...(p.exerciseIdOverrides ?? {}) };
       if (targetId == null) delete base[canonicalId];
       else base[canonicalId] = targetId;
       saveProfile({ ...p, exerciseIdOverrides: base });
+      setSessionExerciseOverrides((prev) => {
+        const next = { ...prev };
+        delete next[canonicalId];
+        return next;
+      });
       router.refresh();
     },
     [router],
   );
+
+  const logMeta = useMemo(() => {
+    const volumeModifier =
+      sessionMode === "quick"
+        ? 0.65
+        : sessionMode === "no_equipment"
+          ? 0.75
+          : 1;
+    let usedExerciseSwaps = false;
+    if (exercisesResolved) {
+      const { withOv, canonicalIds } = exercisesResolved;
+      usedExerciseSwaps = withOv.some((ex, i) => {
+        const canon = canonicalIds[i];
+        return Boolean(canon && ex.id !== canon);
+      });
+    }
+    const completionType: WorkoutSessionCompletionType =
+      sessionMode !== "normal" || usedExerciseSwaps ? "modified" : "full";
+    return {
+      sessionMode,
+      usedExerciseSwaps,
+      completionType,
+      volumeModifier,
+    };
+  }, [sessionMode, exercisesResolved]);
 
   useEffect(() => {
     if (!generated) return;
@@ -305,7 +379,7 @@ export function WorkoutSession() {
 
   const exercises =
     exercisesResolved != null
-      ? mapProToView(exercisesResolved.withOv, exercisesResolved.raw.map((e) => e.id))
+      ? mapProToView(exercisesResolved.withOv, exercisesResolved.canonicalIds)
       : [];
 
   const proMode = profile.mode === "pro";
@@ -319,6 +393,9 @@ export function WorkoutSession() {
       exercisePerformanceHints={proMode ? [] : perfHintsForView}
       enableExerciseSwap={!isFoodOnlyMode(profile)}
       onSwapExercise={onSwapExercise}
+      sessionMode={sessionMode}
+      onSessionModeChange={setSessionMode}
+      sessionLogMeta={logMeta}
     />
   );
 }

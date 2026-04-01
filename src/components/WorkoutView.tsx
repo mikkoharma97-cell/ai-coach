@@ -16,12 +16,14 @@ import { logButtonClick } from "@/lib/uiInteractionDebug";
 import {
   saveWorkoutSession,
   serializeWorkoutSession,
+  type WorkoutSessionSerializeMeta,
 } from "@/lib/workoutLogStorage";
 import { getExerciseById } from "@/lib/training/exercises";
 import { getSwapTargetsForExercise } from "@/lib/training/exerciseOverrides";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { WorkoutSessionMode } from "@/types/adaptiveCoaching";
 
 export type WorkoutViewSet = {
   reps: string;
@@ -63,7 +65,14 @@ type Props = {
   exercisePerformanceHints?: { exerciseId: string; line: string }[];
   /** Sallittu liikevaihto (katalogin vaihtoehdot) */
   enableExerciseSwap?: boolean;
-  onSwapExercise?: (canonicalId: string, targetId: string | null) => void;
+  onSwapExercise?: (
+    canonicalId: string,
+    targetId: string | null,
+    scope: "session" | "profile",
+  ) => void;
+  sessionMode?: WorkoutSessionMode;
+  onSessionModeChange?: (mode: WorkoutSessionMode) => void;
+  sessionLogMeta?: WorkoutSessionSerializeMeta;
 };
 
 function exerciseRowsToSerializable(rows: ExerciseRow[]) {
@@ -147,6 +156,9 @@ export function WorkoutView({
   exercisePerformanceHints,
   enableExerciseSwap = false,
   onSwapExercise,
+  sessionMode = "normal",
+  onSessionModeChange,
+  sessionLogMeta,
 }: Props) {
   const { t, locale } = useTranslation();
   const router = useRouter();
@@ -156,9 +168,9 @@ export function WorkoutView({
       ? t("workout.exerciseCountShort", { count: list.length })
       : undefined;
 
-  const initialRows = useMemo(() => cloneExercises(list), [list]);
-
-  const [rows, setRows] = useState<ExerciseRow[]>(initialRows);
+  const [rows, setRows] = useState<ExerciseRow[]>(() =>
+    cloneExercises(exercises ?? []),
+  );
   const rowsRef = useRef(rows);
   rowsRef.current = rows;
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
@@ -171,14 +183,36 @@ export function WorkoutView({
   const [swapModalOpen, setSwapModalOpen] = useState(false);
   /** Modaalissa vaihdettava rivi (ei vain aktiivinen iso kortti). */
   const [swapFocusIndex, setSwapFocusIndex] = useState<number | null>(null);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [swapScope, setSwapScope] = useState<"session" | "profile">("session");
+  const [confirmFlash, setConfirmFlash] = useState<string | null>(null);
+
+  const logMetaEffective: WorkoutSessionSerializeMeta | undefined =
+    sessionLogMeta;
 
   const saveSessionAndGoApp = useCallback(() => {
     const log = serializeWorkoutSession(
       exerciseRowsToSerializable(rowsRef.current),
+      new Date(),
+      logMetaEffective,
     );
     saveWorkoutSession(log);
     router.push("/app");
-  }, [router]);
+  }, [router, logMetaEffective]);
+
+  const exercisesSyncKey = useMemo(
+    () =>
+      (exercises ?? [])
+        .map((e) => `${e.canonicalExerciseId ?? e.id}:${e.id}`)
+        .join("|"),
+    [exercises],
+  );
+
+  useEffect(() => {
+    setRows(cloneExercises(exercises ?? []));
+    setActiveExerciseIndex(0);
+    setActiveSetIndex(0);
+  }, [exercisesSyncKey, exercises]);
 
   const applyCommand = useCallback(
     (cmd: WorkoutVoiceCommand) => {
@@ -271,6 +305,8 @@ export function WorkoutView({
           case "finish_workout": {
             const log = serializeWorkoutSession(
               exerciseRowsToSerializable(prev),
+              new Date(),
+              logMetaEffective,
             );
             saveWorkoutSession(log);
             router.push("/app");
@@ -281,7 +317,7 @@ export function WorkoutView({
         }
       });
     },
-    [router],
+    [router, logMetaEffective],
   );
 
   const onVoiceCommand = useCallback(
@@ -333,17 +369,6 @@ export function WorkoutView({
     );
   }, [rows, activeExerciseIndex, exercisePerformanceHints]);
 
-  const activeSwapSourceId = useMemo(() => {
-    const ex = rows[activeExerciseIndex];
-    if (!ex) return null;
-    return ex.canonicalExerciseId ?? ex.id;
-  }, [rows, activeExerciseIndex]);
-
-  const activeSwapOptions = useMemo(() => {
-    if (!activeSwapSourceId) return [];
-    return getSwapTargetsForExercise(activeSwapSourceId);
-  }, [activeSwapSourceId]);
-
   const modalExerciseIndex = swapModalOpen
     ? (swapFocusIndex ?? activeExerciseIndex)
     : activeExerciseIndex;
@@ -376,6 +401,11 @@ export function WorkoutView({
     logButtonClick("WorkoutView", "openSwapExercise");
   }, []);
 
+  const openSwapFromCustomize = useCallback(() => {
+    setCustomizeOpen(false);
+    openSwapModal(activeExerciseIndex);
+  }, [openSwapModal, activeExerciseIndex]);
+
   const closeSwapModal = useCallback(() => {
     setSwapModalOpen(false);
     setSwapFocusIndex(null);
@@ -402,6 +432,38 @@ export function WorkoutView({
           }
         />
 
+        {list.length > 0 && onSessionModeChange ? (
+          <div className="mt-4 flex flex-col gap-2">
+            {confirmFlash ? (
+              <p className="text-[12px] font-medium text-accent" role="status">
+                {confirmFlash}
+              </p>
+            ) : null}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  logButtonClick("WorkoutView", "openCustomize");
+                  setCustomizeOpen(true);
+                }}
+                className="inline-flex min-h-[44px] items-center rounded-[var(--radius-lg)] border border-white/[0.12] bg-white/[0.05] px-4 text-[13px] font-semibold text-foreground transition hover:border-accent/35"
+              >
+                {t("workout.smart.customizeCta")}
+              </button>
+              {sessionMode === "quick" ? (
+                <span className="rounded-full border border-accent/35 bg-accent/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
+                  {t("workout.smart.badgeQuick")}
+                </span>
+              ) : null}
+              {sessionMode === "no_equipment" ? (
+                <span className="rounded-full border border-accent/35 bg-accent/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
+                  {t("workout.smart.badgeNoEquipment")}
+                </span>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
         {list.length > 0 && rows[activeExerciseIndex] ? (
           <section
             className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-white/[0.1] bg-white/[0.03] px-4 py-4 sm:px-5"
@@ -419,18 +481,6 @@ export function WorkoutView({
             <h3 className="mt-1 text-[1.15rem] font-semibold leading-tight tracking-[-0.03em] text-foreground">
               {rows[activeExerciseIndex].name}
             </h3>
-            {enableExerciseSwap &&
-            onSwapExercise &&
-            activeSwapSourceId &&
-            activeSwapOptions.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => openSwapModal(activeExerciseIndex)}
-                className="mt-2 text-left text-[12px] font-semibold text-accent underline-offset-[3px] hover:underline"
-              >
-                {t("workout.swapCta")}
-              </button>
-            ) : null}
             <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-2">
               {rows[activeExerciseIndex].target}
             </p>
@@ -662,6 +712,95 @@ export function WorkoutView({
           </p>
         )}
 
+        {customizeOpen && onSessionModeChange ? (
+          <div
+            role="presentation"
+            className="fixed inset-0 z-[210] flex items-end justify-center bg-black/65 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-16 sm:items-center"
+            onClick={() => setCustomizeOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setCustomizeOpen(false);
+            }}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="customize-sheet-title"
+              className="w-full max-w-md rounded-t-[var(--radius-2xl)] border border-border/80 bg-card p-5 shadow-[var(--shadow-float)] sm:rounded-[var(--radius-xl)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p
+                id="customize-sheet-title"
+                className="text-[15px] font-semibold leading-snug text-foreground"
+              >
+                {t("workout.smart.sheetTitle")}
+              </p>
+              <p className="mt-1 text-[12px] leading-snug text-muted-2">
+                {t("workout.smart.sheetLead")}
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                {enableExerciseSwap && onSwapExercise ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logButtonClick("WorkoutView", "customizeSwap");
+                      openSwapFromCustomize();
+                    }}
+                    className="flex min-h-[48px] w-full items-center rounded-[var(--radius-lg)] border border-border/70 bg-white/[0.04] px-4 py-3 text-left text-[14px] font-semibold text-foreground transition hover:border-accent/35"
+                  >
+                    {t("workout.smart.actionSwap")}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSessionModeChange("quick");
+                    setCustomizeOpen(false);
+                    setConfirmFlash(t("workout.smart.quickConfirm"));
+                    window.setTimeout(() => setConfirmFlash(null), 2200);
+                    logButtonClick("WorkoutView", "customizeQuick");
+                  }}
+                  className="flex min-h-[48px] w-full items-center rounded-[var(--radius-lg)] border border-border/70 bg-white/[0.04] px-4 py-3 text-left text-[14px] font-semibold text-foreground transition hover:border-accent/35"
+                >
+                  {t("workout.smart.actionQuick")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSessionModeChange("no_equipment");
+                    setCustomizeOpen(false);
+                    setConfirmFlash(t("workout.smart.noEquipmentConfirm"));
+                    window.setTimeout(() => setConfirmFlash(null), 2200);
+                    logButtonClick("WorkoutView", "customizeNoEq");
+                  }}
+                  className="flex min-h-[48px] w-full items-center rounded-[var(--radius-lg)] border border-border/70 bg-white/[0.04] px-4 py-3 text-left text-[14px] font-semibold text-foreground transition hover:border-accent/35"
+                >
+                  {t("workout.smart.actionNoEquipment")}
+                </button>
+                {sessionMode !== "normal" ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSessionModeChange("normal");
+                      setCustomizeOpen(false);
+                      logButtonClick("WorkoutView", "customizeRestore");
+                    }}
+                    className="mt-1 min-h-[44px] w-full rounded-[var(--radius-lg)] px-4 text-[13px] font-semibold text-muted transition hover:text-foreground"
+                  >
+                    {t("workout.smart.restoreNormal")}
+                  </button>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                onClick={() => setCustomizeOpen(false)}
+                className="mt-4 min-h-[44px] w-full rounded-[var(--radius-lg)] px-4 text-[13px] font-semibold text-muted-2 hover:text-foreground"
+              >
+                {t("food.cancel")}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         {swapModalOpen && modalSwapSourceId && onSwapExercise ? (
           <div
             role="presentation"
@@ -684,53 +823,88 @@ export function WorkoutView({
               >
                 {t("workout.swapExercise")}
               </p>
+              <p className="mt-2 text-[13px] leading-snug text-muted">
+                {t("workout.smart.swapLead")}
+              </p>
+              <p className="mt-1 text-[12px] leading-snug text-muted-2">
+                {t("workout.smart.swapFocusLine")}
+              </p>
               {modalCategoryKey ? (
-                <p className="mt-1 text-[12px] font-medium text-accent/90">
+                <p className="mt-2 text-[12px] font-medium text-accent/90">
                   {t(modalCategoryKey)}
                 </p>
               ) : null}
               <p className="mt-2 text-[11px] leading-snug text-muted-2">
                 {t("workout.swapSameCategoryOnly")}
               </p>
-              <p className="mt-2 text-[13px] leading-relaxed text-muted">
-                {t("workout.swapExerciseHint")}
-              </p>
+              <div className="mt-3 flex flex-col gap-2">
+                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-foreground">
+                  <input
+                    type="radio"
+                    name="swap-scope"
+                    className="accent-accent"
+                    checked={swapScope === "session"}
+                    onChange={() => setSwapScope("session")}
+                  />
+                  {t("workout.smart.swapScopeSession")}
+                </label>
+                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-foreground">
+                  <input
+                    type="radio"
+                    name="swap-scope"
+                    className="accent-accent"
+                    checked={swapScope === "profile"}
+                    onChange={() => setSwapScope("profile")}
+                  />
+                  {t("workout.smart.swapScopeProfile")}
+                </label>
+              </div>
               <ul className="mt-4 max-h-[40vh] space-y-2 overflow-y-auto">
-                {modalSwapOptions.map((opt) => {
-                  const label = locale === "en" ? opt.nameEn : opt.nameFi;
-                  const isCurrent = opt.id === modalRow?.id;
-                  return (
-                    <li key={opt.id}>
-                      <button
-                        type="button"
-                        disabled={isCurrent}
-                        onClick={() => {
-                          onSwapExercise(modalSwapSourceId, opt.id);
-                          closeSwapModal();
-                        }}
-                        className={`flex min-h-[48px] w-full items-center rounded-[var(--radius-lg)] border px-4 py-3 text-left text-[14px] font-semibold transition ${
-                          isCurrent
-                            ? "border-accent/40 bg-accent/10 text-foreground"
-                            : "border-border/70 bg-white/[0.04] text-foreground hover:border-accent/35"
-                        }`}
-                      >
-                        {label}
-                        {isCurrent ? (
-                          <span className="ml-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
-                            {t("workout.swapCurrent")}
-                          </span>
-                        ) : null}
-                      </button>
-                    </li>
-                  );
-                })}
+                {modalSwapOptions.length === 0 ? (
+                  <li className="text-[13px] text-muted">
+                    {t("workout.smart.noSwapOptions")}
+                  </li>
+                ) : (
+                  modalSwapOptions.map((opt) => {
+                    const label = locale === "en" ? opt.nameEn : opt.nameFi;
+                    const isCurrent = opt.id === modalRow?.id;
+                    return (
+                      <li key={opt.id}>
+                        <button
+                          type="button"
+                          disabled={isCurrent}
+                          onClick={() => {
+                            onSwapExercise(modalSwapSourceId, opt.id, swapScope);
+                            closeSwapModal();
+                          }}
+                          className={`flex min-h-[48px] w-full items-center rounded-[var(--radius-lg)] border px-4 py-3 text-left text-[14px] font-semibold transition ${
+                            isCurrent
+                              ? "border-accent/40 bg-accent/10 text-foreground"
+                              : "border-border/70 bg-white/[0.04] text-foreground hover:border-accent/35"
+                          }`}
+                        >
+                          {label}
+                          {isCurrent ? (
+                            <span className="ml-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                              {t("workout.swapCurrent")}
+                            </span>
+                          ) : null}
+                        </button>
+                      </li>
+                    );
+                  })
+                )}
               </ul>
               {modalRow?.canonicalExerciseId &&
               modalRow.id !== modalRow.canonicalExerciseId ? (
                 <button
                   type="button"
                   onClick={() => {
-                    onSwapExercise(modalRow.canonicalExerciseId!, null);
+                    onSwapExercise(
+                      modalRow.canonicalExerciseId!,
+                      null,
+                      swapScope,
+                    );
                     closeSwapModal();
                   }}
                   className="mt-4 min-h-[48px] w-full rounded-[var(--radius-lg)] border border-border/80 px-4 text-[13px] font-semibold text-muted transition hover:border-accent/35 hover:text-foreground"
