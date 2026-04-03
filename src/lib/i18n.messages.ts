@@ -19,6 +19,13 @@ export const fi = {
   "brand.hook.noGuess": "Ei arvailua.",
   "brand.hook.goodContinue": "Hyvä. Jatka.",
 
+  "growth.shareDayLead": "Päivä {{n}} tehty. Jaa tämä.",
+  "growth.shareDayPrompt": "Kerro että treeni tuli tehtyä.",
+  "growth.shareCta": "Jaa",
+  "growth.shareDayTitle": "Coach",
+  "growth.inviteFriend": "Kutsu kaveri",
+  "growth.inviteShareText": "Tule mukaan — aloita täältä:",
+
   "swipe.panelWorkout": "Treeni",
   "swipe.panelFood": "Ruoka",
   "swipe.panelRhythm": "Rytmi",
@@ -50,18 +57,17 @@ export const fi = {
   "pwa.installDismiss": "Ei nyt",
 
   "notifications.titleWorkout": "Treeni",
-  "notifications.bodyWorkout":
-    "Jos sopii, yksi selkeä treeni tänään.",
+  "notifications.bodyWorkout": "Yksi selkeä treeni tänään.",
   "notifications.titleFood": "Ruoka",
   "notifications.bodyFood": "Pidä päivän linja — maltillisesti.",
   "notifications.titleDay": "Päivä",
-  "notifications.bodyDay": "Päivä on vielä kesken — sulje kun ehdit.",
+  "notifications.bodyDay": "Päivä kesken — sulje se.",
   "notifications.prefsTitle": "Muistutukset",
   "notifications.prefsHint":
     "Enintään kolme kevyttä ilmoitusta päivässä. Hiljaisuus yöllä (22–7). Ei spämmiä.",
   "notifications.prefsEnable": "Selainmuistutukset",
   "notifications.permissionDenied":
-    "Ilmoitukset on estetty selaimessa — salli asetuksista, jos haluat muistutuksia.",
+    "Ilmoitukset estetty selaimessa — salli ne asetuksista muistutuksia varten.",
 
   "fallback.sharpensWithUse": "Tarkentuu, kun merkitset päiviä — ilman merkintöjä tämä on arvausta.",
   "fallback.firstWeeksBuildView": "Ensimmäiset viikot täyttävät näkymän.",
@@ -136,7 +142,7 @@ export const fi = {
 
   "onboarding.qPackage": "Valitse valmis paketti",
   "onboarding.packageHint":
-    "Voit hienosäätää seuraavissa vaiheissa — tämä vain asettaa lähtörytmin.",
+    "Seuraavat vaiheet säätävät rytmiä — tämä on lähtö.",
   "onboarding.packageTrainPerWeek": "{{n}}× treeniä / viikko",
 
   "onboarding.qLastBestShape": "Milloin viimeksi olit parhaassa kunnossa?",
@@ -238,7 +244,7 @@ export const fi = {
   "shift.coach.main.off":
     "Vapaapäivä — tässä on paras paikka tehdä kunnolla.",
   "shift.coach.dir.off":
-    "Voit nostaa laatua tai pitää täysin palauttavan päivän.",
+    "Nosta laatua tai pidä täysin palauttava päivä.",
   "shift.ws.morning":
     "Vuoro huomioitu: aamuvuoro — treeni-ikkuna työpäivän ympärillä.",
   "shift.ws.evening":
@@ -693,12 +699,12 @@ export const fi = {
   "progress.continueReason.consistency":
     "Ketju tekee eron — yksi päivä kerrallaan.",
   "progress.continueReason.rebalance":
-    "Tasapainoitus kesken — huomenna näet linjan.",
+    "Tasapainoitus kesken — linja tarkentuu huomenna.",
   "progress.continueReason.default":
     "Rytmi tulee toistosta — ilman ylipainetta.",
   "progress.moreMetrics": "Lisää",
   "progress.chartsHiddenHint":
-    "Käyrät on piilotettu asetuksissa — voit ottaa ne takaisin käyttöön Valinnoista.",
+    "Käyrät piilotettu — käynnistä ne Valinnoista.",
   "progress.combinedLabel": "Yhdistetty putki",
   "progress.combinedSub": "Päivät linjassa — ruoka + treeni kun ohjelma vaatii",
   "progress.rhythmStreakTitle": "Päiviä peräkkäin",
@@ -795,7 +801,7 @@ export const fi = {
   "pro.backToTodayCta": "Takaisin Tänään-näkymään",
   "pro.sectionOwnPrograms": "Omat ohjelmat",
   "pro.ownProgramsHint":
-    "Valitse jako — sovellus täyttää esimerkkirungon ja ehdotukset. Voit vaihtaa myöhemmin.",
+    "Valitse jako — sovellus täyttää esimerkkirungon ja ehdotukset. Vaihto myöhemmin: Valinnat.",
   "pro.presetPpl": "Push / pull / legs",
   "pro.presetUl": "Upper / lower",
   "pro.presetFb": "Koko keho",
@@ -846,6 +852,32 @@ export const fi = {
   "today.systemStatus.goodProgress": "Hyvä. Jatka.",
   "today.systemStatus.fixInProgress": "Pieni säätö. Runko pysyy.",
   "today.labelFocus": "Tämän päivän tehtävä",
+  "todayView.title": "Tänään",
+  "todayView.cta": "Aloita",
+  "todayView.doneCheck": "Päivä {{day}} valmis ✅",
+  "todayView.dayDoneSimple": "Päivä valmis ✅",
+  "todayView.ctaTomorrow": "Huomisen ohjelma",
+  "todayView.streakCompact": "Streak: {{n}}",
+  "todayView.foodLinkOnly": "Ruoka — avaa linja",
+  "todayView.heroWorkout": "Treeni — päivä {{day}}",
+  "todayView.heroEat": "Syö suunnitelman mukaan",
+  "todayView.doneFood": "Ruokalinja valmis",
+  "todayView.dayDoneTrain": "Päivä {{day}} valmis",
+  "todayView.dayDoneRest": "Lepopäivä hoidettu",
+  "todayView.streakLine": "Putki {{n}} päivää",
+
+  "foodFlowV1.todayEyebrow": "Tänään syöt näin",
+  "foodFlowV1.todayCta": "Avaa päivän ruokalinja",
+  "foodFlowV1.pageTitle": "Päivän ruokalinja",
+  "foodFlowV1.styleEyebrow": "Tyyli",
+  "foodFlowV1.styleEasy": "Helppo",
+  "foodFlowV1.stylePrecise": "Tarkka",
+  "foodFlowV1.styleWhatever": "Ei väliä",
+  "foodFlowV1.lineEnergy":
+    "Energiaviite ~{{kcal}} kcal · proteiini ~{{p}} g",
+  "foodFlowV1.ctaKeep": "Pidä tämä tänään",
+  "foodFlowV1.linesAria": "Päivän ruokalinjat",
+
   "today.doThisToday": "Pidä linja. Tee tämä päivä normaalisti.",
   "today.rebuildEnergyTitle": "Tänään · energia ylös",
   "today.rebuildPillarsEyebrow": "Päivän oletus",
@@ -1030,6 +1062,8 @@ export const fi = {
   "workout.foldTechniqueVideo": "Tekniikka & video",
   "workout.description":
     "Merkitse sarjat. Huono liike — vaihda. Runko pysyy.",
+  "workoutSession.markDone": "Valmis",
+
   "workout.restTitle": "Lepo",
   "workout.restHint": "Ei kuormaa. Ruoka ja rytmi linjassa.",
   "workout.backToday": "Takaisin tänään",
@@ -1532,6 +1566,14 @@ export const fi = {
   "plan.arcFlexFlexible": "tilaa taipua",
 
   "paywall.kicker": "Ohjaus",
+  "paywallV1.title": "Jatka ohjelmaa",
+  "paywallV1.subtitle": "Olet aloittanut. Jatka tästä.",
+  "paywallV1.bullet1": "koko ohjelma",
+  "paywallV1.bullet2": "ruokasuunnitelma",
+  "paywallV1.bullet3": "seuranta",
+  "paywallV1.cta": "Jatka",
+  "paywallV1.back": "Takaisin",
+
   "paywall.title": "Saat ohjauksen valmiina.",
   "paywall.subtitle": "Yksi linja tänään. Lista tehtävänä.",
   "paywall.notForYouIfNoGuidance":
@@ -1549,7 +1591,7 @@ export const fi = {
   "paywall.sell4": "Viikko ja palaute tulevat käytöstä — ei raportteja.",
   "paywall.sell5": "Yksi Tänään — vähemmän päätöksiä.",
   "paywall.sell6": "Kehitys näkyy viikoissa.",
-  "paywall.sell7": "Näet pysyykö ruokarytmi kasassa.",
+  "paywall.sell7": "Ruokarytmi: pidä se linjassa viikosta viikkoon.",
   "paywall.sell8": "Kun viikko sotkeutuu, linja ei katoa.",
   "paywall.sell9":
     "Ylisyöminen, huono uni, väliin jäänyt treeni — saat uuden suunnan heti.",
@@ -1639,15 +1681,14 @@ export const fi = {
 
   "preferences.eyebrow": "Profiili",
   "preferences.title": "Valinnat",
-  "preferences.subtitle":
-    "Vain tärkeimmät — laajennat tarvittaessa. Tallennetaan laitteelle.",
+  "preferences.subtitle": "Tallennus laitteelle.",
   "preferences.sectionSimple": "Tärkeimmät",
   "preferences.moreSettings": "Lisää asetuksia",
   "preferences.moreSettingsHint":
-    "Taso, tavoitepäivä, näkyvyydet ja muut — vain jos tarvitset.",
+    "Taso, tavoitepäivä, näkyvyydet — Lisää-asetuksissa.",
   "preferences.coachTitle": "Oma valmentaja",
   "preferences.coachSubtitle":
-    "Valitse, mitä näytämme — logiikka pysyy, näkymät kevenevät.",
+    "Näytä vain nämä — sama logiikka, kevyempi näyttö.",
   "preferences.toggle.coachLines": "Valmentajan kommentit",
   "preferences.toggle.hardline": "Suora valmentajatyyli",
   "preferences.toggle.helpVideos": "Ohjevideot",
@@ -1661,7 +1702,7 @@ export const fi = {
   "preferences.toggle.dailyActivityInput": "Päivän lisäliike",
   "preferences.autopilotTitle": "Autopilot-viikko",
   "preferences.autopilotHint":
-    "Kun päällä: viikkonäkymässä näkyy, että rytmi on kasassa — vähemmän päätöksiä. Sama kytkin kuin Tänään-näkymässä.",
+    "Päällä: viikko näyttää että rytmi pitää — vähemmän päätöksiä. Sama kytkin kuin Tänään-näkymässä.",
   "preferences.autopilotEnable": "Autopilot käytössä",
   "preferences.save": "Tallenna",
   "preferences.saved": "Tallennettu.",
@@ -1742,13 +1783,13 @@ export const fi = {
   "onboarding.introKicker": "Coach",
   "onboarding.introTitle": "Aloitetaan",
   "onboarding.introBody":
-    "Lähtötaso ja suunta ensin. Sitten näet tämän viikon ohjauksen. Tämä on jatkuvaa — ei vain ensimmäistä viikkoa.",
+    "Lähtötaso ja suunta ensin. Sitten tämän viikon ohjaus. Jatkuvaa — ei vain ensimmäistä viikkoa.",
   "onboarding.introProof":
     "Logiikka ja käytännön mallit — ei arvailua.",
   "onboarding.trialRetention1":
-    "Kokeilu kerää viikon merkinnät — sinä et täytä lomakkeita illalla.",
+    "Kokeilu kirjaa viikon — ei illan lomakkeita.",
   "onboarding.trialRetention2":
-    "Päivän ja viikon palaute tulee käytöstä — ei käsin rakennettua raporttia.",
+    "Päivä- ja viikkopalaute käytöstä — ei käsin rakennettua raporttia.",
   "onboarding.continue": "Jatka",
   "onboarding.back": "Takaisin",
   "onboarding.home": "Etusivu",
@@ -1757,14 +1798,14 @@ export const fi = {
   "onboarding.buildingWait": "Hetkinen",
   "onboarding.buildingTitle": "Rakennetaan tämän viikon ohjaus",
   "onboarding.buildingPromise":
-    "Uutta ohjelmaa joka viikko et tarvitse — ohjaus elää mukana. Tänään aukeaa kohta.",
+    "Uutta ohjelmaa joka viikko ei tarvita — ohjaus elää mukana. Tänään seuraava askel.",
   "onboarding.qGoal": "Päämäärä",
   "onboarding.qProgramLibrary": "Treeniohjelma",
   "onboarding.programLibraryHint":
-    "Suositus perustuu tavoitteeseen ja vastauksiisi. Voit vaihtaa — tämä lukitaan eteenpäin.",
+    "Tavoite ja vastaukset — vaihda tarvittaessa; linja lukittuu eteenpäin.",
   "onboarding.qNutritionLibrary": "Ruokarakenne",
   "onboarding.nutritionLibraryHint":
-    "Ateriarytmi ja blueprint. Voit säätää myöhemmin Asetuksista.",
+    "Ateriarytmi ja blueprint. Säätö: Asetukset.",
   "nutritionLibrary.alternatives": "Muut ruokarytmit",
   "plans.title": "Valitse ohjelma",
   "plans.selectCoachingTitle": "Valitse valmennus",
@@ -1806,9 +1847,9 @@ export const fi = {
     "Valinnainen. Pilkuilla: pidät (esim. kala, kaura) ja vältä (esim. sienet).",
   "onboarding.foodLikesPlaceholder": "Pidät: kana, riisi",
   "onboarding.foodDislikesPlaceholder": "Vältä: maksainen",
-  "onboarding.qFlex": "Haluatko selkeän ohjauksen vai enemmän vapautta?",
+  "onboarding.qFlex": "Selkeä ohjaus vai vapaus?",
   "onboarding.flexHelp":
-    "Vaikuttaa siihen, kuinka tiukasti päivän ohjetta seurataan.",
+    "Päivän ohje: tiukka vai löysä.",
   "onboarding.goalLose": "Laihtuminen",
   "onboarding.goalMuscle": "Lihaskasvu",
   "onboarding.goalFitness": "Kunto",
@@ -1834,6 +1875,30 @@ export const fi = {
   "onboarding.flexStructured": "Jäsennelty",
   "onboarding.flexBalanced": "Tasapainoinen",
   "onboarding.flexFlexible": "Joustava",
+
+  "onboarding.fast.qGoal": "Mikä on tavoitteesi?",
+  "onboarding.fast.pickGoal": "Valitse tavoite",
+  "onboarding.fast.qLevel": "Mikä taso?",
+  "onboarding.fast.qDays": "Kuinka monta päivää viikossa?",
+  "onboarding.fast.qTrainFreq": "Kuinka usein treenaat?",
+  "onboarding.fast.qFood": "Miten haluat syödä?",
+  "onboarding.fast.qEatHow": "Miten syöt?",
+  "onboarding.fast.goalLose": "Laihtua",
+  "onboarding.fast.goalMuscle": "Lihasmassa",
+  "onboarding.fast.goalFitness": "Kunto",
+  "onboarding.fast.goalLifestyle": "Elämäntapa",
+  "onboarding.fast.time23": "2–3",
+  "onboarding.fast.time34": "3–4",
+  "onboarding.fast.time5": "5+",
+  "onboarding.fast.foodEasy": "Helppo",
+  "onboarding.fast.foodPrecise": "Tarkka",
+  "onboarding.fast.foodWhatever": "Ei väliä",
+  "onboarding.fast.summaryTitle": "Yhteenveto",
+  "onboarding.fast.summaryProgram": "Ohjelmasi",
+  "onboarding.fast.summaryGoal": "Tavoite",
+  "onboarding.fast.summaryDays": "Treenipäivät",
+  "onboarding.fast.summaryFood": "Ruokavalio",
+  "onboarding.fast.cta": "Aloita tänään",
 
   "programTrack.basic_strength": "Perusvoima",
   "programTrack.muscle_growth": "Lihaskasvu",
@@ -1882,20 +1947,21 @@ export const fi = {
   "landing.heroProof":
     "Vähemmän puhetta. Enemmän tekemistä. Valmis rakenne — ei tyhjää pöytää.",
   "landing.compareEyebrow": "Vertailu",
-  "landing.compareHumanTitle": "Henkilövalmentaja",
-  "landing.compareAppTitle": "Tämä sovellus",
-  "landing.compareHuman1": "Livenä tilanteessa",
-  "landing.compareHuman2": "Reaaliaikainen palaute",
-  "landing.compareHuman3": "Korkeampi hinta",
-  "landing.compareHuman4": "Rajoitetut ajat",
-  "landing.compareHuman5": "Ei skaalautu kaikille",
+  "landing.comparePlanLine": "Yksi selkeä suunnitelma. Päivä kerrallaan.",
+  "landing.compareHumanTitle": "Tyypillinen treenisovellus",
+  "landing.compareAppTitle": "COACH (tämä sovellus)",
+  "landing.compareHuman1": "Geneerinen sisältö",
+  "landing.compareHuman2": "Ei päivittäistä ohjausta",
+  "landing.compareHuman3": "Laatu ja tyyli vaihtelevat",
+  "landing.compareHuman4": "Päivän kokoaminen jää sinulle",
+  "landing.compareHuman5": "Ei kiinteää kuukausihintaa",
   "landing.compareApp1": "Päivittäinen ohjaus",
-  "landing.compareApp2": "Mukautuu viikolta toiseen",
+  "landing.compareApp2": "Mukautuu viikosta toiseen",
   "landing.compareApp3": "Aina käytössä",
   "landing.compareApp4": "Kiinteä kuukausihinta",
   "landing.compareApp5": "Toistettava logiikka",
   "landing.compareDisclaimer":
-    "Tämä ei korvaa terapeuttia, lääkäriä tai henkilökohtaista valmentajaa.",
+    "Ei korvaa terapeuttia tai lääkäriä.",
   "landing.compareCredibility":
     "Perustuu oikeaan treeni- ja ravintologiikkaan — ei pelkkään chatbottiin.",
   "landing.compareCta": "Katso mitä tämä sisältää",
@@ -1938,16 +2004,16 @@ export const fi = {
   "landing.finalOpen": "Avaa Tänään",
   "landing.finalNote": "Ei setuppia. Alle minuutti.",
 
-  "compare.pageTitle": "Ihmisen valmennus vs tämä",
+  "compare.pageTitle": "Treenisovellus vs COACH",
   "compare.pageLead":
-    "Lyhyt rehellinen vertailu: mitä henkilökohtainen valmennus tekee, mitä tämä tekee, ja mihin tämä nojaa.",
-  "compare.sectionHuman": "Mitä henkilökohtainen valmennus tekee",
-  "compare.humanDoes1": "Näkee koko kuvan — tilanne, historia, rajoitteet.",
-  "compare.humanDoes2": "Antaa palautetta heti, kun tekniikka tai kuorma menee pieleen.",
-  "compare.humanDoes3": "Pitää vastuulla ja säätää motivaation mukaan.",
-  "compare.humanDoes4": "Rajattu aika: tapaamiset, viestit, ei 24/7.",
-  "compare.humanDoes5": "Hinta heijastaa aikaa ja osaamista — ei skaalaudu kaikille.",
-  "compare.sectionApp": "Mitä tämä sovellus tekee",
+    "Mitä tyypillinen treenisovellus tekee — ja mitä COACH tekee toisin.",
+  "compare.sectionHuman": "Mitä tyypillinen treenisovellus tekee",
+  "compare.humanDoes1": "Sama pohja kaikille — ei henkilökohtaista linjaa.",
+  "compare.humanDoes2": "Ei päivittäistä ohjausta: lista ja päätökset jäävät sinulle.",
+  "compare.humanDoes3": "Sisältö vaihtelee: ei yhtä toistettavaa logiikkaa.",
+  "compare.humanDoes4": "Kokeilut ja mainokset — ei kiinteää kuukausihintaa.",
+  "compare.humanDoes5": "Käyttö on pätkittäistä — ei samaa rytmiä joka viikko.",
+  "compare.sectionApp": "Mitä COACH (tämä sovellus) tekee",
   "compare.appDoes1": "Näyttää mitä tehdä tänään — ei tyhjää päivää.",
   "compare.appDoes2": "Rakentaa viikkolinjan tavoitteen ja profiilin mukaan.",
   "compare.appDoes3": "Synkkaa treenin, ruoan ja rytmin yhdeksi päiväksi.",
@@ -2179,7 +2245,19 @@ export const fi = {
 
   "settings.title": "Asetukset",
   "settings.eyebrow": "Profiili",
-  "settings.subtitle": "Kieli, tilaus ja tietosi.",
+  "settings.subtitle": "Muokkaukset: Valinnat.",
+  "settings.rowName": "Nimi",
+  "settings.rowGoal": "Tavoite",
+  "settings.rowTraining": "Treenipäivät",
+  "settings.rowFood": "Ruokalinja",
+  "settings.rowReminders": "Muistutukset",
+  "settings.ctaUpdate": "Päivitä",
+  "settings.ctaChangeGoal": "Muuta tavoitetta",
+  "settings.ctaEditReminders": "Muokkaa muistutuksia",
+  "settings.reminderOn": "Päällä",
+  "settings.reminderOff": "Pois",
+  "settings.fieldName": "Nimi",
+  "settings.namePlaceholder": "Valinnainen",
   "settings.language": "Kieli",
   "settings.subscription": "Tilaus",
   "settings.subscribed": "Tilaus aktiivinen",
@@ -2388,11 +2466,11 @@ export const fi = {
   "today.shortcutsEyebrow": "Muualla appissa",
   "today.openFoodCta": "Avaa ruokaohje",
   "workout.afterSessionHint": "Seuraavat askeleet",
-  "progress.seeWeeklyReview": "Näe viikon palaute",
+  "progress.seeWeeklyReview": "Viikon palaute",
   "paywall.linkOnboarding": "Aloitus",
   "start.resumeHint":
-    "Profiilisi on jo tallessa — voit jatkaa suoraan päivänäkymään.",
-  "food.linkSeeProgress": "Näe kehitys",
+    "Profiili tallessa — jatka päivänäkymään.",
+  "food.linkSeeProgress": "Kehitys",
   "food.linkAdjustCoach": "Säädä valmentajaa",
   "adjust.backToday": "Palaa päivään",
 
@@ -2425,6 +2503,13 @@ export const en: { [K in MessageKey]: string } = {
   "brand.hook.noGuess": "No guessing.",
   "brand.hook.goodContinue": "Good. Continue.",
 
+  "growth.shareDayLead": "Day {{n}} done. Share this.",
+  "growth.shareDayPrompt": "Say you got the workout done.",
+  "growth.shareCta": "Share",
+  "growth.shareDayTitle": "Coach",
+  "growth.inviteFriend": "Invite a friend",
+  "growth.inviteShareText": "Join me — start here:",
+
   "swipe.panelWorkout": "Training",
   "swipe.panelFood": "Food",
   "swipe.panelRhythm": "Rhythm",
@@ -2456,18 +2541,17 @@ export const en: { [K in MessageKey]: string } = {
   "pwa.installDismiss": "Not now",
 
   "notifications.titleWorkout": "Training",
-  "notifications.bodyWorkout":
-    "If it fits, one clear session today.",
+  "notifications.bodyWorkout": "One clear workout today.",
   "notifications.titleFood": "Food",
   "notifications.bodyFood": "Hold today’s line — steady.",
   "notifications.titleDay": "Today",
-  "notifications.bodyDay": "Your day is still open — close it when you can.",
+  "notifications.bodyDay": "Day still open — close it.",
   "notifications.prefsTitle": "Reminders",
   "notifications.prefsHint":
     "Up to three gentle notifications per day. Quiet overnight (10pm–7am). No spam.",
   "notifications.prefsEnable": "Browser reminders",
   "notifications.permissionDenied":
-    "Notifications are blocked in the browser — enable them in settings if you want reminders.",
+    "Notifications blocked — enable them in browser settings for reminders.",
 
   "fallback.sharpensWithUse":
     "Sharpens when you log days — without logs, this is guesswork.",
@@ -2543,7 +2627,7 @@ export const en: { [K in MessageKey]: string } = {
 
   "onboarding.qPackage": "Choose a ready package",
   "onboarding.packageHint":
-    "You can fine-tune next — this only sets the starting rhythm.",
+    "Next steps tune rhythm — this is the starting line.",
   "onboarding.packageTrainPerWeek": "{{n}}× training / week",
 
   "onboarding.qLastBestShape": "When were you last in your best shape?",
@@ -3093,12 +3177,12 @@ export const en: { [K in MessageKey]: string } = {
   "progress.continueReason.consistency":
     "The chain is what compounds — one day at a time.",
   "progress.continueReason.rebalance":
-    "Rebalancing in motion — tomorrow you’ll see the line.",
+    "Rebalancing in motion — the line sharpens tomorrow.",
   "progress.continueReason.default":
     "Rhythm comes from repeats — no extra pressure.",
   "progress.moreMetrics": "More",
   "progress.chartsHiddenHint":
-    "Charts are hidden in settings — turn them back on in Preferences.",
+    "Charts off — turn them on in Preferences.",
   "progress.combinedLabel": "Combined streak",
   "progress.combinedSub": "Days in line — food + training when scheduled",
   "progress.rhythmStreakTitle": "Days in a row",
@@ -3196,7 +3280,7 @@ export const en: { [K in MessageKey]: string } = {
   "pro.backToTodayCta": "Back to Today",
   "pro.sectionOwnPrograms": "Your programs",
   "pro.ownProgramsHint":
-    "Pick a split — the app fills a sample frame and suggestions. You can switch later.",
+    "Pick a split — the app fills a sample frame and suggestions. Change later in Preferences.",
   "pro.presetPpl": "Push / pull / legs",
   "pro.presetUl": "Upper / lower",
   "pro.presetFb": "Full body",
@@ -3248,6 +3332,32 @@ export const en: { [K in MessageKey]: string } = {
   "today.systemStatus.fixInProgress":
     "Small tweak. Frame stays.",
   "today.labelFocus": "Today’s task",
+  "todayView.title": "Today",
+  "todayView.cta": "Start",
+  "todayView.doneCheck": "Day {{day}} done ✅",
+  "todayView.dayDoneSimple": "Day done ✅",
+  "todayView.ctaTomorrow": "Tomorrow’s plan",
+  "todayView.streakCompact": "Streak: {{n}}",
+  "todayView.foodLinkOnly": "Food — open line",
+  "todayView.heroWorkout": "Training — day {{day}}",
+  "todayView.heroEat": "Eat the plan",
+  "todayView.doneFood": "Food line done",
+  "todayView.dayDoneTrain": "Day {{day}} done",
+  "todayView.dayDoneRest": "Rest day done",
+  "todayView.streakLine": "{{n}}-day streak",
+
+  "foodFlowV1.todayEyebrow": "How you eat today",
+  "foodFlowV1.todayCta": "Open today’s food line",
+  "foodFlowV1.pageTitle": "Today’s food line",
+  "foodFlowV1.styleEyebrow": "Style",
+  "foodFlowV1.styleEasy": "Easy",
+  "foodFlowV1.stylePrecise": "Precise",
+  "foodFlowV1.styleWhatever": "Flexible",
+  "foodFlowV1.lineEnergy":
+    "Energy guide ~{{kcal}} kcal · protein ~{{p}} g",
+  "foodFlowV1.ctaKeep": "Keep this today",
+  "foodFlowV1.linesAria": "Today’s food lines",
+
   "today.doThisToday": "Hold the line. Run today normally.",
   "today.rebuildEnergyTitle": "Today · energy up",
   "today.rebuildPillarsEyebrow": "Your default view",
@@ -3433,6 +3543,8 @@ export const en: { [K in MessageKey]: string } = {
   "workout.foldTechniqueVideo": "Technique & video",
   "workout.description":
     "Log your sets. Wrong lift — swap it. Frame stays.",
+  "workoutSession.markDone": "Done",
+
   "workout.restTitle": "Rest",
   "workout.restHint": "No load. Food and rhythm on track.",
   "workout.backToday": "Back to Today",
@@ -3945,6 +4057,14 @@ export const en: { [K in MessageKey]: string } = {
   "plan.arcFlexFlexible": "room to bend",
 
   "paywall.kicker": "Guidance",
+  "paywallV1.title": "Continue your program",
+  "paywallV1.subtitle": "You started. Continue from here.",
+  "paywallV1.bullet1": "the full program",
+  "paywallV1.bullet2": "meal planning",
+  "paywallV1.bullet3": "tracking",
+  "paywallV1.cta": "Continue",
+  "paywallV1.back": "Back",
+
   "paywall.title": "Guidance ready for you.",
   "paywall.subtitle": "One line today. Your list to run.",
   "paywall.notForYouIfNoGuidance":
@@ -3962,7 +4082,7 @@ export const en: { [K in MessageKey]: string } = {
   "paywall.sell4": "Week and feedback come from use — no report homework.",
   "paywall.sell5": "One Today — fewer decisions.",
   "paywall.sell6": "Progress shows in weeks.",
-  "paywall.sell7": "You see whether meal rhythm holds.",
+  "paywall.sell7": "Meal rhythm: keep it in line week to week.",
   "paywall.sell8": "When the week scrambles, the line doesn’t vanish.",
   "paywall.sell9":
     "Overeating, bad sleep, missed training — you get a new direction immediately.",
@@ -4052,15 +4172,14 @@ export const en: { [K in MessageKey]: string } = {
 
   "preferences.eyebrow": "Profile",
   "preferences.title": "Preferences",
-  "preferences.subtitle":
-    "Only the essentials — expand when you need more. Saved on this device.",
+  "preferences.subtitle": "Saved on device.",
   "preferences.sectionSimple": "Essentials",
   "preferences.moreSettings": "More settings",
   "preferences.moreSettingsHint":
-    "Level, target date, what we show, and more — only if you need them.",
+    "Level, target date, visibility — under More settings.",
   "preferences.coachTitle": "Your coach",
   "preferences.coachSubtitle":
-    "Choose what we show — logic stays, views get lighter.",
+    "Show only these — same logic, lighter screen.",
   "preferences.toggle.coachLines": "Coach commentary",
   "preferences.toggle.hardline": "Direct coach tone",
   "preferences.toggle.helpVideos": "Help videos",
@@ -4074,7 +4193,7 @@ export const en: { [K in MessageKey]: string } = {
   "preferences.toggle.dailyActivityInput": "Daily extra movement",
   "preferences.autopilotTitle": "Autopilot week",
   "preferences.autopilotHint":
-    "When on, Today shows your week as handled — fewer decisions. Same toggle as on the Today screen.",
+    "On: Today shows the week as handled — fewer decisions. Same toggle as Today.",
   "preferences.autopilotEnable": "Autopilot enabled",
   "preferences.save": "Save",
   "preferences.saved": "Saved.",
@@ -4155,13 +4274,13 @@ export const en: { [K in MessageKey]: string } = {
   "onboarding.introKicker": "Coach",
   "onboarding.introTitle": "Let’s start",
   "onboarding.introBody":
-    "Level and direction first. Then this week’s guidance. Built to keep going — not just week one.",
+    "Level and direction first. Then this week’s guidance. Keeps going — not just week one.",
   "onboarding.introProof":
     "Logic and real-world patterns — not guesswork.",
   "onboarding.trialRetention1":
-    "The trial logs your week — no evening forms.",
+    "The trial logs the week — no evening forms.",
   "onboarding.trialRetention2":
-    "Day and week feedback come from use — no hand-built report.",
+    "Day and week feedback from use — no hand-built report.",
   "onboarding.continue": "Continue",
   "onboarding.back": "Back",
   "onboarding.home": "Home",
@@ -4170,14 +4289,14 @@ export const en: { [K in MessageKey]: string } = {
   "onboarding.buildingWait": "Please wait",
   "onboarding.buildingTitle": "Building this week’s guidance",
   "onboarding.buildingPromise":
-    "You don’t need a new program every week — guidance moves with you. Today opens next.",
+    "No new program every week — guidance moves with you. Next step opens today.",
   "onboarding.qGoal": "Primary goal",
   "onboarding.qProgramLibrary": "Training program",
   "onboarding.programLibraryHint":
-    "Recommendation is based on your goal and answers. You can switch — it locks in going forward.",
+    "Goal and answers drive this — switch if needed; the line locks forward.",
   "onboarding.qNutritionLibrary": "Meal structure",
   "onboarding.nutritionLibraryHint":
-    "Meal rhythm and blueprint. You can adjust later in Settings.",
+    "Meal rhythm and blueprint. Adjust in Settings.",
   "nutritionLibrary.alternatives": "Other meal rhythms",
   "plans.title": "Choose a program",
   "plans.selectCoachingTitle": "Choose your coaching",
@@ -4219,9 +4338,9 @@ export const en: { [K in MessageKey]: string } = {
     "Optional. Comma-separated: likes (e.g. fish, oats) and avoids (e.g. mushrooms).",
   "onboarding.foodLikesPlaceholder": "Like: chicken, rice",
   "onboarding.foodDislikesPlaceholder": "Avoid: liver",
-  "onboarding.qFlex": "Clear guidance or more freedom?",
+  "onboarding.qFlex": "Tight guidance or freedom?",
   "onboarding.flexHelp":
-    "How closely you want to follow the daily guidance.",
+    "Daily guidance: tight or loose.",
   "onboarding.goalLose": "Lose weight",
   "onboarding.goalMuscle": "Build muscle",
   "onboarding.goalFitness": "Improve fitness",
@@ -4247,6 +4366,30 @@ export const en: { [K in MessageKey]: string } = {
   "onboarding.flexStructured": "Structured",
   "onboarding.flexBalanced": "Balanced",
   "onboarding.flexFlexible": "Flexible",
+
+  "onboarding.fast.qGoal": "What’s your goal?",
+  "onboarding.fast.pickGoal": "Pick your goal",
+  "onboarding.fast.qLevel": "What’s your level?",
+  "onboarding.fast.qDays": "How many days per week?",
+  "onboarding.fast.qTrainFreq": "How often do you train?",
+  "onboarding.fast.qFood": "How do you want to eat?",
+  "onboarding.fast.qEatHow": "How do you eat?",
+  "onboarding.fast.goalLose": "Lose fat",
+  "onboarding.fast.goalMuscle": "Build muscle",
+  "onboarding.fast.goalFitness": "Conditioning",
+  "onboarding.fast.goalLifestyle": "Lifestyle rhythm",
+  "onboarding.fast.time23": "2–3",
+  "onboarding.fast.time34": "3–4",
+  "onboarding.fast.time5": "5+",
+  "onboarding.fast.foodEasy": "Keep it simple",
+  "onboarding.fast.foodPrecise": "Track closely",
+  "onboarding.fast.foodWhatever": "No preference",
+  "onboarding.fast.summaryTitle": "Summary",
+  "onboarding.fast.summaryProgram": "Your program",
+  "onboarding.fast.summaryGoal": "Goal",
+  "onboarding.fast.summaryDays": "Training days",
+  "onboarding.fast.summaryFood": "Food line",
+  "onboarding.fast.cta": "Start today",
 
   "programTrack.basic_strength": "Basic strength",
   "programTrack.muscle_growth": "Muscle growth",
@@ -4295,20 +4438,21 @@ export const en: { [K in MessageKey]: string } = {
   "landing.heroProof":
     "Less talk. More doing. A ready structure — no blank page.",
   "landing.compareEyebrow": "Compare",
-  "landing.compareHumanTitle": "Human coach",
-  "landing.compareAppTitle": "This app",
-  "landing.compareHuman1": "Live in your context",
-  "landing.compareHuman2": "Real-time feedback",
-  "landing.compareHuman3": "Higher price point",
-  "landing.compareHuman4": "Limited hours",
-  "landing.compareHuman5": "Doesn’t scale to everyone",
+  "landing.comparePlanLine": "One clear plan. One day at a time.",
+  "landing.compareHumanTitle": "Typical workout app",
+  "landing.compareAppTitle": "COACH (this app)",
+  "landing.compareHuman1": "Generic content",
+  "landing.compareHuman2": "No daily guidance",
+  "landing.compareHuman3": "Quality and style vary",
+  "landing.compareHuman4": "You assemble the day yourself",
+  "landing.compareHuman5": "No flat monthly price",
   "landing.compareApp1": "Daily guidance",
   "landing.compareApp2": "Adapts week to week",
   "landing.compareApp3": "Always available",
   "landing.compareApp4": "Flat monthly price",
   "landing.compareApp5": "Repeatable logic",
   "landing.compareDisclaimer":
-    "This doesn’t replace a therapist, doctor, or in-person coach.",
+    "Doesn’t replace a therapist or doctor.",
   "landing.compareCredibility":
     "Grounded in real training and nutrition logic — not a chatbot alone.",
   "landing.compareCta": "See what’s inside",
@@ -4351,16 +4495,16 @@ export const en: { [K in MessageKey]: string } = {
   "landing.finalOpen": "Open Today",
   "landing.finalNote": "No setup. Takes less than a minute.",
 
-  "compare.pageTitle": "Human coaching vs this",
+  "compare.pageTitle": "Workout app vs COACH",
   "compare.pageLead":
-    "A short honest comparison: what personal coaching does, what this does, and what it’s built on.",
-  "compare.sectionHuman": "What personal coaching does",
-  "compare.humanDoes1": "Sees the full picture — situation, history, limits.",
-  "compare.humanDoes2": "Gives feedback when technique or load goes wrong.",
-  "compare.humanDoes3": "Keeps you accountable and adjusts with motivation.",
-  "compare.humanDoes4": "Limited time: sessions, messages — not 24/7.",
-  "compare.humanDoes5": "Price reflects time and skill — doesn’t scale to everyone.",
-  "compare.sectionApp": "What this app does",
+    "What a typical workout app does — and what COACH does differently.",
+  "compare.sectionHuman": "What a typical workout app does",
+  "compare.humanDoes1": "Same base for everyone — no personal line.",
+  "compare.humanDoes2": "No daily guidance: lists and choices stay on you.",
+  "compare.humanDoes3": "Content varies — no single repeatable logic.",
+  "compare.humanDoes4": "Trials and ads — no flat monthly price.",
+  "compare.humanDoes5": "Use is patchy — not the same rhythm every week.",
+  "compare.sectionApp": "What COACH (this app) does",
   "compare.appDoes1": "Shows what to do today — no empty day.",
   "compare.appDoes2": "Builds the week line from goal and profile.",
   "compare.appDoes3": "Syncs training, food, and rhythm into one day.",
@@ -4596,7 +4740,19 @@ export const en: { [K in MessageKey]: string } = {
 
   "settings.title": "Settings",
   "settings.eyebrow": "Profile",
-  "settings.subtitle": "Language, subscription, and your data.",
+  "settings.subtitle": "Summary. Edits under Preferences.",
+  "settings.rowName": "Name",
+  "settings.rowGoal": "Goal",
+  "settings.rowTraining": "Training days",
+  "settings.rowFood": "Food line",
+  "settings.rowReminders": "Reminders",
+  "settings.ctaUpdate": "Update",
+  "settings.ctaChangeGoal": "Change goal",
+  "settings.ctaEditReminders": "Edit reminders",
+  "settings.reminderOn": "On",
+  "settings.reminderOff": "Off",
+  "settings.fieldName": "Name",
+  "settings.namePlaceholder": "Optional",
   "settings.language": "Language",
   "settings.subscription": "Subscription",
   "settings.subscribed": "Subscription active",
@@ -4806,11 +4962,11 @@ export const en: { [K in MessageKey]: string } = {
   "today.shortcutsEyebrow": "Elsewhere in the app",
   "today.openFoodCta": "Open food plan",
   "workout.afterSessionHint": "Next steps",
-  "progress.seeWeeklyReview": "See weekly review",
+  "progress.seeWeeklyReview": "Weekly review",
   "paywall.linkOnboarding": "Setup",
   "start.resumeHint":
-    "Your profile is already saved — you can go straight to today.",
-  "food.linkSeeProgress": "See progress",
+    "Profile saved — continue to Today.",
+  "food.linkSeeProgress": "Progress",
   "food.linkAdjustCoach": "Adjust coach",
   "adjust.backToday": "Back to today",
 

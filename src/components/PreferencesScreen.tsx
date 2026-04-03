@@ -127,6 +127,19 @@ export function PreferencesScreen() {
   }, []);
 
   useEffect(() => {
+    if (!form || typeof window === "undefined") return;
+    const id = window.location.hash?.replace(/^#/, "");
+    if (!id) return;
+    const t = window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [form]);
+
+  useEffect(() => {
     const sync = () => setAutopilotOn(loadAutopilotEnabled());
     window.addEventListener(AUTOPILOT_CHANGED, sync);
     return () => window.removeEventListener(AUTOPILOT_CHANGED, sync);
@@ -219,9 +232,24 @@ export function PreferencesScreen() {
           </Link>
         </p>
 
-        <form onSubmit={onSubmit} className="mt-6 space-y-5 pb-10">
+        <form onSubmit={onSubmit} className="mt-6 space-y-0 pb-10">
           <PreferenceSection title={t("preferences.sectionSimple")}>
-            <PreferenceField label={t("onboarding.qGoal")}>
+            <PreferenceField label={t("settings.fieldName")} id="pref-profile">
+              <input
+                type="text"
+                name="displayName"
+                autoComplete="name"
+                maxLength={80}
+                placeholder={t("settings.namePlaceholder")}
+                className={sel}
+                value={form.displayName ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  patch({ displayName: v.length ? v : undefined });
+                }}
+              />
+            </PreferenceField>
+            <PreferenceField label={t("onboarding.qGoal")} id="pref-goal">
               <select
                 className={sel}
                 value={form.goal}
@@ -234,7 +262,7 @@ export function PreferencesScreen() {
                 </option>
               </select>
             </PreferenceField>
-            <PreferenceField label={t("onboarding.qDays")}>
+            <PreferenceField label={t("onboarding.qDays")} id="pref-training">
               <select
                 className={sel}
                 value={String(form.daysPerWeek)}
@@ -249,7 +277,7 @@ export function PreferencesScreen() {
                 ))}
               </select>
             </PreferenceField>
-            <PreferenceField label={t("onboarding.qMealStructure")}>
+            <PreferenceField label={t("onboarding.qMealStructure")} id="pref-food">
               <select
                 className={sel}
                 value={form.mealStructure}
@@ -270,7 +298,10 @@ export function PreferencesScreen() {
             </PreferenceField>
           </PreferenceSection>
 
-          <PreferenceSection title={t("notifications.prefsTitle")}>
+          <PreferenceSection
+            id="pref-reminders"
+            title={t("notifications.prefsTitle")}
+          >
             <p className="text-[12px] leading-relaxed text-muted-2">
               {t("notifications.prefsHint")}
             </p>

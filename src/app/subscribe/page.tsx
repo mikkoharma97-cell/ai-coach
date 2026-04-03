@@ -1,10 +1,10 @@
-import { PaywallScreen } from "@/components/paywall/PaywallScreen";
+import { PaywallV1Screen } from "@/components/paywall/PaywallV1Screen";
 import { LocaleProvider } from "@/hooks/useTranslation";
 
 export default function SubscribePage() {
   return (
     <LocaleProvider>
-      <PaywallScreen />
+      <PaywallV1Screen />
     </LocaleProvider>
   );
 }

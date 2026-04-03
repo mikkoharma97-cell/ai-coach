@@ -1,6 +1,23 @@
 /**
- * Lightweight subscription / trial state (local). Replace with real billing later.
+ * Entitlement: kokeilu + tilaus.
+ *
+ * **Oletus (mock):** `localStorage` + `subscribed`-boolean. Ei App Store / Google Play -kuittia.
+ * **Kytke oikea maksu:** `NEXT_PUBLIC_COACH_SUBSCRIPTION_MODE=production` + toteuta `read()`/`write()`
+ * oikealla receipt/entitlement-rajapinnalla. Paywall-päätöslogiikka pysyy `paywallPolicy.ts`:ssä.
  */
+
+/** `mock` = localStorage-demo. `production` = varattu oikealle billingille (env-lippu + toteutus). */
+export type CoachSubscriptionMode = "mock" | "production";
+
+export function getCoachSubscriptionMode(): CoachSubscriptionMode {
+  if (
+    typeof process !== "undefined" &&
+    process.env.NEXT_PUBLIC_COACH_SUBSCRIPTION_MODE === "production"
+  ) {
+    return "production";
+  }
+  return "mock";
+}
 
 export const SUBSCRIPTION_STORAGE_KEY = "ai-coach-subscription-v1";
 const KEY = SUBSCRIPTION_STORAGE_KEY;
@@ -48,6 +65,7 @@ export function ensureTrialStarted(): void {
   });
 }
 
+/** Mock-tilassa: tallentaa booleanin. Production-tilassa: korvaa oikealla entitlement-päivityksellä. */
 export function setSubscribed(value: boolean): void {
   const s = read();
   write({ ...s, subscribed: value });

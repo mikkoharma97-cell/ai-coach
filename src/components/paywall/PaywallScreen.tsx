@@ -4,9 +4,9 @@ import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { MessageKey } from "@/lib/i18n";
+import { canAccessPremium } from "@/lib/paywallPolicy";
 import {
   ensureTrialStarted,
-  hasSubscriptionAccess,
   hasTrialStarted,
   isTrialExpired,
   setSubscribed,
@@ -96,7 +96,7 @@ export function PaywallScreen() {
       logOpenPaywall();
     }
     if (loadProfile()) ensureTrialStarted();
-    if (hasSubscriptionAccess()) {
+    if (canAccessPremium()) {
       router.replace("/app");
     }
   }, [router]);

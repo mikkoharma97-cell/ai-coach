@@ -34,6 +34,7 @@ function normalizeAppUsageMode(m: unknown): AppUsageMode | undefined {
 export const PROFILE_KEY_V3 = "ai-coach-profile-v3";
 const PROFILE_KEY_V2 = "ai-coach-profile-v2";
 const DAY_DONE_PREFIX = "ai-coach-day-done:";
+const PAYWALL_V1_ACK_KEY = "ai-coach-paywall-v1-ack";
 const OUTCOME_HINT_PREFIX = "ai-coach-outcome-hint:";
 
 /** Kun outcome-hint päivittyy (esim. pikamuistiinpano) — Today voi päivittyä */
@@ -152,6 +153,7 @@ export function clearAllCoachLocalData(): void {
   try {
     localStorage.removeItem(PRO_WORKSPACE_KEY);
     localStorage.removeItem(SUBSCRIPTION_STORAGE_KEY);
+    localStorage.removeItem(PAYWALL_V1_ACK_KEY);
     localStorage.removeItem(SAVED_MEALS_KEY);
     savePlannedEvents([]);
     clearExceptionStorage();
@@ -230,6 +232,40 @@ export function setDayMarkedDone(
     const k = DAY_DONE_PREFIX + dayKey(date);
     if (done) localStorage.setItem(k, "1");
     else localStorage.removeItem(k);
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Montako eri päivää on merkitty tehdyksi (päivä-lukemat localStoragesta). */
+export function countDaysMarkedDoneTotal(): number {
+  if (typeof window === "undefined") return 0;
+  let n = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(DAY_DONE_PREFIX)) continue;
+      if (localStorage.getItem(k) === "1") n++;
+    }
+  } catch {
+    return 0;
+  }
+  return n;
+}
+
+export function hasPaywallV1Ack(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(PAYWALL_V1_ACK_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function setPaywallV1Ack(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(PAYWALL_V1_ACK_KEY, "1");
   } catch {
     /* ignore */
   }

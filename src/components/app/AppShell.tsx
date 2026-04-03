@@ -57,6 +57,7 @@ function headerTitleKey(path: string): MessageKey {
   if (path === "/packages") return "packages.title";
   if (path === "/nutrition-plans") return "nutritionPlans.title";
   if (path === "/food-library") return "foodLibrary.pageTitle";
+  if (path === "/food/day") return "foodFlowV1.pageTitle";
   if (path === "/scan") return "nav.scan";
   if (path === "/workout") return "ui.workout";
   if (path === "/plan") return "ui.plan";
@@ -71,7 +72,7 @@ function isNavActive(path: string, href: string): boolean {
   /** Ruoka-välilehti: päivän ruoka + skannaus + kirjasto — ei ruokavalion vaihto (Lisää). */
   if (
     href === "/food" &&
-    (path === "/scan" || path === "/food-library")
+    (path === "/scan" || path === "/food-library" || path === "/food/day")
   ) {
     return true;
   }

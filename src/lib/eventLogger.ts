@@ -37,6 +37,7 @@ export function logOpenReview(): void {
 
 export function logOpenPaywall(): void {
   trackEvent("open_paywall");
+  trackEvent("paywall_open");
 }
 
 export function logClickTrial(): void {

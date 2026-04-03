@@ -6,6 +6,8 @@ type Props = {
   eyebrowClassName?: string;
   title: string;
   description?: string;
+  /** e.g. hide lead on small screens */
+  descriptionClassName?: string;
   /** e.g. link row below description */
   action?: ReactNode;
   className?: string;
@@ -19,6 +21,7 @@ export function CoachScreenHeader({
   eyebrowClassName,
   title,
   description,
+  descriptionClassName,
   action,
   className = "max-w-[22rem]",
 }: Props) {
@@ -29,7 +32,11 @@ export function CoachScreenHeader({
       </p>
       <h1 className="coach-screen-title mt-3">{title}</h1>
       {description ? (
-        <p className="mt-2 text-[14px] leading-relaxed text-muted">{description}</p>
+        <p
+          className={`mt-2 text-[14px] leading-relaxed text-muted ${descriptionClassName ?? ""}`}
+        >
+          {description}
+        </p>
       ) : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </header>

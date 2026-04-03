@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
-import { ensureTrialStarted, hasSubscriptionAccess } from "@/lib/subscription";
+import { shouldRedirectToPaywall } from "@/lib/paywallPolicy";
+import { ensureTrialStarted } from "@/lib/subscription";
 import { loadProfile } from "@/lib/storage";
 import { flowLog } from "@/lib/flowLog";
 import { usePathname, useRouter } from "next/navigation";
@@ -44,7 +45,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
           path !== "/preferences" &&
           path !== "/profile" &&
           path !== "/scan" &&
-          !hasSubscriptionAccess()
+          shouldRedirectToPaywall()
         ) {
           router.replace("/paywall");
         }

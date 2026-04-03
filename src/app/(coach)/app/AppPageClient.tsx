@@ -1,8 +1,8 @@
 "use client";
 
-import { AppDashboard } from "./AppDashboard";
+import { TodayView } from "@/components/today/TodayView";
 
 /** Direct import — avoids dynamic chunk failures on slow/tunnel networks (stuck “Loading…”). */
 export function AppPageClient() {
-  return <AppDashboard />;
+  return <TodayView />;
 }

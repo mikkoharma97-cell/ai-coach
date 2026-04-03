@@ -26,6 +26,9 @@ export function LandingComparisonStrip() {
       <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
         {t("landing.compareEyebrow")}
       </p>
+      <p className="mx-auto mt-4 max-w-md text-center text-[13px] font-semibold leading-snug text-zinc-300">
+        {t("landing.comparePlanLine")}
+      </p>
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4 sm:px-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">

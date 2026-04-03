@@ -1,7 +1,7 @@
 import { AnalyticsRouteBeacon } from "@/components/AnalyticsRouteBeacon";
 import { LocaleProvider } from "@/hooks/useTranslation";
 import { Suspense } from "react";
-import { StartFlow } from "./StartFlow";
+import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 
 function StartFallback() {
   return (
@@ -20,7 +20,7 @@ export default function StartPage() {
     <LocaleProvider>
       <AnalyticsRouteBeacon event="open_start" />
       <Suspense fallback={<StartFallback />}>
-        <StartFlow />
+        <OnboardingFlow />
       </Suspense>
     </LocaleProvider>
   );

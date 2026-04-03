@@ -121,6 +121,8 @@ export type ProgramTrackId =
   | "tight_block";
 
 export interface OnboardingAnswers {
+  /** Valinnainen näyttönimi — asetukset / profiili */
+  displayName?: string;
   goal: Goal;
   level: Level;
   /** Jos asetettu, ohjaa moottoria; oletus sama kuin `level` */

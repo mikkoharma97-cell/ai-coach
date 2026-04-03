@@ -1,11 +1,11 @@
-import { PaywallScreen } from "@/components/paywall/PaywallScreen";
+import { PaywallV1Screen } from "@/components/paywall/PaywallV1Screen";
 import { LocaleProvider } from "@/hooks/useTranslation";
 
 /** Alias route — same premium screen as /subscribe */
 export default function PremiumPage() {
   return (
     <LocaleProvider>
-      <PaywallScreen />
+      <PaywallV1Screen />
     </LocaleProvider>
   );
 }
