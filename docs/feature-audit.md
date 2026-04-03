@@ -4,6 +4,8 @@
 
 **MASTER BUILD:** `docs/MASTER_BUILD_AUDIT.md` — kokonaislistaus vs. repo (ei uusia featureita tässä passissa).
 
+**Tuotteen suunta:** `docs/PRODUCT_DIRECTION.md` — seuraavat prioriteetit (onboarding, growth, analytics); ei feature-laajennuksia ennen minimit.
+
 **HÄRMÄ6 progress-pilarit:** `docs/harma6_progress.md` (consistency / weekly summary / coach insight / daily completion sync → koodiviitteet).
 
 **HÄRMÄ7 gap-fix:** `docs/harma7_gap.md` (nav, food add sheet, program↔nutrition sync, mobile).

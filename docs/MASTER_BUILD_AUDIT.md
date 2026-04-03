@@ -143,3 +143,9 @@
 Tämä repo on **valmis tuotekehityksen** kannalta jatkuvasti päivittyvä; “ei demo” = copy + flow eivät ole pelkkä placeholder, vaan tuotteen oma ääni ja data.
 
 **STOP:** Kun käyttö tuntuu valmentajalta ja näkymät toimivat ilman selitystä — tämä on **laatu- ja testauskysymys**, ei yksi commit.
+
+---
+
+## Seuraava vaihe (tuote, ei feature-lista)
+
+Prioriteetit ja linja (“ei uusia featureita ennen onboarding + growth + analytics -minimi”): **`docs/PRODUCT_DIRECTION.md`**.

@@ -19,6 +19,7 @@ export const coachVoice = {
     "Muistutukset: opt-in, max muutama päivässä, hiljaisuus yöllä — ei ärsyttävää spämmiä (HÄRMÄ20).",
     "Asetukset: ensin tavoite, treenipäivät, ruokarakenne, muistutukset — muu piilossa (HÄRMÄ21).",
     "MASTER: ohjaa tekemään tänään — ei data-dashboardia; valmis tuote, ei demo (HÄRMÄ22).",
+    "Ääni koskee koko polkua (onboarding, paywall, launch, asetukset, Today) — ei vain yksittäisiä rivejä; toteutus i18n + UI.",
   ],
   bannedPhrasesFi: [
     "optimoi",
