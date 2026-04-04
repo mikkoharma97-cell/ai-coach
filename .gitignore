@@ -41,6 +41,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE / paikalliset binäärit (ei repoon)
-.cursor/
+# IDE / paikallinen Cursor-tila (ei repoon) — poikkeus: jaetut säännöt + agenttimuisti
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/saved/
+!.cursor/saved/**
 .tools/

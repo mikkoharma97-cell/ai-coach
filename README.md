@@ -81,5 +81,6 @@ Täydellinen lista kommenteilla: [`.env.example`](./.env.example).
 ## Lisää
 
 - Tuotekonteksti: `PROJECT_BRIEF.md`  
+- Agentti / AI-ohjeet (tiimi): [.cursor/saved/](./.cursor/saved/README.md)  
 - Paikallinen preview + tunnel: `docs/dev-preview.md`  
 - Next.js: [Deployment](https://nextjs.org/docs/app/building-your-application/deploying)
