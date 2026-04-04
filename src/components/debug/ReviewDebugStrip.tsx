@@ -1,6 +1,6 @@
 "use client";
 
-import { HARMÄ_BUILD } from "@/config/version";
+import { APP_VERSION } from "@/config/version";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { buildCoachProgramDecision } from "@/lib/coach/programDecisionEngine";
 import { buildNutritionEngineSnapshot } from "@/lib/coach/nutritionEngine";
@@ -17,13 +17,21 @@ const SHOW_ENV =
   process.env.NEXT_PUBLIC_REVIEW_PANEL === "1";
 
 /**
- * Kevyt review/debug: `?review=1` tai NEXT_PUBLIC_REVIEW_PANEL=1.
+ * Kevyt review/debug: `?review=1` (vain dev tai NEXT_PUBLIC_COACH_DEV_TOOLS) tai
+ * NEXT_PUBLIC_REVIEW_PANEL (vain ei-production).
+ * Tuotannossa ei query-eikä env-pinnoilla — vähentää debug-kasaa.
  */
 export function ReviewDebugStrip() {
   const profile = useClientProfile();
   const searchParams = useSearchParams();
-  const showQuery = searchParams.get("review") === "1";
-  const visible = SHOW_ENV || showQuery;
+  const queryOn = searchParams.get("review") === "1";
+  const showQuery =
+    queryOn &&
+    (process.env.NODE_ENV !== "production" ||
+      process.env.NEXT_PUBLIC_COACH_DEV_TOOLS === "1");
+  const envVisible =
+    SHOW_ENV && process.env.NODE_ENV !== "production";
+  const visible = envVisible || showQuery;
 
   const text = useMemo(() => {
     if (!profile) return null;
@@ -45,7 +53,7 @@ export function ReviewDebugStrip() {
       `food lib: ${nl ? nl.nameFi : "—"}`,
       `kcal ref: ${nut.targetKcal} · P ~${nut.macros.proteinG}g`,
       `preset: ${dec.presetId} · conf: ${dec.confidenceLevel}`,
-      `ver build: ${HARMÄ_BUILD}`,
+      `ver build: ${APP_VERSION}`,
     ].join("\n");
   }, [profile]);
 

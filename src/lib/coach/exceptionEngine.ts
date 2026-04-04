@@ -286,7 +286,8 @@ const FI: Record<ExceptionId, Record<ExceptionSeverity, ExceptionGuidanceStrings
       food: "Proteiini ja riittävä energia — älä leikkaa kaloreita jyrkästi samaan aikaan.",
       recovery: "Jäädytystä/polvi ylös -asentoa iltaisin tarvittaessa.",
       durationCheck: "Jos kipu häiritsee kävelyä, keskeytä kova treeni ja hae arvio.",
-      coachNote: "Polvivaivat ovat yleisiä — rakennamme treenin niin, että voit jatkaa pitkään.",
+      coachNote:
+        "Polvivaivat ovat yleisiä — rakennamme treenin niin, että jatkat pitkään.",
     },
     bad: {
       training: "Ei kyykkyä, ei hyppyjä, ei pitkiä juoksulenkkejä ennen arviota.",
@@ -415,7 +416,7 @@ const FI: Record<ExceptionId, Record<ExceptionSeverity, ExceptionGuidanceStrings
     light: {
       training: "Kevyt viikko: sama liike, vähemmän sarjoja tai painoja.",
       food: "Varmista proteiini ja kokonaisenergia — ei nälkäkierteitä.",
-      recovery: "Uni ensin; väsymys näkyy tankissa ennen kuin näet sen peilistä.",
+      recovery: "Uni ensin; väsymys näkyy tankissa aikaisin.",
       durationCheck: "1–2 viikon jakso ennen kuin teet isoja johtopäätöksiä.",
       coachNote: "Voimat heilahtelevat — katsomme koko kuvaa, emme yhtä huonoa päivää.",
     },
@@ -424,7 +425,8 @@ const FI: Record<ExceptionId, Record<ExceptionSeverity, ExceptionGuidanceStrings
       food: "Jos olet dieetillä, harkitse maltillista refeediä tai ylläpitokaloreita.",
       recovery: "Stressi ja uni — kaksi suurinta voiman syöjää.",
       durationCheck: "Jos pudotus jatkuu useita viikkoja, tarkista terveys ja elämäntilanne.",
-      coachNote: "Voiman lasku voi olla väsymystä, sairautta tai liian kovaa kuormaa — säädetään kokonaisuutta.",
+      coachNote:
+        "Voiman lasku voi olla väsymystä, sairautta tai liian kovaa kuormaa — säädetään linjaa.",
     },
     bad: {
       training: "Lepo tai erittäin kevyt liike. Älä aja maksimeja uupuneena.",

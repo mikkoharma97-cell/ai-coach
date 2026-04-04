@@ -24,7 +24,6 @@ import { generateWorkoutDay } from "@/lib/training/generator";
 import { applyExerciseOverridesToProExercises } from "@/lib/training/exerciseOverrides";
 import type { OnboardingAnswers, PlannedEvent, WeekDayEntry } from "@/types/coach";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 function mondayOfWeek(ref: Date): Date {
@@ -69,18 +68,9 @@ function dayRole(
 }
 
 export function PlanScreen() {
-  const router = useRouter();
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
-
-  useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) {
-      console.debug("[coach] PlanScreen: no profile → /start");
-      router.replace("/start");
-    }
-  }, [profile, router]);
 
   const plan = useMemo(() => {
     if (!profile) return null;

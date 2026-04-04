@@ -5,8 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+function showFloatingHomeRefresh(): boolean {
+  if (process.env.NODE_ENV === "development") return true;
+  return process.env.NEXT_PUBLIC_COACH_DEV_TOOLS === "1";
+}
+
 /**
- * Kiinteä etusivu + täysi reload — build/version-tarkistus mobiilissa ja productionissa.
+ * Kiinteä etusivu + täysi reload — kehitys / eksplisiittinen preview (NEXT_PUBLIC_COACH_DEV_TOOLS).
+ * Tuotannossa piilossa: ei kolmatta "debug" vihjettä build-merkin ja palautteen kanssa.
  * Ei käytä LocaleProvideria (root layout).
  */
 export function HomeCheckButton() {
@@ -30,6 +36,8 @@ export function HomeCheckButton() {
   const onHardRefresh = useCallback(() => {
     window.location.reload();
   }, []);
+
+  if (!showFloatingHomeRefresh()) return null;
 
   const bottomClass = shell
     ? "bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))]"

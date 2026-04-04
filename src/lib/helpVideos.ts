@@ -50,7 +50,7 @@ export const HELP_VIDEOS: Record<HelpVideoPageId, HelpVideoItem> = {
     titleFi: "Viikkokartan lukeminen",
     titleEn: "How to read the week map",
     descriptionFi:
-      "Kartta näyttää rytmin — ei jokaista liikettä. Et säätä tätä jatkuvasti käsin: kokonaisuus pysyy kasassa.",
+      "Kartta näyttää rytmin — ei jokaista liikettä. Et säätä tätä jatkuvasti käsin: viikko pysyy kasassa.",
     descriptionEn:
       "The map shows rhythm — not every rep. You don’t tweak this all day: the week stays coherent.",
     durationLabelFi: "55 s",
@@ -107,9 +107,9 @@ export const HELP_VIDEOS: Record<HelpVideoPageId, HelpVideoItem> = {
     titleFi: "Asetukset nopeasti",
     titleEn: "Preferences in one pass",
     descriptionFi:
-      "Muutokset tallentuvat profiiliin. Voit säätää myöhemmin — ohjaus päivittyy heti.",
+      "Muutokset tallentuvat profiiliin. Säädä myöhemmin — ohjaus päivittyy heti.",
     descriptionEn:
-      "Changes save to your profile. You can tune later — guidance updates right away.",
+      "Changes save to your profile. Tune later — guidance updates right away.",
     durationLabelFi: "35 s",
     durationLabelEn: "35 s",
   },

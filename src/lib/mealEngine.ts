@@ -221,7 +221,11 @@ export function adjustMealToUser(
 ): MealOption {
   const kcal = Math.max(120, Math.round(targets.caloriesTarget * slotShare));
   const targetMealP = targets.proteinTarget * slotShare;
-  let { proteinG, carbsG, fatG } = macroGramsFromKcal(kcal, tmpl.macroSplit);
+  const { carbsG, fatG, proteinG: initialProteinG } = macroGramsFromKcal(
+    kcal,
+    tmpl.macroSplit,
+  );
+  let proteinG = initialProteinG;
   if (proteinG < targetMealP * 0.88) {
     proteinG = Math.round(
       Math.min(targetMealP * 0.97, Math.max(proteinG + 1, targetMealP * 0.92)),

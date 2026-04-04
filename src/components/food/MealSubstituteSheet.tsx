@@ -44,18 +44,18 @@ export function MealSubstituteSheet({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex touch-manipulation flex-col justify-end"
+      className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex touch-manipulation flex-col justify-end pt-[env(safe-area-inset-top,0px)]"
       role="presentation"
     >
       <button
         type="button"
         tabIndex={-1}
         aria-label={t("food.cancel")}
-        className="absolute inset-0 z-0 cursor-pointer border-0 bg-foreground/35 backdrop-blur-[4px] p-0 [touch-action:none]"
+        className="absolute inset-0 z-0 cursor-pointer border-0 bg-[color:var(--coach-modal-scrim)] p-0 backdrop-blur-md [touch-action:none]"
         onClick={onClose}
       />
       <div
-        className="relative z-[var(--z-overlay-sheet)] mt-auto max-h-[min(88vh,90dvh)] w-full overflow-y-auto overscroll-contain rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
+        className="relative z-[var(--z-overlay-sheet)] mt-auto max-h-[min(88vh,90dvh)] w-full overflow-y-auto overscroll-contain rounded-t-[var(--radius-2xl)] border border-[color:var(--coach-modal-panel-border)] bg-[color:var(--coach-modal-panel)] px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="meal-substitute-title"

@@ -12,13 +12,13 @@ Rakennamme uuden tuotteen nimeltä **AI Coach / Flow Engine**.
 - Tämä **EI** ole PDF-ohjelma.
 - Tämä **EI** ole vinkkisovellus.
 
-Tämä on **päivittäinen ohjausjärjestelmä**, joka tekee käyttäjälle selväksi:
+Tämä on **päivittäinen ohjaus**, joka tekee käyttäjälle selväksi:
 
 - mitä tehdä tänään
 - mitä tehdä seuraavaksi
 - miten pysyä polulla
 
-**Ydinajatus:** Käyttäjä ei tarvitse lisää tietoa. Käyttäjä tarvitsee järjestelmän, joka ohjaa tekemään oikeat asiat joka päivä.
+**Ydinajatus:** Käyttäjä ei tarvitse lisää tietoa. Käyttäjä tarvitsee selkeän ohjauksen oikeisiin tekoihin joka päivä.
 
 **Tuotteen tärkein arvo:**
 
@@ -27,13 +27,15 @@ Tämä on **päivittäinen ohjausjärjestelmä**, joka tekee käyttäjälle selv
 - tekee etenemisestä näkyvää
 - tuntuu henkilökohtaiselta valmentajalta ilman valmentajaa
 
+**Tuotesuunta (seuraavat tarpeet, ei automaattista toteutusta):** `docs/PRODUCT_DIRECTION_NOTES.md`
+
 ---
 
 ## 2. TAVOITE ENSIMMÄISELLE VERSIOLLE
 
 Rakennetaan nopeasti toimiva, myytävän näköinen demo-MVP, joka voidaan näyttää heti käyttäjille ja jota voidaan käyttää ensimmäisessä mainonnassa.
 
-Ensimmäisen version tavoite **EI** ole täydellinen järjestelmä. Ensimmäisen version tavoite on:
+Ensimmäisen version tavoite **EI** ole täydellinen kokonaisuus. Ensimmäisen version tavoite on:
 
 - näyttää valmiilta tuotteelta
 - toimia uskottavasti
@@ -103,7 +105,7 @@ Katso toteutus: `src/lib/plan.ts`, komponentit `src/components/`, sivut `src/app
 
 **Stack:** Next.js, TypeScript, Tailwind, localStorage V1.
 
-**Älä:** geneerinen dashboard-täyte, tumma cyberpunk-UI, fitness-neon, liikaa featureita, monimutkainen käyttäjäjärjestelmä V1.
+**Älä:** geneerinen dashboard-täyte, tumma cyberpunk-UI, fitness-neon, liikaa featureita, monimutkainen käyttäjätili / käyttöoikeuskerros V1.
 
 ---
 

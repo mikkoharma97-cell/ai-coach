@@ -1,10 +1,15 @@
 "use client";
 
+/**
+ * @deprecated ARKISTO — ei reittejä, ei importteja.
+ * Aktiivinen totuus: `PaywallV1Screen` + `PaywallV1Panel` + `paywallPolicy.ts` (`/paywall`, Today-overlay).
+ */
+
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { MessageKey } from "@/lib/i18n";
-import { canAccessPremium } from "@/lib/paywallPolicy";
+import { getPaywallTruth } from "@/lib/paywallPolicy";
 import {
   ensureTrialStarted,
   hasTrialStarted,
@@ -96,7 +101,7 @@ export function PaywallScreen() {
       logOpenPaywall();
     }
     if (loadProfile()) ensureTrialStarted();
-    if (canAccessPremium()) {
+    if (getPaywallTruth().hasAccess) {
       router.replace("/app");
     }
   }, [router]);

@@ -124,7 +124,7 @@ const RAW_PROGRAM_LIBRARY: ProgramLibraryEntry[] = [
     goal: "build_muscle",
     trainingVenue: "any",
     weeklyDays: { min: 3, max: 3 },
-    shortDescriptionFi: "Tiivis kokonaisuus, palautuminen mukana.",
+    shortDescriptionFi: "Tiivis rakenne, palautuminen mukana.",
     shortDescriptionEn: "Tight package, recovery included.",
     whyItFitsFi: "Kun kolme kovaa päivää riittää.",
     whyItFitsEn: "When three hard days are enough.",

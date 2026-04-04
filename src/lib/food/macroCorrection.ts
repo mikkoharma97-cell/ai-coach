@@ -67,7 +67,7 @@ export function buildMacroCorrectionPlan(input: {
 
   const rm = Math.max(1, Math.min(5, Math.round(remainingMeals)));
 
-  let remaining: MacroTotals = {
+  const remaining: MacroTotals = {
     calories: Math.max(0, target.calories - consumed.calories),
     protein: Math.max(0, target.protein - consumed.protein),
     carbs: Math.max(0, target.carbs - consumed.carbs),

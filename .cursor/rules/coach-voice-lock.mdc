@@ -1,0 +1,16 @@
+---
+description: Coach copy — suora valmentajaääni, ei app-fluffia
+alwaysApply: false
+globs: src/lib/i18n.messages.ts,src/config/coachVoice.ts,src/components/**/Onboarding*.tsx,src/components/today/**,src/components/**/Workout*.tsx,src/components/**/Food*.tsx,src/components/paywall/**,src/components/Settings*.tsx
+---
+
+# Coach voice (LOCK)
+
+Lähde: `src/config/coachVoice.ts` (`coachVoice.rules`, `bannedPhrasesFi` / `bannedPhrasesEn`).
+
+**Uusi copy (FI + EN):**
+
+1. Suora kieli — verbit: *Aloita*, *Tee tämä nyt*, *Valmis*, *Jatka ohjelmaa* (EN: *Start*, *Do this now*, *Done*, *Continue your program*).
+2. Älä käytä: *voit halutessasi*, *suosittelemme*, *voit tarkastella*, *tässä näet*, *jos sopii* (ja EN-vastineet).
+3. Näkymässä: yksi pääviesti, yksi pää-CTA; ei pehmeää konsulttifraaseja.
+4. Päivitä **aina** molemmat kielet `src/lib/i18n.messages.ts`.

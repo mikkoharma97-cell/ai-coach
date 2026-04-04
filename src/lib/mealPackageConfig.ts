@@ -230,8 +230,8 @@ export function concreteMealIdeasForDay(input: {
     });
   } else {
     ideas.push({
-      fi: "Kalorit antavat tilaa — voit jakaa hiilarit tasaisesti päivään.",
-      en: "Calories give room — you can spread carbs evenly through the day.",
+      fi: "Kalorit antavat tilaa — jaa hiilarit tasaisesti päivään.",
+      en: "Calories give room — spread carbs evenly through the day.",
     });
   }
 

@@ -12,7 +12,7 @@ export const APP_DESCRIPTION =
 
 /** Lyhyt rivi — FI referenssi store-teksteille / sisäiseen käyttöön. */
 export const APP_DESCRIPTION_FI =
-  "Tänään näet mitä tehdä: treeni, ruoka, rytmi — järjestyksessä. Ei arvailua.";
+  "Tänään lista kertoo: treeni, ruoka, rytmi — järjestyksessä. Ei arvailua.";
 
 /** PWA manifest */
 export const APP_START_URL = "/app" as const;

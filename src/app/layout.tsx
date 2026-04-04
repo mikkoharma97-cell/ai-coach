@@ -5,10 +5,11 @@ import {
   APP_SHORT_NAME,
 } from "@/config/appInfo";
 import { ForceRefreshGuard } from "@/components/build/ForceRefreshGuard";
+import { CacheBypassEffect } from "@/components/build/CacheBypassEffect";
 import { GlobalBuildMarker } from "@/components/build/BuildMarkerLine";
 import { HomeCheckButton } from "@/components/build/HomeCheckButton";
-import { VersionBadge } from "@/components/common/VersionBadge";
 import { CoachReminderNotifications } from "@/components/CoachReminderNotifications";
+import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
 import { getPublicSiteUrl } from "@/lib/siteUrl";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -79,9 +80,10 @@ export default function RootLayout({
         <HomeCheckButton />
         <ForceRefreshGuard />
         {children}
+        <FeedbackWidget />
         <PwaInstallPrompt />
         <CoachReminderNotifications />
-        <VersionBadge />
+        <CacheBypassEffect />
       </body>
     </html>
   );

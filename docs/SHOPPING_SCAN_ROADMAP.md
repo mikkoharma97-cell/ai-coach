@@ -111,13 +111,13 @@ Ei uutta monimutkaista näkymää ensimmäisellä kierroksella.
 - ohjelmasuunta  
 - tärkeät tapahtumat  
 - painon / suorituskyvyn suunta (laadullinen)  
-- järjestelmä rakentaa **viikot**; **päivän päätökset** pysyvät automaattisina
+- tausta rakentaa **viikot**; **päivän päätökset** pysyvät automaattisina
 
 ---
 
 ## 6. Periaate: automaatio vs. käyttäjä
 
-**Järjestelmä automatisoi:** treenirytmi, ruokarytmi, vaihtoehdot, ostoslista, kuukausitason runko (kun kerros on valmis).
+**Automaatio:** treenirytmi, ruokarytmi, vaihtoehdot, ostoslista, kuukausitason runko (kun kerros on valmis).
 
 **Käyttäjä antaa:** tavoitteen, tason, rajoitteet, tapahtumat, mieltymykset — ei jokaista makroa käsin.
 

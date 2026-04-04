@@ -4,38 +4,44 @@ import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { appendBuildQuery } from "@/lib/buildInfo";
 
+/**
+ * Kolme rinnakkaista: treenisovellus · henkilökohtainen valmennus · tämä tuote.
+ * Ei hyökkäävä sävy — implikaatio riveillä.
+ */
 export function LandingComparisonStrip() {
   const { t } = useTranslation();
-  const human = [
-    "landing.compareHuman1",
-    "landing.compareHuman2",
-    "landing.compareHuman3",
-    "landing.compareHuman4",
-    "landing.compareHuman5",
+
+  const appKeys = [
+    "landing.compareColApp1",
+    "landing.compareColApp2",
+    "landing.compareColApp3",
   ] as const;
-  const app = [
-    "landing.compareApp1",
-    "landing.compareApp2",
-    "landing.compareApp3",
-    "landing.compareApp4",
-    "landing.compareApp5",
+  const ptKeys = [
+    "landing.compareColPt1",
+    "landing.compareColPt2",
+    "landing.compareColPt3",
+  ] as const;
+  const thisKeys = [
+    "landing.compareColThis1",
+    "landing.compareColThis2",
+    "landing.compareColThis3",
   ] as const;
 
   return (
-    <div className="w-full max-w-[min(100%,40rem)]">
-      <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+    <div className="w-full max-w-[min(100%,44rem)]">
+      <p className="text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">
+        {t("landing.compareEyebrowPrimary")}
+      </p>
+      <p className="mt-2 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
         {t("landing.compareEyebrow")}
       </p>
-      <p className="mx-auto mt-4 max-w-md text-center text-[13px] font-semibold leading-snug text-zinc-300">
-        {t("landing.comparePlanLine")}
-      </p>
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4 sm:px-5">
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
-            {t("landing.compareHumanTitle")}
+            {t("landing.compareColAppTitle")}
           </p>
-          <ul className="mt-3 space-y-2 text-[13px] font-medium leading-snug text-zinc-300">
-            {human.map((k) => (
+          <ul className="mt-3 space-y-2 text-[12.5px] font-medium leading-snug text-zinc-300">
+            {appKeys.map((k) => (
               <li key={k} className="flex gap-2">
                 <span className="text-zinc-600" aria-hidden>
                   ·
@@ -45,12 +51,27 @@ export function LandingComparisonStrip() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-accent/25 bg-accent/[0.06] px-4 py-4 sm:px-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/90">
-            {t("landing.compareAppTitle")}
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+            {t("landing.compareColPtTitle")}
           </p>
-          <ul className="mt-3 space-y-2 text-[13px] font-semibold leading-snug text-zinc-100">
-            {app.map((k) => (
+          <ul className="mt-3 space-y-2 text-[12.5px] font-medium leading-snug text-zinc-300">
+            {ptKeys.map((k) => (
+              <li key={k} className="flex gap-2">
+                <span className="text-zinc-600" aria-hidden>
+                  ·
+                </span>
+                {t(k)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-2xl border border-accent/30 bg-accent/[0.07] px-4 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/90">
+            {t("landing.compareColThisTitle")}
+          </p>
+          <ul className="mt-3 space-y-2 text-[12.5px] font-semibold leading-snug text-zinc-100">
+            {thisKeys.map((k) => (
               <li key={k} className="flex gap-2">
                 <span className="text-accent/70" aria-hidden>
                   ·
@@ -61,11 +82,11 @@ export function LandingComparisonStrip() {
           </ul>
         </div>
       </div>
-      <p className="mx-auto mt-5 max-w-lg text-center text-[13px] font-medium leading-relaxed text-zinc-400">
-        {t("landing.compareDisclaimer")}
+      <p className="mx-auto mt-5 max-w-md text-center text-[13px] font-semibold leading-snug text-zinc-300">
+        {t("landing.compareClosingLine")}
       </p>
-      <p className="mx-auto mt-3 max-w-lg text-center text-[12px] leading-relaxed text-zinc-500">
-        {t("landing.compareCredibility")}
+      <p className="mx-auto mt-3 max-w-lg whitespace-pre-line text-center text-[12px] font-medium leading-relaxed text-zinc-500">
+        {t("landing.compareTrust")}
       </p>
       <div className="mt-6 flex justify-center">
         <Link
@@ -75,6 +96,9 @@ export function LandingComparisonStrip() {
           {t("landing.compareCta")}
         </Link>
       </div>
+      <p className="mx-auto mt-6 max-w-lg text-center text-[13px] font-semibold leading-snug tracking-[-0.02em] text-zinc-200">
+        {t("landing.compareDropMic")}
+      </p>
     </div>
   );
 }

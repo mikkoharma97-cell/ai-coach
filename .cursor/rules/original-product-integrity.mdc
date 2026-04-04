@@ -1,0 +1,28 @@
+---
+description: Tekijänoikeus ja oma tuote — ei johdettua kopiota; referenssi vain logiikkaan
+alwaysApply: true
+---
+
+# Oma tuote — alkuperäisyys (pakollinen)
+
+Tavoite: **tämä repo on itsenäinen tuote**, ei ulkoisten ohjelmien, PDF:ien tai valmennusmateriaalien muokattu versio.
+
+## Ulkoinen materiaali
+
+- Käytä **vain referenssinä**: logiikka, rakenneperiaate, käyttäjäarvo.
+- **Älä** tuo sisään sellaisenaan: tekstejä, grammoja, ateriayhdistelmiä, ohjelmanimiä, listoja, viikkorakenteita, PDF-rakenteita tai “hieman muokattuja” kopioita.
+
+## Mitä tehdään aina
+
+- Kirjoita **sisältö ja copy uusiksi** (FI/EN) agentin ja tuotteen omalla äänellä.
+- Muodosta **omat** määrät, mallit, pakettinimet, treenikuvaukset ja UI-tekstit.
+- Kun lisäät ruoka-/treeni-/pakettidataa: **uudet id:t ja nimet**, ei peilattuja otsikoita lähteestä.
+
+## Jos jokin näyttää liian samalta kuin lähdemateriaali
+
+→ **Muuta rohkeasti**: formulointi, järjestys, painotukset, nimet tai rakenne, kunnes se on selvästi oma.
+
+## Koodissa
+
+- Uudet templaatit ja i18n-rivit = **tämän repomme** sanamuodot; ei copy-pastea ulkopuolisista dokumenteista.
+- Epäselvässä tapauksessa: **preferoi uudelleenkirjoitusta** kuin “lähellä olevaa” säilytystä.

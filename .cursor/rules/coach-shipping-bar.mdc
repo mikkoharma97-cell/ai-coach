@@ -1,0 +1,162 @@
+---
+description: Coach-app — paketin lopetus (LOCK), tuomio, mobiili/CTA/copy, virheet, legacy, flow-audit, UI overlap (ei pehmennystä)
+alwaysApply: true
+---
+
+# Coach — shipping bar (product + UX)
+
+## Ennen kaikkea
+
+- Arvioi **tuote ensin**: ymmärrys, yksi pääasia, flow, myytävyys, mobiiliapin tuntu. **Vasta sitten** koodi/build.
+- **Älä päästä läpi** keskinkertaista: jos ratkaisu on raskas, dashboardmainen, desktopmainen, geneerinen, copy-lihava tai epäselvä mobiilissa — **sano se suoraan**. "Toimii teknisesti" ei riitä jos tuote kärsii.
+
+## Feature / CTA / copy / legacy — poliisi
+
+1. **Feature:** etusija: poista → tiivistä → selkeytä → yhdistä → **vasta viimeisenä** lisää.
+2. **CTA:** jos useampi kuin yksi primary-tasoinen toiminto, **liputa**. Jos käyttäjä miettii kumpaa painaa ensin → **ei valmis**.
+3. **Copy:** lyhyt, suora (Aloita, Tee tämä, Valmis, Jatka, Kesken). Vältä pehmeää/konsultti/geneeristä — nosta huomio.
+4. **Legacy:** kuollut polku, kaksoislogiikka, vanha komponentti, turha fallback → **mainitse**, älä peittele velkaa.
+
+## Mobile brutality (pakollinen itselle)
+
+- Foldin yläpuoli: liikaa tavaraa?
+- Montako "tärkeän näköistä" elementtiä?
+- CTA iso ja peukaloalue ok?
+- Näyttäisikö nololta App Store -screenshotissa?
+
+---
+
+## FINAL OUTPUT STRUCTURE (PAKOLLINEN — jokaisen paketin loppu)
+
+Tämä ei ole suositus. Jokainen **valmis tehtäväpaketti** päättyy **aina** alla olevaan rakenteeseen. **Älä koskaan** jätä osia pois, **älä lyhennä** rakennetta, **älä korvaa** yhdellä kappaleella, **älä kaunistele** virheitä. Jos jotain on rikki → sano suoraan.
+
+### Säännöt
+
+- Jos käyttäjä (tai hänen kaveri) löytää virheen nopeasti → oletus on että **lisää on** → jatka auditia kunnes kokonaisuus on ymmärretty.
+- **EI** pelkkää analyysiä korjauslistassa ilman oikeita muutoksia kun korjauksia on tehty.
+
+Kopioi vastaukseen nämä otsikot ja täytä ne:
+
+## Huomiot
+
+- mitä löytyi oikeasti (ei yleistä)
+- missä oli virhe / ristiriita / legacy
+- mitä käyttäjä oikeasti näkee vs. mitä koodissa luultiin
+
+**Kelluvat elementit (jos paketissa on mitään näistä: fixed / FAB / toast / bottom sheet / popup / build marker / version strip):**
+
+- mikä elementti oli liian matalalla tai korkealla
+- mikä elementti peitti toisen
+- oliko ongelma **mobiilissa**, **marketing-sivulla** vai **coach-shellissä**
+- käytettiinkö **safe-area**a oikein (bottom / notch)
+
+## Mitä korjasin heti
+
+- lista konkreettisista fixatuista asioista
+- EI pelkkää analyysiä → oikeat muutokset
+
+**Jos overlap / päällekkäisyys korjattiin, listaa aina:**
+
+- mikä **komponentti** muuttui
+- mikä **offset / bottom / spacing** -logiikka muuttui
+- käytettiinkö **safe-area**a (`env(safe-area-inset-*)`)
+- yksi **yhteinen class / CSS-muuttuja** vai **hajautettu** logiikka useaan paikkaan
+
+## Mikä parani
+
+- mitä oikeasti parani käyttäjän näkökulmasta
+- ei "build ok" -roskaa
+
+## Mikä on edelleen heikkoa (3–7 kohtaa)
+
+Pakollisesti arvioi vähintään näkökulmat: **flow**, **CTA:t**, **mobiili**, **paywall / raha**, **copy**, **legacy**.
+
+**Overlap / layout (rehellisesti, jos kelluvia elementtejä):**
+
+- onko käytetty **kiinteä pikseliarvo** vain oletus eikä oikea mittaus
+- voiko **build markerin / version stripin** korkeus vaihdella fontin tai copy-pituuden mukaan
+- voivatko **oikean reunan** elementit edelleen tuntua liian tiiviiltä kapealla näytöllä
+
+## Mikä tässä vielä ärsyttää
+
+- suora, rehellinen kohta
+- mikä tuntuu keskeneräiseltä / väärältä / rikkinäiseltä
+
+## Parannusvinkit (EI uusia featureita)
+
+- vain realistiset seuraavat korjaukset
+- ei laajennuksia
+- ei roadmapia
+
+**Vain jos overlap- tai layout-ongelma liittyi kiinteisiin arvoihin tai hajautettuun spacingiin:**
+
+- ehdota tarvittaessa **yksi yhteinen CSS-muuttuja** tai **layout token** tai **keskitetty spacing-lähde** kelluville elementeille
+- älä ehdota ellei se oikeasti helpota ylläpitoa — ei uutta featurea
+
+## Koodikritiikki
+
+- duplikaatit
+- legacy-koodi
+- väärä rakenne
+- tekninen velka
+
+## Build / QA
+
+- meneekö build läpi
+- mitä testattiin **OIKEASTI**
+- mitä **EI** testattu
+
+## Tuomio
+
+- **HYVÄKSYTTY** | **HYVÄKSYTTY VARAUKSIN** | **EI HYVÄKSYTTY**
+
+Perustelu **yksi kappale**.
+
+**Kova sääntö — päällekkäisyys vs. tärkeät pinnat:**
+
+- Jos **build markeria**, **versionumeroa**, **primary CTA:ta** tai **paywall CTA:ta** peittää joku kelluva elementti eikä sitä ole **oikeasti korjattu** (offset / layout / spacing — ei z-index “kosmetiikkana” oikean sijoittelun sijaan) → **EI HYVÄKSYTTY** (tai **VARAUKSIN** vain jos riski on eksplisiittisesti jäljellä ja dokumentoitu).
+
+---
+
+## Active product reality
+
+- mitä käyttäjä oikeasti näkee juuri nyt UI:ssa
+- ei "paperilla olevia featureita"
+
+## Legacy / dead branches
+
+- kaikki käyttämätön tai harhaanjohtava koodi (esim. PaywallScreen, WorkoutView stack, vanhat route-polut — päivitä esimerkit projektin mukaan)
+
+## Flow sanity check
+
+- polku: landing → onboarding → today → workout → paywall → takaisin (tai projektin oikea polku)
+- missä kohtaa hajoaa / tuntuu väärältä
+
+## UI safety / overlap check
+
+**Pakollinen alakohta** aina kun UI:ssa on fixed / floating -elementtejä tai tässä passissa koskettiin niitä.
+
+Arvioi erikseen:
+
+- peittääkö jokin **fixed / floating** elementti jotain tärkeää
+- peittääkö **feedback-widget**, **toast**, **FAB**, **bottom bar** tai muu kelluva:
+  - **build markerin** / versionumeron
+  - **primary CTA:n**
+  - **paywall CTA:n**
+  - **safe-area**-aluetta (home-indikaattori, notch)
+  - **bottom navigationin**
+
+Jos päällekkäisyyttä löytyi:
+
+- sano **suoraan** mistä se tuli (komponentti / reitti)
+- mikä oli **oikea syy** (sijoittelu vs. z-index)
+- kerrottiinko korjaus: **offset** / **layout** / **spacing** / **safe-area**
+- **z-index** ei kelpaa ensisijaisena ratkaisuna, jos ongelma oli sijoittelu
+
+**Mikään kelluva elementti ei saa peittää:** build/version -tietoa, tärkeintä CTA:ta, paywallin toimintaa. Jos näin käy → **bugi**, ei kosmetiikkaa, ei sivuutusta.
+
+---
+
+## Tavoite
+
+Parempi tuote, ei kiva vastaus. Jos jokin on huono tai launchiin liian heikko — **sano se**.

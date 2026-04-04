@@ -14,8 +14,12 @@ import { emptyAnswers } from "@/lib/plan";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import type {
   DaysPerWeek,
+  DietaryRestriction,
+  DietType,
   Goal,
   Level,
+  MealStructurePreference,
+  MealsPerDayCount,
   OnboardingAnswers,
 } from "@/types/coach";
 import type { MessageKey } from "@/lib/i18n";
@@ -44,6 +48,65 @@ function daysBucketToDaysPerWeek(b: DaysBucket): DaysPerWeek {
   if (b === "t23") return 3;
   if (b === "t34") return 4;
   return 5;
+}
+
+function mapMealsToStructure(n: MealsPerDayCount): MealStructurePreference {
+  if (n <= 2) return "lighter_evening";
+  if (n === 3) return "three_meals";
+  return "snack_forward";
+}
+
+function pushUnique(list: string[], value: string) {
+  const v = value.toLowerCase();
+  if (!list.some((x) => x.toLowerCase() === v)) list.push(value);
+}
+
+function applyPersonalization(
+  base: OnboardingAnswers,
+  mealsPerDay: MealsPerDayCount,
+  diet: DietType,
+  restrictions: DietaryRestriction[],
+  rhythm: "regular" | "shift_work",
+): OnboardingAnswers {
+  const foodPreferences = [...(base.foodPreferences ?? [])];
+  const foodDislikes = [...(base.foodDislikes ?? [])];
+
+  if (diet === "vegetarian") {
+    pushUnique(foodPreferences, "kasvis");
+    pushUnique(foodDislikes, "kana");
+    pushUnique(foodDislikes, "liha");
+  } else if (diet === "vegan") {
+    pushUnique(foodPreferences, "vegaani");
+    pushUnique(foodDislikes, "kana");
+    pushUnique(foodDislikes, "liha");
+    pushUnique(foodDislikes, "maito");
+    pushUnique(foodDislikes, "juusto");
+    pushUnique(foodDislikes, "muna");
+  }
+
+  for (const r of restrictions) {
+    if (r === "lactose_free") pushUnique(foodDislikes, "laktoosi");
+    if (r === "gluten_free") {
+      pushUnique(foodDislikes, "gluteeni");
+      pushUnique(foodDislikes, "vehnä");
+    }
+    if (r === "dairy_free") {
+      pushUnique(foodDislikes, "maito");
+      pushUnique(foodDislikes, "juusto");
+    }
+  }
+
+  return {
+    ...base,
+    mealsPerDay,
+    dietType: diet,
+    dietaryRestrictions: restrictions,
+    mealStructure: mapMealsToStructure(mealsPerDay),
+    lifeSchedule: rhythm === "shift_work" ? "shift_work" : "regular",
+    shiftMode: rhythm === "shift_work",
+    foodPreferences,
+    foodDislikes,
+  };
 }
 
 function buildBaseAnswers(
@@ -120,7 +183,17 @@ export function OnboardingFlow() {
   const [goal, setGoal] = useState<GoalChoice | null>(null);
   const [level, setLevel] = useState<Level | null>(null);
   const [days, setDays] = useState<DaysBucket | null>(null);
+  const [mealsPerDay, setMealsPerDay] = useState<MealsPerDayCount | null>(null);
+  const [diet, setDiet] = useState<DietType | null>(null);
+  const [restrictions, setRestrictions] = useState<DietaryRestriction[]>([]);
+  const [rhythm, setRhythm] = useState<"regular" | "shift_work" | null>(null);
   const [food, setFood] = useState<FoodChoice | null>(null);
+
+  const toggleRestriction = useCallback((r: DietaryRestriction) => {
+    setRestrictions((prev) =>
+      prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r],
+    );
+  }, []);
 
   useBodyScrollLock(building);
 
@@ -140,16 +213,51 @@ export function OnboardingFlow() {
     if (step >= 1 && !goal) setStep(0);
     else if (step >= 2 && (!goal || !level)) setStep(0);
     else if (step >= 3 && (!goal || !level || !days)) setStep(0);
-    else if (step >= 4 && (!goal || !level || !days || !food)) setStep(0);
-  }, [step, goal, level, days, food]);
+    else if (step >= 4 && (!goal || !level || !days || !mealsPerDay)) setStep(0);
+    else if (step >= 5 && (!goal || !level || !days || !mealsPerDay || !diet)) {
+      setStep(0);
+    } else if (
+      step >= 6 &&
+      (!goal || !level || !days || !mealsPerDay || !diet)
+    ) {
+      setStep(0);
+    } else if (
+      step >= 7 &&
+      (!goal || !level || !days || !mealsPerDay || !diet || !rhythm)
+    ) {
+      setStep(0);
+    } else if (
+      step >= 8 &&
+      (!goal || !level || !days || !mealsPerDay || !diet || !rhythm || !food)
+    ) {
+      setStep(0);
+    }
+  }, [step, goal, level, days, mealsPerDay, diet, rhythm, food]);
 
   const startBuild = useCallback(() => {
-    if (!goal || !level || !days || !food) return;
+    if (
+      !goal ||
+      !level ||
+      !days ||
+      !food ||
+      !mealsPerDay ||
+      !diet ||
+      !rhythm
+    ) {
+      return;
+    }
 
     const base = buildBaseAnswers(goal, level, days, food);
-    const rec = recommendProgramForProfile(base);
-    const patch = applyProgramLibraryEntry(rec.id, base);
-    const merged = { ...base, ...patch } as OnboardingAnswers;
+    const personalized = applyPersonalization(
+      base,
+      mealsPerDay,
+      diet,
+      restrictions,
+      rhythm,
+    );
+    const rec = recommendProgramForProfile(personalized);
+    const patch = applyProgramLibraryEntry(rec.id, personalized);
+    const merged = { ...personalized, ...patch } as OnboardingAnswers;
     const recNut = recommendNutritionForProfile(merged);
     const final: OnboardingAnswers = {
       ...merged,
@@ -173,7 +281,7 @@ export function OnboardingFlow() {
     window.setTimeout(() => {
       setBuilding(false);
     }, BUILD_DELAY_MS + 10000);
-  }, [days, food, goal, level, router]);
+  }, [days, diet, food, goal, level, mealsPerDay, restrictions, rhythm, router]);
 
   const goBack = useCallback(() => {
     setStep((s) => Math.max(0, s - 1));
@@ -207,6 +315,24 @@ export function OnboardingFlow() {
     return m[f];
   };
 
+  const dietLabelKey = (d: DietType): MessageKey => {
+    const m: Record<DietType, MessageKey> = {
+      omnivore: "onboarding.dietOmnivore",
+      vegetarian: "onboarding.dietVegetarian",
+      vegan: "onboarding.dietVegan",
+    };
+    return m[d];
+  };
+
+  const restrLabelKey = (r: DietaryRestriction): MessageKey => {
+    const m: Record<DietaryRestriction, MessageKey> = {
+      lactose_free: "onboarding.restrLactose",
+      gluten_free: "onboarding.restrGluten",
+      dairy_free: "onboarding.restrDairy",
+    };
+    return m[r];
+  };
+
   if (building) {
     return (
       <div className="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-background/98 px-6 backdrop-blur-sm">
@@ -233,7 +359,7 @@ export function OnboardingFlow() {
     );
   }
 
-  const stepLabel = `${step + 1}/5`;
+  const stepLabel = `${step + 1}/9`;
 
   return (
     <div className="flex min-h-dvh flex-col bg-gradient-to-b from-card/[0.04] via-background to-background">
@@ -379,10 +505,145 @@ export function OnboardingFlow() {
           {step === 3 && goal && level && days ? (
             <section
               className="flex w-full max-w-md flex-col items-center"
-              aria-labelledby="ob-q-food"
+              aria-labelledby="ob-q-meals"
             >
               <h1
-                id="ob-q-food"
+                id="ob-q-meals"
+                className="w-full text-balance text-center text-[1.375rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground"
+              >
+                {t("onboarding.qMealsPerDay")}
+              </h1>
+              <div className="mt-6 grid w-full grid-cols-2 gap-2.5 sm:grid-cols-3">
+                {([2, 3, 4, 5, 6] as const).map((n) => (
+                  <PickButton
+                    key={n}
+                    selected={mealsPerDay === n}
+                    onClick={() => {
+                      setMealsPerDay(n);
+                      setStep(4);
+                    }}
+                  >
+                    {t("onboarding.mealsN", { n })}
+                  </PickButton>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {step === 4 && goal && level && days && mealsPerDay ? (
+            <section
+              className="flex w-full max-w-md flex-col items-center"
+              aria-labelledby="ob-q-diet"
+            >
+              <h1
+                id="ob-q-diet"
+                className="w-full text-balance text-center text-[1.375rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground"
+              >
+                {t("onboarding.qDiet")}
+              </h1>
+              <div className="mt-6 flex w-full flex-col justify-center gap-2.5">
+                {(["omnivore", "vegetarian", "vegan"] as const).map((d) => (
+                  <PickButton
+                    key={d}
+                    selected={diet === d}
+                    onClick={() => {
+                      setDiet(d);
+                      setStep(5);
+                    }}
+                  >
+                    {t(dietLabelKey(d))}
+                  </PickButton>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {step === 5 && goal && level && days && mealsPerDay && diet ? (
+            <section
+              className="flex w-full max-w-md flex-1 flex-col items-center"
+              aria-labelledby="ob-q-restr"
+            >
+              <h1
+                id="ob-q-restr"
+                className="w-full text-balance text-center text-[1.375rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground"
+              >
+                {t("onboarding.qRestrictions")}
+              </h1>
+              <p className="mt-2 max-w-sm text-center text-[13px] leading-snug text-muted">
+                {t("onboarding.restrictionsHint")}
+              </p>
+              <div className="mt-6 flex w-full flex-col justify-center gap-2.5">
+                {(["lactose_free", "gluten_free", "dairy_free"] as const).map(
+                  (r) => (
+                    <PickButton
+                      key={r}
+                      selected={restrictions.includes(r)}
+                      onClick={() => toggleRestriction(r)}
+                    >
+                      {t(restrLabelKey(r))}
+                    </PickButton>
+                  ),
+                )}
+              </div>
+              <div className="mt-auto w-full shrink-0 pt-8">
+                <button
+                  type="button"
+                  onClick={() => setStep(6)}
+                  className="flex h-[56px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent text-[17px] font-semibold tracking-[-0.02em] text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                >
+                  {t("onboarding.continue")}
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {step === 6 && goal && level && days && mealsPerDay && diet ? (
+            <section
+              className="flex w-full max-w-md flex-col items-center"
+              aria-labelledby="ob-q-rhythm"
+            >
+              <h1
+                id="ob-q-rhythm"
+                className="w-full text-balance text-center text-[1.375rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground"
+              >
+                {t("onboarding.qRhythm")}
+              </h1>
+              <div className="mt-6 flex w-full flex-col justify-center gap-2.5">
+                <PickButton
+                  selected={rhythm === "regular"}
+                  onClick={() => {
+                    setRhythm("regular");
+                    setStep(7);
+                  }}
+                >
+                  {t("onboarding.rhythmRegular")}
+                </PickButton>
+                <PickButton
+                  selected={rhythm === "shift_work"}
+                  onClick={() => {
+                    setRhythm("shift_work");
+                    setStep(7);
+                  }}
+                >
+                  {t("onboarding.rhythmShift")}
+                </PickButton>
+              </div>
+            </section>
+          ) : null}
+
+          {step === 7 &&
+          goal &&
+          level &&
+          days &&
+          mealsPerDay &&
+          diet &&
+          rhythm ? (
+            <section
+              className="flex w-full max-w-md flex-col items-center"
+              aria-labelledby="ob-q-foodline"
+            >
+              <h1
+                id="ob-q-foodline"
                 className="w-full text-balance text-center text-[1.375rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground"
               >
                 {t("onboarding.fast.qEatHow")}
@@ -394,7 +655,7 @@ export function OnboardingFlow() {
                     selected={food === f}
                     onClick={() => {
                       setFood(f);
-                      setStep(4);
+                      setStep(8);
                     }}
                   >
                     {t(foodLabelKey(f))}
@@ -404,7 +665,14 @@ export function OnboardingFlow() {
             </section>
           ) : null}
 
-          {step === 4 && goal && level && days && food ? (
+          {step === 8 &&
+          goal &&
+          level &&
+          days &&
+          mealsPerDay &&
+          diet &&
+          rhythm &&
+          food ? (
             <section
               className="flex w-full max-w-md flex-1 flex-col items-center justify-between"
               aria-labelledby="ob-summary"
@@ -433,7 +701,33 @@ export function OnboardingFlow() {
                       {t(daysLabelKey(days))}
                     </span>
                   </li>
-                  <li className="flex flex-col gap-0.5 pb-1 text-center">
+                  <li className="flex flex-col gap-0.5 border-b border-white/[0.06] pb-3 text-center">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                      {t("onboarding.summaryMeals")}
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {t("onboarding.mealsN", { n: mealsPerDay })}
+                    </span>
+                  </li>
+                  <li className="flex flex-col gap-0.5 border-b border-white/[0.06] pb-3 text-center">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                      {t("onboarding.summaryDiet")}
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {t(dietLabelKey(diet))}
+                    </span>
+                  </li>
+                  <li className="flex flex-col gap-0.5 border-b border-white/[0.06] pb-3 text-center">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                      {t("onboarding.summaryRhythm")}
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {rhythm === "shift_work"
+                        ? t("onboarding.rhythmShift")
+                        : t("onboarding.rhythmRegular")}
+                    </span>
+                  </li>
+                  <li className="flex flex-col gap-0.5 border-b border-white/[0.06] pb-3 text-center">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
                       {t("onboarding.fast.summaryFood")}
                     </span>

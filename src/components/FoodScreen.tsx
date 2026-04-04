@@ -96,7 +96,6 @@ import type {
   OnboardingAnswers,
   SavedMeal,
 } from "@/types/coach";
-import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { flowLog } from "@/lib/flowLog";
 import { logButtonClick } from "@/lib/uiInteractionDebug";
@@ -190,7 +189,6 @@ function goalHeadlineKey(g: OnboardingAnswers["goal"]): MessageKey {
 }
 
 export function FoodScreen() {
-  const router = useRouter();
   const { t, locale } = useTranslation();
   const profileRaw = useClientProfile();
   const [profileReloadSeq, setProfileReloadSeq] = useState(0);
@@ -233,14 +231,6 @@ export function FoodScreen() {
       document.body.style.overflow = prev;
     };
   }, [sheetOpen]);
-
-  useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) {
-      console.debug("[coach] FoodScreen: no profile → /start");
-      router.replace("/start");
-    }
-  }, [profile, router]);
 
   useEffect(() => {
     setOffPlanMeals(loadOffPlanMealsForDay(now));
@@ -1248,18 +1238,18 @@ export function FoodScreen() {
       {portalReady && sheetOpen
         ? createPortal(
             <div
-              className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex touch-manipulation flex-col justify-end"
+              className="fixed inset-0 z-[var(--z-overlay-backdrop)] flex touch-manipulation flex-col justify-end pt-[env(safe-area-inset-top,0px)]"
               role="presentation"
             >
               <button
                 type="button"
                 tabIndex={-1}
                 aria-label={t("food.cancel")}
-                className="absolute inset-0 z-0 cursor-pointer border-0 bg-foreground/35 backdrop-blur-[4px] p-0 [touch-action:none]"
+                className="absolute inset-0 z-0 cursor-pointer border-0 bg-[color:var(--coach-modal-scrim)] p-0 backdrop-blur-md [touch-action:none]"
                 onClick={closeSheet}
               />
               <div
-                className="relative z-[var(--z-overlay-sheet)] mt-auto w-full max-h-[min(88vh,90dvh)] overscroll-contain overflow-y-auto rounded-t-[var(--radius-2xl)] border border-border/80 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
+                className="relative z-[var(--z-overlay-sheet)] mt-auto w-full max-h-[min(88vh,90dvh)] overscroll-contain overflow-y-auto rounded-t-[var(--radius-2xl)] border border-[color:var(--coach-modal-panel-border)] bg-[color:var(--coach-modal-panel)] px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[var(--shadow-float)] pointer-events-auto [-webkit-overflow-scrolling:touch]"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="add-food-title"

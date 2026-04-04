@@ -438,7 +438,7 @@ export function composeCoachDailyPlan(
   const activityEnergyBonusKcal = activityEnergyBonusKcalForReferenceDate(
     userState.referenceDate,
   );
-  let finalCalories = todayCalories + activityEnergyBonusKcal;
+  const finalCalories = todayCalories + activityEnergyBonusKcal;
   let finalMacros = todayMacros;
   if (activityEnergyBonusKcal > 0 && todayCalories > 0) {
     const factor = finalCalories / todayCalories;

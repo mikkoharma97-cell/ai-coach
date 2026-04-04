@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 type Props = {
   hubBlockClass: string;
   sectionTitle: string;
@@ -9,16 +7,17 @@ type Props = {
   /** Lepopäivällä false — yksi viesti hero-kortissa, ei toistoa. */
   showSummaryLine: boolean;
   summaryLine: string;
-  linkWorkoutLabel: string;
 };
 
+/**
+ * Toinen taso: ei toista pää-CTA:ta — vain tila + tiivis kuvaus (linkki poistettu).
+ */
 export function TodayWorkoutHub({
   hubBlockClass,
   sectionTitle,
   workoutStatusLabel,
   showSummaryLine,
   summaryLine,
-  linkWorkoutLabel,
 }: Props) {
   return (
     <section
@@ -32,22 +31,15 @@ export function TodayWorkoutHub({
         >
           {sectionTitle}
         </h3>
-        <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-foreground">
+        <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold text-muted">
           {workoutStatusLabel}
         </span>
       </div>
       {showSummaryLine ? (
-        <p className="mt-2 line-clamp-2 text-[14px] font-medium leading-snug text-foreground">
+        <p className="mt-2 line-clamp-2 text-[14px] font-medium leading-snug text-muted">
           {summaryLine}
         </p>
       ) : null}
-      <Link
-        href="/workout"
-        scroll={false}
-        className="mt-2 inline-flex text-[13px] font-medium text-muted underline-offset-[3px] hover:text-foreground hover:underline"
-      >
-        {linkWorkoutLabel}
-      </Link>
     </section>
   );
 }

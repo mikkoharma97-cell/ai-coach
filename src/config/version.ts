@@ -1,28 +1,33 @@
 /**
- * Tuoteversio — HÄRMÄ71: build-päivä ja -aika tulevat `buildInfo.generated.ts`istä
- * (kirjoitetaan `npm run build` → write-build-info.mjs, sama hetki kuin BUILD_TIME_ISO).
- * `BUILD_SYNC_FINGERPRINT`: cache-bypass / ForceRefreshGuard.
+ * Versio + build — yksi lähde: `buildInfo.generated.ts` (npm run build → write-build-info.mjs).
  */
 import {
+  APP_VERSION,
   BUILD_DATE_DISPLAY,
+  BUILD_DISPLAY_LINE,
   BUILD_TIME_DISPLAY,
+  BUILD_TIME_ISO,
 } from "@/lib/buildInfo.generated";
 
-export const APP_VERSION = "HÄRMÄ71";
+export {
+  APP_VERSION,
+  BUILD_DATE_DISPLAY,
+  BUILD_TIME_DISPLAY,
+  BUILD_TIME_ISO,
+  BUILD_DISPLAY_LINE,
+};
 
-/** Juokseva build-numero — käytä fingerprintissä */
+/** @deprecated Käytä APP_VERSION — juokseva build-numero; fingerprint käyttää BUILD_TIME_ISO */
 export const HARMÄ_BUILD = 71;
 
-/** Generoitu jokaisessa buildissa — ei manuaalista päivitystä */
 export const BUILD_DATE = BUILD_DATE_DISPLAY;
-
 export const BUILD_TIME = BUILD_TIME_DISPLAY;
 
-/** Näkyvä toinen rivi build-markerissa */
-export const BUILD_DISPLAY_LINE = `${BUILD_DATE} · ${BUILD_TIME}`;
+/** Sama kuin `BUILD_DISPLAY_LINE` (generoitu yksi rivi). */
+export const BUILD_TIMESTAMP = BUILD_DISPLAY_LINE;
 
-export const BUILD_SYNC_FINGERPRINT = `${APP_VERSION}|${HARMÄ_BUILD}`;
-
-export const COACH_RELEASE_LABEL = APP_VERSION;
+export const BUILD_SYNC_FINGERPRINT = `${APP_VERSION}|${BUILD_TIME_ISO}`;
 
 export const BUILD_V_DISPLAY = `BUILD ${APP_VERSION}`;
+
+export const COACH_RELEASE_LABEL = APP_VERSION;

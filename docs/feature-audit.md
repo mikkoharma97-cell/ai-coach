@@ -37,7 +37,7 @@ Tilat: **verified** = toteutettu ja linjassa auditin kanssa · **partial** = osi
 | Osa | Status | Huomio |
 |-----|--------|--------|
 | **Input-to-Plan Mapping** | **partial** | Profiili → `normalizeProfileForEngine` → `composeCoachDailyPlan` / `generateFoodTargets` / V2-päätös; uudet `nutritionProgressionEngine`, `activityProgressionEngine`, `trainingProgressionEngine` käyttävät samaa `getDailyCoachDecisionV2` + `plan`-totuutta |
-| **Food Only Mode** | **verified** | `appUsageMode`, `FoodOnlyTodayPanel`, treeni piilotettu navista; HÄRMÄ33: viikkoinsight + upsell Full Coachiin |
+| **Food Only Mode** | **verified** | `appUsageMode`, `TodayView` (ruoka-painotus), treeni piilotettu navista; HÄRMÄ33: viikkoinsight + upsell Full Coachiin |
 | **Home check (build)** | **verified** | `HomeCheckButton` → `/home`, root `layout.tsx` |
 | **Näkyvä versio** | **verified** | `src/config/version.ts` — `HÄRMÄ34`, `BUILD_TIME` |
 | **Review linkit + testiprofiilit** | **verified** | `docs/review-links.md`, `docs/test-profiles.md` · `?review=1` → `ReviewDebugStrip` (coach layout) |

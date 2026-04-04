@@ -1,9 +1,10 @@
 /**
  * Entitlement: kokeilu + tilaus.
  *
- * **Oletus (mock):** `localStorage` + `subscribed`-boolean. Ei App Store / Google Play -kuittia.
- * **Kytke oikea maksu:** `NEXT_PUBLIC_COACH_SUBSCRIPTION_MODE=production` + toteuta `read()`/`write()`
- * oikealla receipt/entitlement-rajapinnalla. Paywall-päätöslogiikka pysyy `paywallPolicy.ts`:ssä.
+ * **Mock (oletus):** `localStorage` + `subscribed`-boolean — nimetty eksplisiittisesti, ei sekoiteta tuotannon kanssa.
+ * **Production:** `NEXT_PUBLIC_COACH_SUBSCRIPTION_MODE=production` + korvaa `read()`/`write()` oikealla kuitti/entitlement-rajapinnalla.
+ *
+ * Paywallin yksi totuus (hasAccess, syy, billingMode): `getPaywallTruth()` → `src/lib/paywallPolicy.ts`.
  */
 
 /** `mock` = localStorage-demo. `production` = varattu oikealle billingille (env-lippu + toteutus). */

@@ -48,8 +48,8 @@ export function CoachingInsightsSection({
       </h2>
       <p className="mt-1 text-[12px] leading-snug text-muted-2">
         {loc === "fi"
-          ? "Järjestelmä reagoi treeneihin, ruokaan ja kuormaan — ei automaattisia ohjelmapakotteita."
-          : "The system reacts to training, food, and load — no forced program changes."}
+          ? "Ohjaus seuraa treeniä, ruokaa ja kuormaa — ei pakotettuja ohjelmanvaihtoja."
+          : "Guidance follows training, food, and load — no forced program changes."}
       </p>
       {mainInsights.length > 0 ? (
         <div className="mt-4 flex flex-col gap-3">

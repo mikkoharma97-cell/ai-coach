@@ -85,13 +85,6 @@ export function WorkoutSession() {
   >({});
 
   useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) {
-      router.replace("/start");
-    }
-  }, [profile, router]);
-
-  useEffect(() => {
     const b = () => setShiftTick((x) => x + 1);
     window.addEventListener(WORK_SHIFTS_CHANGED, b);
     return () => window.removeEventListener(WORK_SHIFTS_CHANGED, b);
@@ -294,6 +287,7 @@ export function WorkoutSession() {
             </Link>
             <Link
               href="/app"
+              scroll={false}
               className="inline-flex min-h-[44px] items-center text-[14px] font-semibold text-muted underline-offset-[3px] hover:text-foreground hover:underline"
             >
               {t("workout.backToday")}
@@ -354,6 +348,7 @@ export function WorkoutSession() {
           />
           <Link
             href="/app"
+            scroll={false}
             className="mt-6 inline-flex min-h-[48px] items-center text-[15px] font-semibold text-accent underline-offset-[3px] hover:underline"
           >
             {t("workout.backToday")}

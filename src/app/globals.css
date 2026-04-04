@@ -12,7 +12,7 @@ html {
  * - Z-index: katso :root --z-nav, --z-overlay-backdrop, --z-overlay-sheet, --z-overlay-swap.
  * - Motion: vähennä varjojen määrää samalla näytöllä (Today + Food + Plan) jos tuntuu “koristeelta”.
  */
-/* —— AI Coach: angry black + electric blue (valmennusjärjestelmä, kova kontrasti) —— */
+/* —— Coach: angry black + electric blue (kova kontrasti) —— */
 :root {
   --background: #05060a;
   --background-mid: #0a0d14;
@@ -70,6 +70,18 @@ html {
   --coach-ring-surface: rgba(255, 255, 255, 0.06);
   --coach-shadow-soft: 0 10px 36px rgb(0 0 0 / 0.32);
   --coach-surface-muted: rgba(255, 255, 255, 0.035);
+  /** Bottom nav + safe area — scroll-padding, FAB, build-merkki (yksi lähde) */
+  /* Nav: kaksiriviset tab-labelit + pt/pb — 72px oli liian matala mobiilissa */
+  --bottom-nav-height: 88px;
+  --bottom-safe-area: env(safe-area-inset-bottom, 0px);
+  --bottom-stack: calc(
+    var(--bottom-nav-height) + var(--bottom-safe-area)
+  );
+
+  /* Modaalit / sheetit — yksi scrim + pinta (ei haamu-bg-card) */
+  --coach-modal-scrim: rgba(5, 6, 10, 0.82);
+  --coach-modal-panel: rgba(15, 21, 34, 0.98);
+  --coach-modal-panel-border: rgba(255, 255, 255, 0.12);
 
   /* Z-index — yksi järjestys: header/nav < preview < overlay backdrop < sheet */
   --z-nav: 50;
@@ -120,7 +132,8 @@ html {
 body {
   color: var(--text-body);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-size: 16px;
+  /* Mobiili: ei alle 13px; skaalaa näkymän leveyden mukaan, max 16px */
+  font-size: clamp(13px, 1.1vw, 16px);
   line-height: 1.62;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -132,7 +145,7 @@ body {
 
 /* Yksi pääasiallinen scroll-konteksti coach-shellissä — ei body-double-scrollia */
 .app-main-scroll {
-  scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  scroll-padding-bottom: calc(var(--bottom-stack) + 1.25rem);
 }
 
 @media (min-width: 481px) {
@@ -468,10 +481,10 @@ body {
       0 0 22px -6px var(--accent-glow-soft);
   }
 
-  /* Bottom nav ~52px + home indicator — ei peitä viimeisiä rivejä */
+  /* Bottom nav + home indicator — sama token kuin AppShell / --bottom-stack */
   .coach-page {
     @apply pt-6 sm:pb-16;
-    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--bottom-stack) + 0.75rem);
   }
 
   /* Mobiili: fokus ei jää näppäimistön / navin alle */

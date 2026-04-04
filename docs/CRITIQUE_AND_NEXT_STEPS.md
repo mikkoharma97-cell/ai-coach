@@ -21,7 +21,7 @@ Tämä tiedosto on tarkoituksella **sisäinen**: mitä viime töissä jäi heiko
 
 ### Today-mock (“control panel”)
 
-- **Hyvä:** Yksi paneeli + väliviivat = “järjestelmä”, ei kolme erillistä korttia.
+- **Hyvä:** Yksi paneeli + väliviivat = yksi kokonaisuus, ei kolme erillistä korttia.
 - **Heikko:** Paljon **inline-arvoja** (`from-[#fcfdff]`, `bg-[linear-gradient(...)]`) — sama visuaalinen kieli ei toistu automaattisesti oikealla `/app` Today-näkymällä. Riski: **mock ei enää näytä samalta kuin tuote**.
 - **Heikko:** CTA-teksti vaihtui **“Complete day”** — jos muualla tuotteessa on edelleen “Mark as done”, syntyy **terminologinen epäjohdonmukaisuus** (ei välttämättä väärin, mutta pitää hallita tietoisesti).
 
@@ -37,7 +37,7 @@ Tämä tiedosto on tarkoituksella **sisäinen**: mitä viime töissä jäi heiko
 ### A. Yksi totuus Today-UI:lle
 
 - Poimisi **jaetut tokenit** (`--today-panel-bg`, `--today-divider`, `--shadow-today`) ja käyttäisi niitä sekä `HeroTodayLiving` (landing) että oikea dashboard-komponentti.
-- Tavoite: mock ei ole erillinen “demo-skin”, vaan **sama järjestelmä**, eri data.
+- Tavoite: mock ei ole erillinen “demo-skin”, vaan **sama logiikka**, eri data.
 
 ### B. CSS: vähemmän magiaa, enemmän nimiä
 

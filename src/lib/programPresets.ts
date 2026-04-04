@@ -293,7 +293,7 @@ export function refinePresetBlueprints(
   let nutritionBlueprintId = base.nutritionBlueprintId;
   let programTrackId = base.programTrackId;
   let weeklyStructureType = base.weeklyStructureType;
-  let coachingToneBias = base.coachingToneBias;
+  const coachingToneBias = base.coachingToneBias;
   let recoverySensitivity = base.recoverySensitivity;
   let programComplexity = base.programComplexity;
 

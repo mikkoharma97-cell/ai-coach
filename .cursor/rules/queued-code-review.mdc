@@ -1,0 +1,20 @@
+---
+description: Kun käyttäjä laittaa koodin jonoon tarkasteltavaksi, tuota aina strukturoitu arvio
+alwaysApply: true
+---
+
+# Jonossa oleva koodi — arviointilista
+
+Kun käyttäjä **laittaa koodin queue-tilaan** tarkasteltavaksi (erä tiedostoja, eksplisiittinen review-pyyntö, tai sama konteksti kuin “lue nämä / arvioi nämä”), tuota **aina** ennen tai rinnalla muuta työtä selkeä kooste — ellei käyttäjä pyydä vain muutosta ilman analyysiä.
+
+## Rakenne (suomi, ellei pyydetä englantia)
+
+1. **Kritiikki** — mitä kannattaa tiedostaa: riskit, duplikaatio, hajautuminen, velka, epäselvyydet.
+2. **Parannukset** — konkreettiset, toteuttamiskelpoiset (lyhyt vs. pidempi työ).
+3. **Ehdotukset** — suunta / seuraavat askeleet, ei pelkkää yleistä.
+
+## Tyyli
+
+- Luettava lista (bulletit), ei esseetä.
+- Viittaa todellisiin tiedostoihin / moduuleihin kun konteksti on tiedossa.
+- Älä korvaa käyttäjän pyytämää toteutusta pelkällä listalla, jos hän pyysi konkreettista muutosta — tee molemmat tarvittaessa.

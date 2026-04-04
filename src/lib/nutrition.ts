@@ -95,7 +95,7 @@ export function macrosFromBodyWeight(
 ): DailyMacros {
   const { kg } = bodyWeightKgForMacros(answers);
   const level = effectiveTrainingLevel(answers);
-  let proteinG = Math.round(kg * proteinGPerKg(answers.goal, level));
+  const proteinG = Math.round(kg * proteinGPerKg(answers.goal, level));
   let fatG = Math.round(kg * fatGPerKg(answers.goal, level));
   let carbCals = calories - proteinG * 4 - fatG * 9;
   if (carbCals < 100) {

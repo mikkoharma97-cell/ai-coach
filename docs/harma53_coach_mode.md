@@ -7,7 +7,7 @@ Lähde: ulkoinen muistiinpano `HARMA53_COACH_MODE.txt` (tyhjä paitsi otsikko **
 | Ulkoinen muistio | Sovelluksessa |
 |------------------|----------------|
 | «Self coach» / oma ohjaus | **`pro`** — valinnainen työkalukerros, oma runko (blueprintit), vähemmän valmentajatekstiä UI:ssa |
-| Järjestelmän ohjaus | **`guided`** — oletus; täydempi coach-copy / videot / rivit kun featuret päällä |
+| Oletusohjaus | **`guided`** — oletus; täydempi coach-copy / videot / rivit kun featuret päällä |
 
 `dailyEngine` ei erottele `mode`-kenttää päätöksissä samalla tavalla kuin UI; kommentti `types/coach.ts`: `mode` vaikuttaa erityisesti **Pro-UI** ja `getCoachFeatureToggles`-logiikkaan.
 

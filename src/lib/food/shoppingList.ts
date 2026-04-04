@@ -390,8 +390,8 @@ export function generateWeeklyShoppingList(
   return {
     titleFi: "Viikon ostot valmiina",
     titleEn: "Your week’s shopping ready",
-    leadFi: "Rakennettu tämän viikon ateriarytmistä — voit vaihtaa tuotteita myöhemmin.",
-    leadEn: "Built from this week’s meal rhythm — you can swap items later.",
+    leadFi: "Rakennettu tämän viikon ateriarytmistä. Vaihda tuotteita myöhemmin.",
+    leadEn: "Built from this week’s meal rhythm. Swap items later.",
     dayCount: n,
     items,
     groups,

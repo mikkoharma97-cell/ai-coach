@@ -1,5 +1,5 @@
 /**
- * Pro mode — oma runko + järjestelmän kehitys (guided-logiikka säilyy erillisenä).
+ * Pro mode — oma runko + moottorin kehitys (guided-logiikka säilyy erillisenä).
  */
 
 import type { ExerciseSelectionDebug } from "@/types/exercise";

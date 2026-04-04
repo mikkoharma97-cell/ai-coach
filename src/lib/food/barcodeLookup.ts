@@ -39,7 +39,7 @@ export function findProductByBarcode(barcode: string): BarcodeLookupResult {
     return {
       found: false,
       hintFi:
-        "Tuotetta ei löydy omasta katalogista. Voit tallentaa sen omana tuotteena tai käyttää vastaavaa geneeristä tuotetyyppiä.",
+        "Tuotetta ei löydy omasta katalogista. Tallenna omana tuotteena tai käytä geneeristä tuotetyyppiä.",
       hintEn:
         "Product not in our catalog yet. Save it as your own item or use a generic food type.",
     };
@@ -77,10 +77,10 @@ export function findProductByBarcode(barcode: string): BarcodeLookupResult {
       mealFitEn: mealFit.en,
       substituteFi: sub
         ? `Vaihtoehtoja: ${sub} (geneeriset tuotetyypit).`
-        : "Sama kategoria — voit vaihtaa toiseen vastaavaan tuotteeseen.",
+        : "Sama kategoria — vaihda toiseen vastaavaan tuotteeseen.",
       substituteEn: sub
         ? `Alternatives: ${sub} (generic types).`
-        : "Same category — you can swap to a similar product.",
+        : "Same category — swap to a similar product.",
     },
   };
 }

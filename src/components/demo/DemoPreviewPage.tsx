@@ -135,7 +135,7 @@ export function DemoPreviewPage() {
             {t("launch.ctaStart")}
           </CTAButton>
           <CTAButton
-            href={appendBuildQuery("/app?demo=1")}
+            href={appendBuildQuery("/start")}
             variant="link"
             className="!min-h-[44px] !text-[14px] !font-semibold !text-accent"
           >

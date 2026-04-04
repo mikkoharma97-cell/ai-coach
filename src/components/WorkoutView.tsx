@@ -220,7 +220,7 @@ export function WorkoutView({
       logMetaEffective,
     );
     saveWorkoutSession(log);
-    router.push("/app");
+    router.push("/app", { scroll: false });
   }, [router, logMetaEffective]);
 
   const exercisesSyncKey = useMemo(
@@ -332,7 +332,7 @@ export function WorkoutView({
               logMetaEffective,
             );
             saveWorkoutSession(log);
-            router.push("/app");
+            router.push("/app", { scroll: false });
             return prev;
           }
           default:

@@ -59,7 +59,6 @@ import type {
 } from "@/types/coach";
 import type { CoachFeatureToggles } from "@/types/coachPreferences";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -103,7 +102,6 @@ function splitList(s: string): string[] {
 }
 
 export function PreferencesScreen() {
-  const router = useRouter();
   const { t, setLocale, locale } = useTranslation();
   const [profile] = useState(() => loadProfile());
   const [form, setForm] = useState<OnboardingAnswers | null>(null);
@@ -113,14 +111,11 @@ export function PreferencesScreen() {
   const [autopilotOn, setAutopilotOn] = useState(() => loadAutopilotEnabled());
 
   useEffect(() => {
-    if (!profile) {
-      router.replace("/start");
-      return;
-    }
+    if (!profile) return;
     const merged: OnboardingAnswers = { ...emptyAnswers(), ...profile };
     merged.uiLocale = merged.uiLocale ?? "fi";
     setForm(merged);
-  }, [profile, router]);
+  }, [profile]);
 
   useEffect(() => {
     setReminderPrefs(loadReminderPrefs());
@@ -220,7 +215,6 @@ export function PreferencesScreen() {
         <CoachScreenHeader
           eyebrow={t("preferences.eyebrow")}
           title={t("preferences.title")}
-          description={t("preferences.subtitle")}
         />
 
         <p className="mt-4 text-center sm:text-left">
@@ -302,10 +296,7 @@ export function PreferencesScreen() {
             id="pref-reminders"
             title={t("notifications.prefsTitle")}
           >
-            <p className="text-[12px] leading-relaxed text-muted-2">
-              {t("notifications.prefsHint")}
-            </p>
-            <label className="mt-3 flex cursor-pointer items-center justify-between gap-4 px-1 py-1">
+            <label className="flex cursor-pointer items-center justify-between gap-4 px-1 py-1">
               <span className="text-[13px] leading-snug text-foreground">
                 {t("notifications.prefsEnable")}
               </span>
@@ -325,10 +316,7 @@ export function PreferencesScreen() {
           </PreferenceSection>
 
           <PreferenceSection title={t("preferences.autopilotTitle")}>
-            <p className="text-[12px] leading-relaxed text-muted-2">
-              {t("preferences.autopilotHint")}
-            </p>
-            <label className="mt-3 flex cursor-pointer items-center justify-between gap-4 px-1 py-1">
+            <label className="flex cursor-pointer items-center justify-between gap-4 px-1 py-1">
               <span className="text-[13px] leading-snug text-foreground">
                 {t("preferences.autopilotEnable")}
               </span>
@@ -350,16 +338,10 @@ export function PreferencesScreen() {
                 </span>
               </span>
             </summary>
-            <p className="mt-2 text-[12px] leading-relaxed text-muted-2">
-              {t("preferences.moreSettingsHint")}
-            </p>
 
-            <div className="mt-6 space-y-6">
+            <div className="mt-4 space-y-6">
               <PreferenceSection title={t("preferences.coachTitle")}>
-                <p className="text-[12px] leading-relaxed text-muted-2">
-                  {t("preferences.coachSubtitle")}
-                </p>
-                <div className="mt-3 divide-y divide-border/45 rounded-[var(--radius-lg)] border border-border/50 bg-white/[0.02] px-1">
+                <div className="divide-y divide-border/45 rounded-[var(--radius-lg)] border border-border/50 bg-white/[0.02] px-1">
                   {COACH_TOGGLE_KEYS.map((key) => (
                     <label
                       key={key}
@@ -770,7 +752,7 @@ export function PreferencesScreen() {
             type="submit"
             className="flex min-h-[52px] w-full items-center justify-center rounded-[var(--radius-lg)] bg-accent text-[16px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99]"
           >
-            {t("ui.save")}
+            {t("settings.ctaUpdate")}
           </button>
         </form>
       </Container>

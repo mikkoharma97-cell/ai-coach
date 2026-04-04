@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { CoachAppShortcuts } from "@/components/app/CoachAppShortcuts";
 import { Container } from "@/components/ui/Container";
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
@@ -36,7 +35,6 @@ import { generateDailyPlan } from "@/lib/dailyEngine";
 import { shouldShowProgressExamples } from "@/lib/firstUserProgressUi";
 
 export function ProgressPage() {
-  const router = useRouter();
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const ref = useMemo(() => new Date(), []);
@@ -118,14 +116,6 @@ export function ProgressPage() {
     ref,
     weightForExamples.points.length >= 2,
   );
-
-  useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) {
-      console.debug("[coach] ProgressPage: no profile → /start");
-      router.replace("/start");
-    }
-  }, [profile, router]);
 
   const features = useMemo(
     () => getCoachFeatureToggles(profile ?? null),

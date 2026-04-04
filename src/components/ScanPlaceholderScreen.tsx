@@ -5,19 +5,20 @@ import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFal
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
-import { loadProfile } from "@/lib/storage";
+import { useClientProfile } from "@/hooks/useClientProfile";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export function ScanPlaceholderScreen() {
-  const router = useRouter();
   const { t } = useTranslation();
-  const profile = loadProfile();
+  const profile = useClientProfile();
 
-  useEffect(() => {
-    if (!profile) router.replace("/start");
-  }, [profile, router]);
+  if (profile === undefined) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-[15px] text-muted-2">
+        {t("common.loading")}
+      </div>
+    );
+  }
 
   if (!profile) {
     return <CoachProfileMissingFallback />;

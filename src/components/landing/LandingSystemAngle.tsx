@@ -3,7 +3,7 @@
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 
-/** Sama järjestelmä + arki — ei hajoa kun elämä sotkee */
+/** Sama linja + arki — ei hajoa kun elämä sotkee */
 export function LandingSystemAngle() {
   const { t } = useTranslation();
 

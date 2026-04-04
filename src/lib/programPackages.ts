@@ -73,7 +73,7 @@ export const PROGRAM_PACKAGES: ProgramPackage[] = [
     shortFi: "Lihaskasvuun ja säännölliseen nostoon",
     shortEn: "For muscle gain and consistent lifting",
     summaryFi:
-      "Rakennettu lihaskasvun rytmiin — kokonaisuus pysyy kasassa.",
+      "Rakennettu lihaskasvun rytmiin — viikko pysyy kasassa.",
     summaryEn: "Built for muscle rhythm — the whole week stays together.",
     trainingDays: 4,
     mealCount: 4,

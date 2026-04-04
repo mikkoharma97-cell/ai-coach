@@ -31,7 +31,6 @@ import { useClientProfile } from "@/hooks/useClientProfile";
 import { getCoachFeatureToggles } from "@/lib/coachFeatureToggles";
 import type { WeeklyReviewDataStrip } from "@/types/coach";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 function ReviewDataStrip({
@@ -126,19 +125,10 @@ function ReviewDataStrip({
 }
 
 export function WeeklyReviewScreen() {
-  const router = useRouter();
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
   const [exTick, setExTick] = useState(0);
-
-  useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) {
-      console.debug("[coach] WeeklyReviewScreen: no profile → /start");
-      router.replace("/start");
-    }
-  }, [profile, router]);
 
   useEffect(() => {
     const b = () => setExTick((x) => x + 1);

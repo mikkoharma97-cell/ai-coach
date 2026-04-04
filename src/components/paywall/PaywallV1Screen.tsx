@@ -1,7 +1,7 @@
 "use client";
 
 import { PaywallV1Panel } from "@/components/paywall/PaywallV1Panel";
-import { canAccessPremium } from "@/lib/paywallPolicy";
+import { getPaywallTruth } from "@/lib/paywallPolicy";
 import { ensureTrialStarted, setSubscribed } from "@/lib/subscription";
 import { loadProfile, setPaywallV1Ack } from "@/lib/storage";
 import { trackEvent } from "@/lib/analytics";
@@ -14,13 +14,14 @@ export function PaywallV1Screen() {
 
   useEffect(() => {
     if (loadProfile()) ensureTrialStarted();
-    if (canAccessPremium()) {
+    const { hasAccess, paywallReason } = getPaywallTruth();
+    if (hasAccess) {
       router.replace("/app");
       return;
     }
     if (!paywallOpenTracked.current) {
       paywallOpenTracked.current = true;
-      trackEvent("paywall_open", { reason: "trial_expired" });
+      trackEvent("paywall_open", { reason: paywallReason });
     }
   }, [router]);
 
@@ -32,7 +33,8 @@ export function PaywallV1Screen() {
   };
 
   const onBack = () => {
-    router.push("/app");
+    /** Ei `/app` — gate vie trial-lopun jälkeen takaisin paywalliin. Asetukset sallittu. */
+    router.push("/settings");
   };
 
   return (

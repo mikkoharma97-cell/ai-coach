@@ -1,12 +1,14 @@
 /**
- * Capacitor — iOS TestFlight -polku.
+ * Capacitor — iOS wrapper (TestFlight / dev).
  *
- * - appId / appName: App Store Connect + Xcode Bundle ID -synkassa.
- * - webDir: `out/` (scripts/prepare-cap-web.mjs ennen cap sync).
- * - CAPACITOR_SERVER_URL: tuotannon base-URL (Vercel) → WebView lataa täyden Next-appin (API-reitit mukana).
- *   Ilman URL:ia näkyy vain minimaalinen fallback out/index.html.
+ * Totuus:
+ * - `server.url` (env `CAPACITOR_SERVER_URL`) **kun asetettu synkissä** → WebView lataa Nextin tuosta
+ *   (tuotanto: https Vercel; dev-LAN: http://<LAN-IP>:<PORT>, vaatii iOS ATS: NSAllowsLocalNetworking).
+ * - Ilman URL:ia → vain `out/index.html` (prepare-cap-web.mjs), ei täyttä appia.
  *
- * Taulukko: docs/mobile-build.md, docs/mobile-release-checklist.md
+ * webDir: `out/` kirjoitetaan `npm run cap:prepare` ennen `cap sync`.
+ *
+ * docs/mobile-build.md
  */
 const serverUrl = process.env.CAPACITOR_SERVER_URL?.trim();
 

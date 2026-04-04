@@ -1,14 +1,9 @@
 "use client";
 
-import { BUILD_DISPLAY_LINE, BUILD_V_DISPLAY } from "@/config/version";
-import {
-  formatBuildDateTimeForMarker,
-  getPublicBuildInfo,
-} from "@/lib/buildInfo";
-import { isAppShellRoute } from "@/lib/appShellRoutes";
-import { useTranslation } from "@/hooks/useTranslation";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { BUILD_DISPLAY_LINE, BUILD_V_DISPLAY } from "@/config/version";
+import { useClientMounted } from "@/hooks/useClientMounted";
+import { isAppShellRoute } from "@/lib/appShellRoutes";
 
 type Props = {
   className?: string;
@@ -16,67 +11,58 @@ type Props = {
   compact?: boolean;
 };
 
-function BuildMarkerLines({
-  locale,
-  className = "",
-}: {
-  locale: "fi" | "en";
-  className?: string;
-}) {
-  const { buildTimestamp } = useMemo(() => getPublicBuildInfo(), []);
-  /** ISO generoitu jokaisessa buildissa — sama hetki kuin BUILD_DISPLAY_LINE, locale-aware. */
-  const dateTimeLine =
-    buildTimestamp && buildTimestamp !== "dev" && buildTimestamp.length > 0
-      ? formatBuildDateTimeForMarker(buildTimestamp, locale)
-      : BUILD_DISPLAY_LINE.trim().length > 0
-        ? BUILD_DISPLAY_LINE
-        : "—";
+/** Vain `BUILD_V_DISPLAY` + `BUILD_DISPLAY_LINE` (`version.ts` → `buildInfo.generated.ts`) — ei render-ajan aikaa. */
+function BuildMarkerLines({ className = "" }: { className?: string }) {
+  const firstLine = BUILD_V_DISPLAY;
+  const secondLine = BUILD_DISPLAY_LINE;
 
   return (
     <span className={className}>
       <span className="block font-semibold tracking-tight text-foreground/95">
-        {BUILD_V_DISPLAY}
+        {firstLine}
       </span>
       <span className="mt-0.5 block text-[10px] tabular-nums leading-tight text-muted-2/95 sm:text-[11px]">
-        {dateTimeLine}
+        {secondLine}
       </span>
     </span>
   );
 }
 
+/** Piilota `NEXT_PUBLIC_SHOW_BUILD_MARKER=0` (esim. Vercel / native-julkaisu). */
+export function buildMarkerVisible(): boolean {
+  const flag = process.env.NEXT_PUBLIC_SHOW_BUILD_MARKER;
+  if (process.env.NODE_ENV === "production") return flag === "1";
+  return flag !== "0";
+}
+
+function showFloatingBuildMarker(): boolean {
+  return buildMarkerVisible();
+}
+
 /**
- * Kiinteä build-merkki — kaikilla sivuilla (root layout).
- * Ei käytä LocaleProvideria: locale selaimesta (SSR: fi).
+ * Kiinteä build-merkki — coach-shell -reitit (root layout).
+ * Marketing-sivuilla (esim. `/home`) oma footer-merkki — ei duplikaattia.
+ * Ei käytä LocaleProvideria.
+ * Offset: bottom nav + safe area (`appShellRoutes`).
  */
 export function GlobalBuildMarker() {
+  const mounted = useClientMounted();
   const pathname = usePathname() ?? "";
-  const shellRoute = isAppShellRoute(pathname);
-  const [locale, setLocale] = useState<"fi" | "en">("fi");
+  const shell = isAppShellRoute(pathname);
+  if (!mounted || !shell || !showFloatingBuildMarker()) return null;
 
-  useEffect(() => {
-    try {
-      const l = navigator.language.toLowerCase();
-      setLocale(l.startsWith("fi") ? "fi" : "en");
-    } catch {
-      setLocale("fi");
-    }
-  }, []);
-
-  /** Bottom-right: ei peitä headeria / tabeja; coach: navin yläpuolella (kuten PWA-banneri). */
-  const bottomClass = shellRoute
-    ? "bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))]"
-    : "bottom-[max(0.5rem,env(safe-area-inset-bottom,0px))]";
+  const bottomClass = "bottom-[calc(var(--bottom-stack)+4px)]";
 
   return (
     <div
-      className={`pointer-events-none fixed right-2 z-[90] max-w-[min(100vw-1rem,18rem)] select-none text-right ${bottomClass}`}
+      className={`pointer-events-none fixed left-4 z-[90] max-w-[min(100vw-1rem,18rem)] select-none text-left ${bottomClass}`}
     >
       <div
         className="inline-block rounded-md border border-white/[0.1] bg-[rgba(5,7,12,0.94)] px-2.5 py-1.5 font-mono shadow-[0_0_28px_rgba(41,92,255,0.14),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-md"
         style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
         role="status"
       >
-        <BuildMarkerLines locale={locale} />
+        <BuildMarkerLines />
       </div>
     </div>
   );
@@ -86,8 +72,8 @@ export function GlobalBuildMarker() {
  * Inline build / versio — asetukset, footer, marketing.
  */
 export function BuildMarkerLine({ className = "", compact = false }: Props) {
-  const { locale } = useTranslation();
-  const loc = locale === "en" ? "en" : "fi";
+  const mounted = useClientMounted();
+  if (!mounted || !buildMarkerVisible()) return null;
 
   return (
     <p
@@ -95,7 +81,7 @@ export function BuildMarkerLine({ className = "", compact = false }: Props) {
       role="status"
       style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
     >
-      <BuildMarkerLines locale={loc} />
+      <BuildMarkerLines />
     </p>
   );
 }

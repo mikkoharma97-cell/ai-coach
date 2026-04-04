@@ -31,7 +31,6 @@ import { hasEverMarkedDayDone } from "@/lib/storage";
 import { WORK_SHIFTS_CHANGED } from "@/lib/workShiftStorage";
 import type { PlannedEvent } from "@/types/coach";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useReducer, useState } from "react";
 
@@ -73,7 +72,6 @@ function horizonLine(
 }
 
 export function AdjustmentsScreen() {
-  const router = useRouter();
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
@@ -85,14 +83,6 @@ export function AdjustmentsScreen() {
   const addEventAction = useAsyncButtonState({
     name: "AdjustmentsScreen.addEvent",
   });
-
-  useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) {
-      console.debug("[coach] AdjustmentsScreen: no profile → /start");
-      router.replace("/start");
-    }
-  }, [profile, router]);
 
   useEffect(() => {
     const b = () => setShiftTick((x) => x + 1);

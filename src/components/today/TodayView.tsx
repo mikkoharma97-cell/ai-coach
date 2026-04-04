@@ -21,14 +21,34 @@ import { TodayFoodHub } from "@/components/today/TodayFoodHub";
 import { TodayStatusHub } from "@/components/today/TodayStatusHub";
 import { TodayWorkoutHub } from "@/components/today/TodayWorkoutHub";
 import { trackEvent } from "@/lib/analytics";
-import { shareCoachPayload } from "@/lib/shareCoach";
-import { loadActiveExceptionForDay } from "@/lib/exceptionStorage";
-import { loadMinimumDayForDay } from "@/lib/minimumDayStorage";
+import {
+  EXCEPTION_STATE_CHANGED,
+  loadActiveExceptionForDay,
+  saveActiveException,
+} from "@/lib/exceptionStorage";
+import { loadMinimumDayForDay, saveMinimumDayForDay } from "@/lib/minimumDayStorage";
+import { MINIMUM_DAY_CHANGED } from "@/lib/minimumDayStorage";
 import { loadWorkoutSessions, WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
+import {
+  clearFeedbackForDay,
+  loadTodayFlowRecord,
+  markTodaySkipped,
+  readActiveFeedback,
+  setPrimaryCtaTapped,
+  TODAY_FLOW_CHANGED,
+} from "@/lib/todayFlowStorage";
 import type { CoachDailyPlan, OnboardingAnswers } from "@/types/coach";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import type { TodayFlowUiState } from "@/lib/todayFlowStorage";
 
 function trainingSessionIndexThisWeek(
   plan: CoachDailyPlan,
@@ -51,6 +71,43 @@ function mealCountFromProfile(p: OnboardingAnswers): number {
   return p.mealStructure === "snack_forward" ? 4 : 3;
 }
 
+function resolveTodayFlowUi(args: {
+  isDayDone: boolean;
+  hasWorkoutLog: boolean;
+  isRest: boolean;
+  foodOnly: boolean;
+  dayKey: string;
+}): TodayFlowUiState {
+  const { isDayDone, hasWorkoutLog, isRest, foodOnly, dayKey } = args;
+  if (isDayDone) return "completed";
+  const rec = loadTodayFlowRecord(dayKey);
+  if (rec?.flowState === "skipped") return "skipped";
+  if (foodOnly || isRest) {
+    if (rec?.primaryTapped) return "in_progress";
+    return "not_started";
+  }
+  if (hasWorkoutLog) return "in_progress";
+  if (rec?.flowState === "in_progress" || rec?.primaryTapped) {
+    return "in_progress";
+  }
+  return "not_started";
+}
+
+function progressPercentFor(flow: TodayFlowUiState): number {
+  switch (flow) {
+    case "not_started":
+      return 14;
+    case "in_progress":
+      return 58;
+    case "skipped":
+      return 36;
+    case "completed":
+      return 100;
+    default:
+      return 12;
+  }
+}
+
 export function TodayView() {
   const router = useRouter();
   const pathname = usePathname();
@@ -63,6 +120,10 @@ export function TodayView() {
   const [paywallOverlayDismissed, setPaywallOverlayDismissed] =
     useState(false);
   const [workoutLogTick, setWorkoutLogTick] = useState(0);
+  const [flowTick, setFlowTick] = useState(0);
+  const [notTodayOpen, setNotTodayOpen] = useState(false);
+  const [workoutFeedbackOn, setWorkoutFeedbackOn] = useState(false);
+  const lastWorkoutFbDay = useRef<string | null>(null);
 
   const dayKeyToday = useMemo(() => dayKeyFromDate(now), [now]);
 
@@ -76,6 +137,26 @@ export function TodayView() {
     return () => window.removeEventListener(WORKOUT_LOG_CHANGED, up);
   }, []);
 
+  useEffect(() => {
+    const bump = () => setFlowTick((x) => x + 1);
+    window.addEventListener(TODAY_FLOW_CHANGED, bump);
+    window.addEventListener(MINIMUM_DAY_CHANGED, bump);
+    window.addEventListener(EXCEPTION_STATE_CHANGED, bump);
+    return () => {
+      window.removeEventListener(TODAY_FLOW_CHANGED, bump);
+      window.removeEventListener(MINIMUM_DAY_CHANGED, bump);
+      window.removeEventListener(EXCEPTION_STATE_CHANGED, bump);
+    };
+  }, []);
+
+  useEffect(() => {
+    const r = loadTodayFlowRecord(dayKeyToday);
+    if (r?.feedbackUntil && Date.now() > r.feedbackUntil) {
+      clearFeedbackForDay(dayKeyToday);
+      setFlowTick((x) => x + 1);
+    }
+  }, [dayKeyToday, flowTick]);
+
   const normalizedProfile = useMemo(
     () => (profile ? normalizeProfileForEngine(profile) : null),
     [profile],
@@ -83,12 +164,12 @@ export function TodayView() {
 
   const activeException = useMemo(
     () => loadActiveExceptionForDay(dayKeyToday),
-    [dayKeyToday],
+    [dayKeyToday, flowTick],
   );
 
   const minimumDayActive = useMemo(
     () => loadMinimumDayForDay(dayKeyToday),
-    [dayKeyToday],
+    [dayKeyToday, flowTick],
   );
 
   const plan = useMemo(() => {
@@ -154,16 +235,6 @@ export function TodayView() {
     router.push("/settings");
   }, [router]);
 
-  const onShareDay = useCallback(() => {
-    const origin =
-      typeof window !== "undefined" ? window.location.origin : "";
-    void shareCoachPayload({
-      title: t("growth.shareDayTitle"),
-      text: t("growth.shareDayPrompt"),
-      url: origin ? `${origin}/start` : undefined,
-    });
-  }, [t]);
-
   const statusLines = useMemo(() => {
     if (!plan) return [];
     const out: string[] = [];
@@ -176,8 +247,99 @@ export function TodayView() {
     if (minimumDayActive) {
       out.push(t("todayView.minimumDayHint"));
     }
-    return out.slice(0, 2);
+    return out.slice(0, 1);
   }, [plan, minimumDayActive, t]);
+
+  const flowRecord = useMemo(
+    () => loadTodayFlowRecord(dayKeyToday),
+    [dayKeyToday, flowTick],
+  );
+
+  const resolvedFlow = useMemo(
+    () =>
+      resolveTodayFlowUi({
+        isDayDone: isCompleted,
+        hasWorkoutLog: hasWorkoutLoggedToday,
+        isRest: isRestDay,
+        foodOnly,
+        dayKey: dayKeyToday,
+      }),
+    [
+      isCompleted,
+      hasWorkoutLoggedToday,
+      isRestDay,
+      foodOnly,
+      dayKeyToday,
+      flowTick,
+    ],
+  );
+
+  useEffect(() => {
+    if (!hasWorkoutLoggedToday || isRestDay || foodOnly) return;
+    if (lastWorkoutFbDay.current === dayKeyToday) return;
+    lastWorkoutFbDay.current = dayKeyToday;
+    setWorkoutFeedbackOn(true);
+    const id = window.setTimeout(() => setWorkoutFeedbackOn(false), 8000);
+    return () => window.clearTimeout(id);
+  }, [hasWorkoutLoggedToday, dayKeyToday, isRestDay, foodOnly]);
+
+  const activeStorageFeedback = useMemo(
+    () => readActiveFeedback(dayKeyToday),
+    [dayKeyToday, flowTick],
+  );
+
+  const feedbackLine = useMemo(() => {
+    if (activeStorageFeedback) {
+      return activeStorageFeedback.kind === "good_continue"
+        ? t("todayView.feedbackGoodContinue")
+        : t("todayView.feedbackDoneDay");
+    }
+    if (workoutFeedbackOn) return t("todayView.feedbackGoodContinue");
+    return null;
+  }, [activeStorageFeedback, workoutFeedbackOn, t]);
+
+  const progressAriaLabel = useMemo(() => {
+    switch (resolvedFlow) {
+      case "not_started":
+        return t("todayView.progressAriaNotStarted");
+      case "in_progress":
+        return t("todayView.progressAriaInProgress");
+      case "completed":
+        return t("todayView.progressAriaCompleted");
+      case "skipped":
+        return t("todayView.progressAriaSkipped");
+      default:
+        return t("todayView.progressAriaNotStarted");
+    }
+  }, [resolvedFlow, t]);
+
+  const onPrimaryNavigate = useCallback(() => {
+    setPrimaryCtaTapped(dayKeyToday);
+  }, [dayKeyToday]);
+
+  const onPickLightDay = useCallback(() => {
+    saveMinimumDayForDay(dayKeyToday);
+    markTodaySkipped({
+      dayKey: dayKeyToday,
+      kind: "light",
+      feedback: "good_continue",
+    });
+    setNotTodayOpen(false);
+  }, [dayKeyToday]);
+
+  const onPickTomorrow = useCallback(() => {
+    saveActiveException({
+      id: "skipped_session",
+      severity: "light",
+      dayKey: dayKeyToday,
+    });
+    markTodaySkipped({
+      dayKey: dayKeyToday,
+      kind: "tomorrow",
+      feedback: "good_continue",
+    });
+    setNotTodayOpen(false);
+  }, [dayKeyToday]);
 
   if (profile === undefined) {
     return (
@@ -212,7 +374,6 @@ export function TodayView() {
     ? (dayEntry?.workoutLine || plan.todayWorkout).trim() || plan.todayWorkout
     : "";
 
-  /** Lepopäivällä yksi pääviesti hero-kortissa; treeniosio ei toista samaa tekstiä. */
   const showWorkoutSummaryParagraph = !isRestDay;
 
   const workoutStatusLabel = isRestDay
@@ -221,15 +382,34 @@ export function TodayView() {
       ? t("todayView.workoutStatusDone")
       : t("todayView.workoutStatusPending");
 
-  const hubHeroBody = foodOnly
+  let hubHeroBody = foodOnly
     ? foodMainLineForToday(plan.todayFoodTask)
     : isRestDay
       ? restHeroLine
       : t("todayView.heroWorkout", { day: dayNum });
 
+  let focusTitle = t("todayView.focusTitle");
+
+  if (resolvedFlow === "skipped" && flowRecord?.skipKind === "light") {
+    hubHeroBody = t("todayView.heroSkippedLight");
+    focusTitle = t("todayView.focusTitleLightDay");
+  } else if (resolvedFlow === "skipped" && flowRecord?.skipKind === "tomorrow") {
+    hubHeroBody = t("todayView.heroSkippedTomorrow");
+    focusTitle = t("todayView.focusTitleDefer");
+  }
+
   const primaryCta = (() => {
     if (isCompleted) {
       return { href: "/plan" as const, label: t("todayView.ctaTomorrow") };
+    }
+    if (resolvedFlow === "skipped") {
+      return { href: "/food/day" as const, label: t("todayView.focusCtaFood") };
+    }
+    const cont = t("todayView.ctaContinue");
+    if (resolvedFlow === "in_progress") {
+      if (foodOnly) return { href: "/food" as const, label: cont };
+      if (isRestDay) return { href: "/food/day" as const, label: cont };
+      return { href: "/workout" as const, label: cont };
     }
     if (foodOnly) {
       return { href: "/food" as const, label: t("todayView.focusCtaFood") };
@@ -241,86 +421,106 @@ export function TodayView() {
   })();
 
   const hubBlockClass =
-    "mt-3 rounded-[var(--radius-md)] border border-white/[0.08] bg-white/[0.03] px-3 py-3";
+    "mt-2.5 rounded-[var(--radius-md)] border border-white/[0.05] bg-white/[0.015] px-3 py-2.5 text-[13px] text-muted/90";
+
+  const showWorkoutSecondary =
+    !foodOnly && resolvedFlow !== "skipped";
+
+  const secondaryBlocks: ReactNode[] = [];
+  if (showWorkoutSecondary) {
+    secondaryBlocks.push(
+      <TodayWorkoutHub
+        key="w"
+        hubBlockClass={hubBlockClass}
+        sectionTitle={t("todayView.hubSectionWorkout")}
+        workoutStatusLabel={workoutStatusLabel}
+        showSummaryLine={showWorkoutSummaryParagraph}
+        summaryLine={workoutSummaryLine}
+      />,
+    );
+  }
+  secondaryBlocks.push(
+    <TodayFoodHub
+      key="f"
+      hubBlockClass={hubBlockClass}
+      sectionTitle={t("todayView.hubSectionFood")}
+      mealsLine={t("todayView.mealsLine", { n: mealN })}
+      previewLines={foodPreviewLines}
+    />,
+  );
+  if (statusLines.length > 0) {
+    secondaryBlocks.push(
+      <TodayStatusHub
+        key="s"
+        hubBlockClass={hubBlockClass}
+        sectionTitle={t("todayView.hubSectionStatus")}
+        lines={statusLines}
+      />,
+    );
+  }
+  const visibleSecondary = secondaryBlocks.slice(0, 3);
+
+  const showNotToday =
+    !isCompleted && resolvedFlow !== "skipped";
 
   return (
     <>
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden bg-[var(--background)] pt-3">
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden bg-[var(--background)] pt-2 sm:pt-3">
         <Container
           size="phone"
-          className="flex min-h-0 min-w-0 flex-1 flex-col px-4 pb-2 pt-1 sm:px-5"
+          className="flex min-h-0 min-w-0 flex-1 flex-col px-4 pb-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+5.5rem))] pt-1 sm:px-5"
         >
           {!isCompleted ? (
             <div className="flex min-h-0 min-w-0 flex-1 flex-col">
               <TodayFocusCard
                 focusEyebrow={t("todayView.focusEyebrow")}
-                focusTitle={t("todayView.focusTitle")}
+                focusTitle={focusTitle}
                 heroBody={hubHeroBody}
+                progressPercent={progressPercentFor(resolvedFlow)}
                 primaryCta={primaryCta}
+                onPrimaryNavigate={onPrimaryNavigate}
+                showNotToday={showNotToday}
+                notTodayOpen={notTodayOpen}
+                onToggleNotToday={() => setNotTodayOpen((o) => !o)}
+                onPickLightDay={onPickLightDay}
+                onPickTomorrow={onPickTomorrow}
+                feedbackLine={feedbackLine}
+                notTodayLabel={t("todayView.notToday")}
+                optionLightLabel={t("todayView.optionLightDay")}
+                optionTomorrowLabel={t("todayView.optionTomorrow")}
+                progressAriaLabel={progressAriaLabel}
               />
 
               <section
-                className="mt-4 border-t border-white/[0.06] pt-4"
+                className="mt-6 border-t border-white/[0.04] pt-5 opacity-[0.82]"
                 aria-labelledby="today-secondary-heading"
               >
                 <h2
                   id="today-secondary-heading"
-                  className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2"
+                  className="mb-2.5 text-center text-[10px] font-medium uppercase tracking-[0.16em] text-muted-2/75"
                 >
                   {t("todayView.secondarySectionHeading")}
                 </h2>
-                <div className="flex min-h-0 min-w-0 flex-col gap-3">
-                  {!foodOnly ? (
-                    <TodayWorkoutHub
-                      hubBlockClass={hubBlockClass}
-                      sectionTitle={t("todayView.hubSectionWorkout")}
-                      workoutStatusLabel={workoutStatusLabel}
-                      showSummaryLine={showWorkoutSummaryParagraph}
-                      summaryLine={workoutSummaryLine}
-                      linkWorkoutLabel={t("todayView.linkWorkout")}
-                    />
-                  ) : null}
-
-                  <TodayFoodHub
-                    hubBlockClass={hubBlockClass}
-                    sectionTitle={t("todayView.hubSectionFood")}
-                    mealsLine={t("todayView.mealsLine", { n: mealN })}
-                    previewLines={foodPreviewLines}
-                    linkFoodLabel={t("todayView.linkFood")}
-                  />
-
-                  {statusLines.length > 0 ? (
-                    <TodayStatusHub
-                      hubBlockClass={hubBlockClass}
-                      sectionTitle={t("todayView.hubSectionStatus")}
-                      lines={statusLines}
-                    />
-                  ) : null}
+                <div className="flex min-h-0 min-w-0 flex-col gap-2.5">
+                  {visibleSecondary}
                 </div>
               </section>
             </div>
           ) : (
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 pt-6 text-center">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-8 pb-2 pt-8 text-center">
               <p
-                className="line-clamp-3 shrink-0 text-balance text-[clamp(1.2rem,4.5vw,1.45rem)] font-semibold leading-snug tracking-[-0.03em] text-foreground"
+                className="line-clamp-3 shrink-0 text-balance text-[clamp(1.05rem,4vw,1.35rem)] font-medium leading-snug tracking-[-0.02em] text-muted"
                 role="status"
               >
                 {t("todayView.dayDoneSimple")}
               </p>
-              <div className="mt-auto flex w-full min-w-0 flex-col gap-4">
+              <div className="flex w-full min-w-0 flex-col">
                 <Link
                   href="/plan"
-                  className="flex min-h-[56px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent px-4 text-[17px] font-semibold text-white shadow-[var(--shadow-primary-cta)] transition hover:bg-[var(--accent-hover)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="flex min-h-[58px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent px-5 text-[18px] font-semibold tracking-[-0.02em] text-white shadow-[var(--shadow-primary-cta)] ring-1 ring-white/10 transition hover:bg-[var(--accent-hover)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   {t("todayView.ctaTomorrow")}
                 </Link>
-                <button
-                  type="button"
-                  onClick={onShareDay}
-                  className="flex min-h-[52px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] border border-white/[0.14] bg-white/[0.04] px-4 text-[16px] font-semibold tracking-[-0.02em] text-foreground transition hover:border-accent/35 hover:bg-white/[0.07] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  {t("todayView.shareThis")}
-                </button>
               </div>
             </div>
           )}

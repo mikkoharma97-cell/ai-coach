@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:lan": "next dev -H 0.0.0.0 -p 3000",
+    "dev:mobile": "node scripts/dev-mobile.mjs",
+    "tunnel:ngrok": "ngrok http 3000",
+    "tunnel:cloudflare": "cloudflared tunnel --url http://localhost:3000",
     "dev:webpack": "next dev --webpack",
     "build": "node scripts/write-build-info.mjs && next build",
     "start": "next start",
@@ -17,7 +21,12 @@
     "qa:routes": "node scripts/qa-final-routes.mjs",
     "cap:prepare": "node scripts/prepare-cap-web.mjs",
     "cap:sync": "npm run build && npm run cap:prepare && npx cap sync ios",
-    "cap:open": "npx cap open ios"
+    "cap:sync:prod": "node scripts/cap-sync-prod.mjs",
+    "cap:sync:dev": "node scripts/cap-sync-dev.mjs",
+    "cap:open": "npx cap open ios",
+    "cap:open:ios": "npx cap open ios",
+    "native:ios": "npm run cap:sync && npm run cap:open:ios",
+    "testflight:prep": "npm run cap:sync:prod && npm run cap:open:ios"
   },
   "dependencies": {
     "next": "16.2.1",

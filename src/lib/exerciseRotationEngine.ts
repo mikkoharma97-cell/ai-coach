@@ -37,13 +37,13 @@ export function rotationAdviceForExercise(
     keepOrRotate === "rotate_now"
       ? isMain
         ? "Pääliike: vaihtoehto kun tekniikka on kunnossa (noin 6 vk välein)."
-        : "Sivuliike: voit vaihdella useammin."
+        : "Sivuliike: vaihda useammin tarvittaessa."
       : "Pidä liike toistaiseksi — vaihto blokin vaihtuessa.";
   const reasonEn =
     keepOrRotate === "rotate_now"
       ? isMain
         ? "Main lift: rotate when technique is solid (~every 6 weeks)."
-        : "Accessory: you can rotate more often."
+        : "Accessory: rotate more often if needed."
       : "Keep for now — rotate when the block changes.";
 
   return {

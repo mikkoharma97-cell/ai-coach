@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { coachRouteAllowsNoProfile } from "@/lib/coachNoProfileRoutePolicy";
 import { shouldRedirectToPaywall } from "@/lib/paywallPolicy";
 import { ensureTrialStarted } from "@/lib/subscription";
 import { loadProfile } from "@/lib/storage";
@@ -8,14 +9,6 @@ import { flowLog } from "@/lib/flowLog";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-
-/** Sallittu ilman tallennettua profiilia (asetukset / tyhjä profiilisivu). */
-const EXEMPT_NO_PROFILE = new Set([
-  "/settings",
-  "/preferences",
-  "/profile",
-  "/scan",
-]);
 
 /**
  * After trial, coach routes require subscription (unlock on paywall).
@@ -35,18 +28,16 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
     try {
       const profile = loadProfile();
       if (!profile) {
-        if (!EXEMPT_NO_PROFILE.has(path)) {
+        if (!coachRouteAllowsNoProfile(path)) {
           router.replace("/start");
+          flowLog("gate.redirectNoProfile", path);
+          clearTimeout(failsafe);
+          setReady(true);
+          return () => {};
         }
       } else {
         ensureTrialStarted();
-        if (
-          path !== "/settings" &&
-          path !== "/preferences" &&
-          path !== "/profile" &&
-          path !== "/scan" &&
-          shouldRedirectToPaywall()
-        ) {
+        if (!coachRouteAllowsNoProfile(path) && shouldRedirectToPaywall()) {
           router.replace("/paywall");
         }
       }

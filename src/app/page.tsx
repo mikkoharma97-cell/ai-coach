@@ -1,5 +1,6 @@
 import { EntryGate } from "@/components/EntryGate";
 import { APP_DESCRIPTION, APP_DISPLAY_NAME } from "@/config/appInfo";
+import { LocaleProvider } from "@/hooks/useTranslation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootPage() {
-  return <EntryGate />;
+  return (
+    <LocaleProvider>
+      <EntryGate />
+    </LocaleProvider>
+  );
 }

@@ -24,7 +24,7 @@ export type CoachAiInputsEcho = {
   progressSignals: CoachDecisionV2["signals"];
 };
 
-/** Seuraava järjestelmän liike — näkyy hero + viikkorivi + ruoka-säätö */
+/** Seuraava moottorin liike — näkyy hero + viikkorivi + ruoka-säätö */
 export type CoachNextAdjustment = {
   priority: CoachDecisionV2["priority"];
   weeklyHeadlineKey: MessageKey;

@@ -61,10 +61,6 @@ export function SettingsScreen() {
   }, [pathname]);
 
   useEffect(() => {
-    if (!profile) router.replace("/start");
-  }, [profile, router]);
-
-  useEffect(() => {
     setReminderPrefs(loadReminderPrefs());
   }, [pathname]);
 
@@ -94,7 +90,6 @@ export function SettingsScreen() {
         <CoachScreenHeader
           eyebrow={t("settings.eyebrow")}
           title={t("settings.title")}
-          description={t("settings.subtitle")}
         />
 
         <p className="mt-4 text-center sm:text-left">
@@ -122,25 +117,25 @@ export function SettingsScreen() {
           <SettingsRow
             label={t("settings.rowName")}
             value={displayNameLine}
-            cta={t("settings.ctaUpdate")}
+            cta={t("settings.ctaRow")}
             href="/preferences#pref-profile"
           />
           <SettingsRow
             label={t("settings.rowGoal")}
             value={goalSummary(profile.goal, t)}
-            cta={t("settings.ctaChangeGoal")}
+            cta={t("settings.ctaRow")}
             href="/preferences#pref-goal"
           />
           <SettingsRow
             label={t("settings.rowTraining")}
             value={trainingLine}
-            cta={t("settings.ctaUpdate")}
+            cta={t("settings.ctaRow")}
             href="/preferences#pref-training"
           />
           <SettingsRow
             label={t("settings.rowFood")}
             value={mealStructureSummary(profile.mealStructure, t)}
-            cta={t("settings.ctaUpdate")}
+            cta={t("settings.ctaRow")}
             href="/preferences#pref-food"
           />
           <SettingsRow
@@ -150,7 +145,7 @@ export function SettingsScreen() {
                 ? t("settings.reminderOn")
                 : t("settings.reminderOff")
             }
-            cta={t("settings.ctaEditReminders")}
+            cta={t("settings.ctaRow")}
             href="/preferences#pref-reminders"
           />
         </nav>
@@ -159,7 +154,7 @@ export function SettingsScreen() {
           <h2 className="coach-section-label text-muted-2">
             {t("settings.resetTitle")}
           </h2>
-          <p className="mt-2 text-[13px] leading-relaxed text-muted-2">
+          <p className="mt-2 text-[12px] leading-snug text-muted-2">
             {t("settings.resetBody")}
           </p>
           <button

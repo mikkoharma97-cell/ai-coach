@@ -5,7 +5,11 @@ import { Suspense, useEffect } from "react";
 
 const CACHE_BYPASS_SESSION_KEY = "coach_ver_cache_bypass_applied";
 
-function VersionBadgeInner() {
+/**
+ * `?ver=` → tyhjennä service worker -cachet kerran per sessio.
+ * Ei UI:ta — refresh-nappi poistettiin tuotantopinnasta (duplikaatti HomeCheckButtonin kanssa).
+ */
+function CacheBypassInner() {
   const searchParams = useSearchParams();
   const verParam = searchParams.get("ver");
 
@@ -22,22 +26,13 @@ function VersionBadgeInner() {
     }
   }, [verParam]);
 
-  return (
-    <button
-      type="button"
-      aria-label="Refresh"
-      onClick={() => window.location.reload()}
-      className="fixed bottom-2 left-2 z-[100] text-[10px] opacity-50"
-    >
-      refresh
-    </button>
-  );
+  return null;
 }
 
-export function VersionBadge() {
+export function CacheBypassEffect() {
   return (
     <Suspense fallback={null}>
-      <VersionBadgeInner />
+      <CacheBypassInner />
     </Suspense>
   );
 }

@@ -17,9 +17,12 @@ export function PaywallV1Panel({
       size="phone"
       className="w-full max-w-[min(100%,24rem)] px-4 py-1 text-center"
     >
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-2">
+        {t("paywallV1.eyebrow")}
+      </p>
       <h2
         id="paywall-v1-title"
-        className="text-balance text-[1.375rem] font-semibold leading-tight tracking-[-0.03em] text-foreground"
+        className="mt-2 text-balance text-[1.375rem] font-semibold leading-tight tracking-[-0.03em] text-foreground"
       >
         {t("paywallV1.title")}
       </h2>

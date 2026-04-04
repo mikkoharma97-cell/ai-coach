@@ -4,6 +4,7 @@
 const APP_SHELL_PATHS = new Set([
   "/app",
   "/food",
+  "/food/day",
   "/workout",
   "/progress",
   "/more",

@@ -23,7 +23,6 @@ import type {
   ProWorkspace,
 } from "@/types/pro";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const PRESETS: { id: ProSplitPreset; labelKey: string }[] = [
@@ -44,7 +43,6 @@ function buildProgressMap(program: ReturnType<typeof seedTrainingProgram>) {
 }
 
 export function ProScreen() {
-  const router = useRouter();
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [workspace, setWorkspace] = useState<ProWorkspace>(() =>
@@ -59,11 +57,6 @@ export function ProScreen() {
   const refresh = useCallback(() => {
     setWorkspace(loadProWorkspace());
   }, []);
-
-  useEffect(() => {
-    if (profile === undefined) return;
-    if (!profile) router.replace("/start");
-  }, [profile, router]);
 
   const applyPreset = useCallback(
     (preset: ProSplitPreset) => {

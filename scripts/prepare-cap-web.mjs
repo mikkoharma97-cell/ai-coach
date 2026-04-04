@@ -28,7 +28,7 @@ const html = `<!DOCTYPE html>
 <body>
   <div>
     <p><strong>AI Coach</strong></p>
-    <p class="muted">Capacitor-kuori. Aseta CAPACITOR_SERVER_URL tuotannon osoitteeseen (Vercel), jotta WebView lataa täyden Next-sovelluksen — ks. docs/mobile-release-checklist.md</p>
+    <p class="muted">Capacitor-kuori. Aseta CAPACITOR_SERVER_URL tuotannon osoitteeseen (Vercel), jotta WebView lataa tayden Next-sovelluksen — ks. docs/mobile-build.md</p>
   </div>
 </body>
 </html>

@@ -27,6 +27,17 @@ export type MealStructurePreference =
   | "lighter_evening"
   | "snack_forward";
 
+/** Onboarding — aterioiden määrä (2–6) */
+export type MealsPerDayCount = 2 | 3 | 4 | 5 | 6;
+
+/** Ruokavalion linja — ohjaa ehdotuksia ja vältettäviä */
+export type DietType = "omnivore" | "vegetarian" | "vegan";
+
+export type DietaryRestriction =
+  | "lactose_free"
+  | "gluten_free"
+  | "dairy_free";
+
 /** How rigid vs flexible the system should be */
 export type FlexibilityPreference = "structured" | "balanced" | "flexible";
 
@@ -62,7 +73,7 @@ export type EventDisruptionStyle = "snap_back" | "reset" | "loose";
 /** Matches app UI locale — synced with `coach-locale` when saved from preferences */
 export type UiLocale = "fi" | "en";
 
-/** App layer: guided = valmis ohjaus, pro = oma runko + järjestelmän kehitys */
+/** App layer: guided = valmis ohjaus, pro = oma runko + moottorin kehitys */
 export type CoachMode = "guided" | "pro";
 
 export type ProgramPackageId =
@@ -197,6 +208,12 @@ export interface OnboardingAnswers {
    * Avain = moottorin antama liike-id ennen vaihtoa.
    */
   exerciseIdOverrides?: Record<string, string>;
+  /** Aterioiden määrä päivässä — onboarding */
+  mealsPerDay?: MealsPerDayCount;
+  /** Seka / kasvis / vegaaninen */
+  dietType?: DietType;
+  /** Laktoositon, gluteeniton, maidoton */
+  dietaryRestrictions?: DietaryRestriction[];
 }
 
 export interface WeekDayEntry {

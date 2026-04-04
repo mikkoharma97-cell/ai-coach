@@ -72,7 +72,7 @@ Tarkistus: missä data syntyy, miten se kulkee engine → UI:hin, ja missä näk
 
 ### B. Food Only
 
-- `isFoodOnlyMode` — Today: `FoodOnlyTodayPanel`; kcal/proteiini rivit käyttävät `plan.todayCalories` / `estimateConsumedFromKcalLog`.
+- `isFoodOnlyMode` — Today: `TodayView` (food-only -haarat); kcal/proteiini rivit käyttävät `plan.todayCalories` / `estimateConsumedFromKcalLog`.
 - **Tila:** linjassa päiväsuunnitelman kanssa; treeniä ei näytetä pääpolulla.
 
 ### C. Pro mode

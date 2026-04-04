@@ -23,6 +23,7 @@ Projekti käyttää `webDir: out`. Next ei tuota `out/` ilman erillistä staatti
 
 ```bash
 export CAPACITOR_SERVER_URL="https://sinun-domain.vercel.app"
+npm run cap:sync:prod
 ```
 
 Ilman tätä näkyy vain minimaalinen placeholder-sivu.
@@ -37,17 +38,13 @@ npm install
 # Jos ios/ puuttuu (kerran):
 npx cap add ios
 
-npm run build
-npm run cap:prepare
-npx cap sync ios
-npx cap open ios
+npm run testflight:prep
 ```
 
 Lyhyt polku:
 
 ```bash
-npm run cap:sync   # build + prepare + cap sync ios
-npx cap open ios
+npm run testflight:prep
 ```
 
 ## 4. Xcode

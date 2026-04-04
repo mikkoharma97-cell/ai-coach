@@ -9,16 +9,12 @@ import { applyPackageToAnswers } from "@/lib/programPackages";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function PackagesPage() {
   const router = useRouter();
   const { t } = useTranslation();
   const [profile] = useState(() => loadProfile());
-
-  useEffect(() => {
-    if (!profile) router.replace("/start");
-  }, [profile, router]);
 
   const onSelect = useCallback(
     (packageId: string) => {

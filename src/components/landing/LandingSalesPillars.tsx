@@ -12,7 +12,7 @@ const KEYS = [
   "landing.salesPillar6",
 ] as const;
 
-/** Myyntikärjet — sama järjestelmä, koko päivä, ei arvailua. */
+/** Myyntikärjet — sama rakenne, koko päivä, ei arvailua. */
 export function LandingSalesPillars() {
   const { t } = useTranslation();
 
