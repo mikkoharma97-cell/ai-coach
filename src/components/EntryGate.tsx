@@ -1,15 +1,16 @@
 "use client";
 
 import { loadProfile } from "@/lib/storage";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
- * Juuripolun reititys: profiili tallessa → /app, muuten /launch (HÄRMÄ14).
- * Pitkä markkinointi: /home.
+ * Juuripolku `/`: profiili tallessa → `/app`, muuten `/home`.
  */
 export function EntryGate() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [stuck, setStuck] = useState(false);
 
   useEffect(() => {
@@ -27,52 +28,57 @@ export function EntryGate() {
   }, [router]);
 
   useEffect(() => {
-    const t = window.setTimeout(() => setStuck(true), 4000);
-    return () => clearTimeout(t);
+    const timer = window.setTimeout(() => setStuck(true), 4000);
+    return () => window.clearTimeout(timer);
   }, []);
 
   if (stuck) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#06070b] px-6 text-center text-[14px] text-muted">
         <p className="text-[15px] font-semibold text-foreground">
-          Aloitetaan tästä.
+          {t("fallback.profileMissingTitle")}
         </p>
         <p className="max-w-sm text-muted">
-          Tietoja ei löytynyt tai lataus keskeytyi. Voit jatkaa etusivulta tai
-          aloituksesta.
+          {t("fallback.profileLoadFailed")}
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="/launch"
-            className="rounded-xl border border-white/15 bg-white/[0.06] px-5 py-3 text-[15px] font-semibold text-foreground"
-          >
-            Aloitus
-          </a>
-          <a
-            href="/home"
-            className="rounded-xl border border-white/10 px-5 py-3 text-[15px] font-medium text-muted"
-          >
-            Täysi esittely
-          </a>
+        <p className="max-w-sm text-muted">{t("fallback.entryStuckContinue")}</p>
+        <div className="flex w-full max-w-sm flex-col gap-3">
           <a
             href="/start"
-            className="rounded-xl bg-accent px-5 py-3 text-[15px] font-semibold text-white"
+            className="flex min-h-[52px] w-full items-center justify-center rounded-xl bg-accent px-5 py-3 text-[15px] font-semibold text-white"
           >
-            Avaa aloitus
+            {t("fallback.openStart")}
           </a>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <a
+              href="/launch"
+              className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-2.5 text-[14px] font-medium text-foreground"
+            >
+              {t("fallback.entryStuckLinkLaunch")}
+            </a>
+            <a
+              href="/home"
+              className="rounded-xl border border-white/10 px-4 py-2.5 text-[14px] font-medium text-muted"
+            >
+              {t("launch.linkFullMarketing")}
+            </a>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-[#06070b]">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-[#06070b] px-6">
       <div
         className="size-10 animate-pulse rounded-2xl bg-accent/30"
         aria-hidden
       />
       <p className="mt-6 text-[12px] font-medium uppercase tracking-[0.2em] text-muted-2">
-        Coach
+        {t("nav.brand")}
+      </p>
+      <p className="mt-3 max-w-xs text-center text-[14px] leading-snug text-muted">
+        {t("fallback.entryLoadingHint")}
       </p>
     </div>
   );

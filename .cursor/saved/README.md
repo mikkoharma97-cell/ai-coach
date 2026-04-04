@@ -12,4 +12,6 @@ Tämä kansio on **jaettu lähde** ohjeille, jotka muuten eläisivät vain chati
 
 **Asiakasnäkökulman ideat (koko appi):** [`../../docs/CUSTOMER_IMPROVEMENT_IDEAS.md`](../../docs/CUSTOMER_IMPROVEMENT_IDEAS.md)
 
+**UX — selkeys / yksinkertaisuus:** [`../../docs/UX_SIMPLICITY_PRINCIPLES.md`](../../docs/UX_SIMPLICITY_PRINCIPLES.md)
+
 **Juuren README:** [../../README.md](../../README.md) — linkki tähän kansioon myös siellä.

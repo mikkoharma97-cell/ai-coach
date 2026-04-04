@@ -151,3 +151,9 @@ docs/CUSTOMER_IMPROVEMENT_IDEAS.md §JATKO — Mahdolliset jatkot
 ---
 
 *Lähde: keskustelun kooste + repo-kartoitus. Päivitä kun prioriteetit muuttuvat.*
+
+---
+
+## Katso myös
+
+- [UX_SIMPLICITY_PRINCIPLES.md](./UX_SIMPLICITY_PRINCIPLES.md) — selkeys- ja yksinkertaisuusperiaatteet (yksi pääpolku, progressiivinen syvyys, mobiili ensin).

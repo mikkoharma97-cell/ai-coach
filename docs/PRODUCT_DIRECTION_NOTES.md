@@ -69,3 +69,5 @@ Kaikki yllä olevat kohdat ovat **suuntaa ja backlogia**, ei valmiita featureita
 ## Asiakasnäkökulman laajempi ideapankki
 
 Kooste käyttäjäkokemuksen parannuksista (koko sovellus, prioriteetit mukana): [CUSTOMER_IMPROVEMENT_IDEAS.md](./CUSTOMER_IMPROVEMENT_IDEAS.md).
+
+Selkeys- ja yksinkertaisuusperiaatteet (tuote + UX): [UX_SIMPLICITY_PRINCIPLES.md](./UX_SIMPLICITY_PRINCIPLES.md).
