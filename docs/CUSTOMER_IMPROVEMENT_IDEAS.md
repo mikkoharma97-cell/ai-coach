@@ -27,6 +27,25 @@ Merkitse korttiin kopioitavalla viitteellä, esim. **`docs/CUSTOMER_IMPROVEMENT_
 
 Pykälät vastaavat alla olevia lukunumeroituja osioita (1–12), §PRI ja §JATKO omat loppukohdat.
 
+**Copy-paste yksi rivi korttiin** (GitHub / Linear / Jira — kuvaus tai label):
+
+```
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §1 — Ensikosketus
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §2 — Onboarding
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §3 — Tänään
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §4 — Alapalkki ja Lisää
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §5 — Treeni
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §6 — Ruoka
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §7 — Kehitys, katsaus, säätö
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §8 — Paywall ja raha
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §9 — Skannaus
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §10 — Asetukset, kieli, data
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §11 — Palaute
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §12 — Poikkeustilanteet ja luottamus
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §PRI — Tiivis prioriteetti
+docs/CUSTOMER_IMPROVEMENT_IDEAS.md §JATKO — Mahdolliset jatkot
+```
+
 ---
 
 ## 1. Ensikosketus: `/` → `/home` / `/app`
