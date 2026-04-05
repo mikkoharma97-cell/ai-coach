@@ -4,15 +4,15 @@
  * App-kuori — bottom nav: Tänään · Treeni · Ruoka · Kehitys · Lisää (täysi valmennus).
  * Food Only -tilassa nelikko — treenivälilehti piilotettu.
  */
-import { PreviewBuildStrip } from "@/components/PreviewBuildStrip";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { useTranslation } from "@/hooks/useTranslation";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { loadProfile, saveProfile } from "@/lib/storage";
 import { trackEvent } from "@/lib/analytics";
 import type { Locale } from "@/lib/i18n";
+import { pushCoachBack, shouldShowCoachBack } from "@/lib/coachNavBack";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo } from "react";
 import type { MessageKey } from "@/lib/i18n";
@@ -80,8 +80,10 @@ function isNavActive(path: string, href: string): boolean {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const path = usePathname();
   const { t, locale, setLocale } = useTranslation();
+  const showBack = shouldShowCoachBack(path);
   const profile = useClientProfile();
   const isNativeApp =
     typeof navigator !== "undefined" &&
@@ -119,12 +121,39 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex h-full min-h-0 w-full min-w-0 max-w-full flex-1 flex-col">
       <header className="sticky top-0 z-[var(--z-nav)] w-full shrink-0 border-b border-white/[0.06] bg-[rgba(5,6,10,0.82)] pt-[env(safe-area-inset-top,0px)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.78)]">
         <div className="mx-auto grid h-11 w-full max-w-[100vw] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4">
-          <Link
-            href="/app"
-            className="justify-self-start min-h-[44px] min-w-[44px] py-2 text-[13px] font-semibold leading-none tracking-[-0.02em] text-[color:var(--foreground)]"
-          >
-            {t("nav.brand")}
-          </Link>
+          <div className="justify-self-start flex min-w-0 max-w-[min(100%,11rem)] items-center gap-0.5 sm:max-w-none">
+            {showBack ? (
+              <button
+                type="button"
+                onClick={() => pushCoachBack(router, path)}
+                className="inline-flex min-h-[44px] min-w-[40px] shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.04] text-muted-2 transition hover:border-accent/35 hover:text-foreground active:scale-[0.98]"
+                aria-label={t("common.back")}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden
+                >
+                  <path
+                    d="M15 18l-6-6 6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            ) : null}
+            <Link
+              href="/app"
+              className="min-h-[44px] min-w-0 truncate py-2 text-left text-[13px] font-semibold leading-none tracking-[-0.02em] text-[color:var(--foreground)]"
+            >
+              {t("nav.brand")}
+            </Link>
+          </div>
           <span className="max-w-[min(100%,9rem)] text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-muted truncate min-[400px]:max-w-[10rem] min-[480px]:text-[11px] min-[480px]:tracking-[0.16em] sm:max-w-none">
             {t(titleKey)}
           </span>
@@ -184,8 +213,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="app-main-scroll flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] pb-[calc(var(--bottom-stack)+20px)]">
         {children}
       </div>
-
-      <PreviewBuildStrip />
 
       <nav
         className="relative z-[var(--z-nav)] shrink-0 border-t border-white/[0.06] bg-[rgba(5,6,10,0.88)] pb-[calc(12px+env(safe-area-inset-bottom,0px))] pt-1.5 shadow-[0_-8px_32px_rgb(0_0_0/0.4)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.82)] transition duration-[250ms] ease-in-out"

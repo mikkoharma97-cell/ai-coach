@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Legacy full food UI (shopping, substitutes, supplements, sheets).
+ * Not mounted from `/food` after FoodScreenSimple — kept for reference / recovery.
+ */
 import { HelpVideoCard } from "@/components/ui/HelpVideoCard";
 import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
 import { Container } from "@/components/ui/Container";

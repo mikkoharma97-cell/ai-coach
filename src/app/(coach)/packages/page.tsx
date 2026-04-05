@@ -1,23 +1,29 @@
 "use client";
 
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
-import { ProgramPackageCards } from "@/components/packages/ProgramPackageCards";
-import { CoachScreenHeader } from "@/components/ui/CoachScreenHeader";
+import { CoachingPackagesView } from "@/components/packages/CoachingPackagesView";
 import { Container } from "@/components/ui/Container";
 import { useTranslation } from "@/hooks/useTranslation";
 import { applyPackageToAnswers } from "@/lib/programPackages";
 import { loadProfile, saveProfile } from "@/lib/storage";
+import type { ProgramPackageId } from "@/types/coach";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function PackagesPage() {
   const router = useRouter();
   const { t } = useTranslation();
-  const [profile] = useState(() => loadProfile());
+  const [profile, setProfile] = useState<ReturnType<typeof loadProfile> | undefined>(
+    undefined,
+  );
 
-  const onSelect = useCallback(
-    (packageId: string) => {
+  useEffect(() => {
+    setProfile(loadProfile());
+  }, []);
+
+  const onSelectPackage = useCallback(
+    (packageId: ProgramPackageId) => {
       const p = loadProfile();
       if (!p) {
         router.push("/start");
@@ -30,29 +36,29 @@ export default function PackagesPage() {
     [router],
   );
 
+  if (profile === undefined) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-[15px] text-muted-2">
+        {t("common.loading")}
+      </div>
+    );
+  }
+
   if (!profile) {
-    return <CoachProfileMissingFallback />;
+    return <CoachProfileMissingFallback handoff="packages" />;
   }
 
   return (
-    <main className="coach-page">
-      <Container size="phone" className="px-5 pb-16 pt-8">
-        <CoachScreenHeader
-          eyebrow={t("packages.eyebrow")}
-          eyebrowClassName="sr-only"
-          title={t("packages.title")}
-          description={t("packages.subtitle")}
-        />
-        <div className="mt-8">
-          <ProgramPackageCards
-            selectedId={profile.selectedPackageId}
-            onSelect={onSelect}
-          />
-        </div>
-        <p className="mt-8 text-center text-[12px] text-muted-2">
+    <main className="coach-page flex min-h-0 min-w-0 flex-1 flex-col">
+      <CoachingPackagesView
+        selectedPackageId={profile.selectedPackageId}
+        onSelectPackage={onSelectPackage}
+      />
+      <Container size="phone" className="border-t border-white/[0.06] bg-[#050608] px-5 py-6">
+        <p className="text-center text-[13px] text-white/50">
           <Link
             href="/app"
-            className="font-semibold text-accent underline-offset-[3px] hover:underline"
+            className="font-semibold text-cyan-300/90 underline-offset-[3px] hover:text-cyan-200 hover:underline"
           >
             {t("packages.saveBack")}
           </Link>

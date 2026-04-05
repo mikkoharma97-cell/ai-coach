@@ -71,6 +71,17 @@ export {
 } from "@/lib/coach/feedbackEngine";
 export { buildCoachEngineBundle } from "@/lib/coach/coachEngineBundle";
 export {
+  buildCoachMessages,
+  coachMessageAt,
+  getCoachMessage,
+  type CoachContext,
+  type CoachMessageBuildInput,
+  type CoachMessageContext,
+  type CoachMessageResult,
+  type CoachMessages,
+  type CoachMessageSlot,
+} from "@/lib/coach/coachMessage";
+export {
   buildCoachAiEngineResult,
   type CoachAiEngineResult,
   type CoachAiInputsEcho,

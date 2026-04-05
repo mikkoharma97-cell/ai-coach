@@ -9,8 +9,7 @@ import {
 } from "@/lib/storage";
 import {
   getCoachSubscriptionMode,
-  getSubscriptionSnapshot,
-  hasSubscriptionAccess,
+  getSubscriptionAccessDecision,
   type CoachSubscriptionMode,
 } from "@/lib/subscription";
 
@@ -44,36 +43,47 @@ export type TodayPaywallOverlayDecision = {
   paywallReason: "none" | "engagement_milestone";
 };
 
+/** Yksi totuus: näytetäänkö täysi paywall (profiili olemassa, ei maksua). */
+export function shouldShowPaywall(): boolean {
+  return getSubscriptionAccessDecision().shouldShowPaywall;
+}
+
 /**
  * Yksi lähde: access + täysi paywall + billing.
  * Ei sisällä Today-overlay-logiikkaa (vaatii erillisen päätöksen).
  */
 export function getPaywallTruth(): PaywallTruth {
+  const decision = getSubscriptionAccessDecision();
   const billingMode = getCoachSubscriptionMode();
-  const hasAccess = hasSubscriptionAccess();
-  const shouldShowPaywall = !hasAccess;
   return {
-    hasAccess,
-    shouldShowPaywall,
-    paywallReason: shouldShowPaywall ? "trial_expired" : "none",
+    hasAccess: decision.hasAccess,
+    shouldShowPaywall: decision.shouldShowPaywall,
+    paywallReason: decision.shouldShowPaywall ? "trial_expired" : "none",
     billingMode,
     isMockBilling: billingMode === "mock",
   };
 }
 
 /**
- * Today: pehmeä overlay kun kokeilu vielä voimassa, 2+ päivää tehty, ei tilausta/ack.
- * Kokeilu loppu → gate + täysi paywall, ei overlayta.
+ * Today: pehmeä overlay vain trial-käyttäjälle kun 2+ päivää tehty eikä ack/dismiss ole asetettu.
+ * Jos access päättynyt → full paywall gate, ei overlayta.
  */
 export function getTodayPaywallOverlayDecision(
   overlayDismissed: boolean,
 ): TodayPaywallOverlayDecision {
-  const { hasAccess } = getPaywallTruth();
-  if (!hasAccess) {
+  const decision = getSubscriptionAccessDecision();
+  if (!decision.hasProfile) {
     return { shouldShow: false, paywallReason: "none" };
   }
-  const { subscribed } = getSubscriptionSnapshot();
-  if (subscribed) return { shouldShow: false, paywallReason: "none" };
+  if (decision.shouldShowPaywall) {
+    return { shouldShow: false, paywallReason: "none" };
+  }
+  if (decision.hasPaidAccess) {
+    return { shouldShow: false, paywallReason: "none" };
+  }
+  if (!decision.inTrial) {
+    return { shouldShow: false, paywallReason: "none" };
+  }
   if (hasPaywallV1Ack()) return { shouldShow: false, paywallReason: "none" };
   if (overlayDismissed) return { shouldShow: false, paywallReason: "none" };
   if (countDaysMarkedDoneTotal() < 2) {

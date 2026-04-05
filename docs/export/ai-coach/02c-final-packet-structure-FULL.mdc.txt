@@ -1,0 +1,98 @@
+---
+description: Pakollinen lopetusrakenne kaikille valmiille agentti-/pakettivastauksille (Coach). Ei korvaa closing-suggestions -sääntöä kokonaisuutena — tämä on laajempi paketti-lopetus.
+alwaysApply: true
+---
+
+# FINAL PACKET STRUCTURE (PAKOLLINEN)
+
+Jokainen **valmis tehtäväpaketti** tai merkittävä agenttityö **päättyy aina** alla olevaan rakenteeseen. Tämä ei ole suositus.
+
+## Kielletyt oikaisut
+
+- **Älä** jätä näitä osioita pois
+- **Älä** korvaa rakennetta yhdellä kappaleella
+- **Älä** lyhennä rakennetta
+- **Älä** kaunistele virheitä
+- **Älä** täytä “build ok” -tyyppistä täytettä kohtaan **Mikä parani** (vain oikea käyttäjähyöty)
+
+Jos jotain on rikki → sano suoraan. Jos käyttäjä (tai hänen kaveri) löytää virheen nopeasti → oletus on että **lisää on** → jatka auditia kunnes kokonaisuus on ymmärretty.
+
+**EI** pelkkää analyysiä korjauslistassa ilman oikeita muutoksia, kun korjauksia on tehty.
+
+---
+
+Kopioi vastaukseen nämä otsikot ja täytä ne:
+
+## Huomiot
+
+- mitä löytyi **oikeasti** (ei yleistä)
+- missä oli virhe / ristiriita / legacy
+- mitä käyttäjä **oikeasti näkee** vs. mitä koodissa luultiin
+
+## Mitä korjasin heti
+
+- lista **konkreettisista** fixatuista asioista
+- **EI** pelkkää analyysiä → oikeat muutokset (tiedostot / käyttäytyminen)
+
+## Mikä parani
+
+- mitä **oikeasti** parani **käyttäjän näkökulmasta**
+- ei tyhjää “build ok” -roskaa
+
+## Mikä on edelleen heikkoa (3–7 kohtaa)
+
+Pakollisesti arvioi vähintään näkökulmat: **flow**, **CTA:t**, **mobiili**, **paywall / raha**, **copy**, **legacy**.
+
+## Mikä tässä vielä ärsyttää
+
+- suora, rehellinen kohta
+- mikä tuntuu keskeneräiseltä / väärältä / rikkinäiseltä
+
+## Parannusvinkit (EI uusia featureita)
+
+- vain realistiset seuraavat korjaukset
+- ei laajennuksia
+- ei roadmapia
+
+## Koodikritiikki
+
+- duplikaatit
+- legacy-koodi
+- väärä rakenne
+- tekninen velka
+
+## Build / QA
+
+- meneekö build läpi
+- mitä testattiin **OIKEASTI**
+- mitä **EI** testattu
+
+## Tuomio
+
+- **HYVÄKSYTTY** | **HYVÄKSYTTY VARAUKSIN** | **EI HYVÄKSYTTY**
+
+Perustelu **yksi kappale**.
+
+---
+
+## Active product reality
+
+- mitä käyttäjä **oikeasti näkee juuri nyt** UI:ssa
+- ei “paperilla olevia featureita”
+
+## Legacy / dead branches
+
+- kaikki käyttämätön tai harhaanjohtava koodi (esim. vanhat komponentit, kuolleet reitit, duplikaattipolut — päivitä esimerkit projektin mukaan)
+
+## Flow sanity check
+
+- polku: landing → onboarding → today → workout → paywall → takaisin (**tai projektin oikea polku**)
+- missä kohtaa hajoaa / tuntuu väärältä
+
+---
+
+## Tavoite
+
+Parempi tuote, ei kiva vastaus. Jos jokin on huono tai launchiin liian heikko — **sano se**.
+
+Vastauksen lopussa käytä yllä olevaa rakennetta otsikkoina sellaisenaan, jotta paketit ovat yhteismitallisia.

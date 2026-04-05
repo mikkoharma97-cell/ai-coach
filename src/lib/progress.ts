@@ -64,7 +64,7 @@ export type WeightSeriesResult = {
 
 /** JSON array in localStorage: `{ dateKey, kg }[]`; vähintään kaksi pistettä ikkunassa → käyrä. */
 export function loadWeightSeries(
-  weeks: 3 | 6 | 12,
+  weeks: 3 | 4 | 6 | 12,
   answers: OnboardingAnswers | null,
 ): WeightSeriesResult {
   const days = weeks * 7;

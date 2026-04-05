@@ -72,12 +72,13 @@ export default function RootLayout({
   return (
     <html
       lang="en" /* vaihda dynaamiseksi kun locale tulee layoutista */
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full min-h-dvh antialiased`}
     >
       <body className="app-page-canvas min-h-dvh overflow-x-hidden text-foreground">
         <div className="app-grain" aria-hidden />
-        <GlobalBuildMarker />
         <HomeCheckButton />
+        <GlobalBuildMarker />
         <ForceRefreshGuard />
         {children}
         <FeedbackWidget />

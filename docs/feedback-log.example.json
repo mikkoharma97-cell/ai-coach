@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "message": "Esimerkkimerkintä",
+      "type": "idea",
+      "path": "/app",
+      "device": "mobile",
+      "viewport": { "w": 390, "h": 844 },
+      "timestamp": 1710000000000,
+      "locale": "fi",
+      "receivedAt": "2026-04-05T12:00:00.000Z"
+    }
+  ]
+}

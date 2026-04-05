@@ -2,25 +2,11 @@
 /**
  * Dev server: bind 0.0.0.0 + set LAN_DEV_ORIGINS so Next.js allows /_next/* from phone.
  * Jos PORT (oletus 3000) on varattu, kokeillaan seuraavia portteja — tulostettu linkki vastaa valittua porttia.
- * Usage: npm run dev:mobile
+ * @deprecated Käytä iOS Capacitor -LAN-dev: npm run mobile:dev (yksi tuettu polku).
  */
 import { spawn } from "node:child_process";
-import { execSync } from "node:child_process";
 import { createServer } from "node:net";
-
-function getLanIp() {
-  for (const iface of ["en0", "en1", "en2"]) {
-    try {
-      const ip = execSync(`ipconfig getifaddr ${iface}`, {
-        encoding: "utf8",
-      }).trim();
-      if (ip && !ip.startsWith("127.")) return ip;
-    } catch {
-      /* next */
-    }
-  }
-  return "";
-}
+import { getLanIp } from "./lib/lan-ip.mjs";
 
 /**
  * @param {number} start
@@ -50,6 +36,10 @@ function findFreePort(start, maxAttempts = 12) {
     tryListen(start, maxAttempts);
   });
 }
+
+console.warn(
+  "[ai-coach] dev:mobile on vanhentunut — iOS + Capacitor: käytä npm run mobile:dev",
+);
 
 const ip = getLanIp();
 const extra = (process.env.LAN_DEV_ORIGINS || "")

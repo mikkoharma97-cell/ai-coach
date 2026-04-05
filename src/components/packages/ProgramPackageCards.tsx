@@ -1,5 +1,6 @@
 "use client";
 
+/** Legacy list UI — `/packages` käyttää `CoachingPackagesView` + `coachOffer`. */
 import { PROGRAM_PACKAGES, packageLabel } from "@/lib/programPackages";
 import { useTranslation } from "@/hooks/useTranslation";
 

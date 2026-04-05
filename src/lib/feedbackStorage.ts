@@ -62,6 +62,26 @@ export function appendFeedbackEntry(entry: FeedbackEntryV2): void {
   }
 }
 
+/**
+ * Dev only: peilaa merkintä repossa olevaan `docs/feedback-log.json` -tiedostoon (API route).
+ * Ei vaikuta tuotantoon / `next start` production -buildissa.
+ */
+export function mirrorFeedbackToDevLogFile(
+  entry: FeedbackEntryV2,
+  locale: Locale,
+): void {
+  if (typeof window === "undefined") return;
+  if (process.env.NODE_ENV !== "development") return;
+  const body = JSON.stringify({ ...entry, locale });
+  void fetch("/api/dev/feedback-log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body,
+  }).catch(() => {
+    /* dev-tiedosto on lisä; älä häiritse UX:ää */
+  });
+}
+
 export function clearFeedbackEntries(): void {
   if (typeof window === "undefined") return;
   try {

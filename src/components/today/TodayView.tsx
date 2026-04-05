@@ -9,17 +9,22 @@ import {
   buildCoachDailyPlanForSession,
   normalizeProfileForEngine,
 } from "@/lib/coach";
-import { dayKeyFromDate } from "@/lib/dateKey";
-import { buildFoodDayLines, foodMainLineForToday } from "@/lib/food/foodDayContent";
+import {
+  FOOD_LOG_CHANGED,
+  subscribeCoachEvent,
+  TODAY_STATE_CHANGED,
+} from "@/lib/coachEvents";
+import {
+  foodPlanFallbackLabel,
+  formatWorkoutPlanLabel,
+} from "@/lib/coachDisplayLabels";
+import { dayKeyFromDate, normalizeDayKey } from "@/lib/dateKey";
 import { getMondayBasedIndex } from "@/lib/plan";
 import { isDayMarkedDone, setPaywallV1Ack } from "@/lib/storage";
 import { setSubscribed } from "@/lib/subscription";
 import { shouldShowTodayPaywallOverlay } from "@/lib/paywallPolicy";
 import { PaywallV1Panel } from "@/components/paywall/PaywallV1Panel";
 import { TodayFocusCard } from "@/components/today/TodayFocusCard";
-import { TodayFoodHub } from "@/components/today/TodayFoodHub";
-import { TodayStatusHub } from "@/components/today/TodayStatusHub";
-import { TodayWorkoutHub } from "@/components/today/TodayWorkoutHub";
 import { trackEvent } from "@/lib/analytics";
 import {
   EXCEPTION_STATE_CHANGED,
@@ -30,6 +35,16 @@ import { loadMinimumDayForDay, saveMinimumDayForDay } from "@/lib/minimumDayStor
 import { MINIMUM_DAY_CHANGED } from "@/lib/minimumDayStorage";
 import { loadWorkoutSessions, WORKOUT_LOG_CHANGED } from "@/lib/workoutLogStorage";
 import {
+  completedTrainingDaysThisWeek,
+  plannedTrainingDaysThisWeek,
+} from "@/lib/todayBrief";
+import { getProgramPackage, normalizeProgramPackageId } from "@/lib/programPackages";
+import { resolveTodayDisplayMock } from "@/data/todayContent.mock";
+import type { Locale } from "@/lib/i18n";
+import { loadFoodLog } from "@/lib/foodStorage";
+import { hasSetLogsForDay } from "@/lib/workoutStore";
+import { consumeJustCompletedWorkoutFlag } from "@/lib/workoutFlowFlags";
+import {
   clearFeedbackForDay,
   loadTodayFlowRecord,
   markTodaySkipped,
@@ -37,39 +52,17 @@ import {
   setPrimaryCtaTapped,
   TODAY_FLOW_CHANGED,
 } from "@/lib/todayFlowStorage";
-import type { CoachDailyPlan, OnboardingAnswers } from "@/types/coach";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import type { TodayFlowUiState } from "@/lib/todayFlowStorage";
-
-function trainingSessionIndexThisWeek(
-  plan: CoachDailyPlan,
-  ref: Date,
-): number | null {
-  const todayIdx = getMondayBasedIndex(ref);
-  const days = plan.weeklyPlan.days;
-  let n = 0;
-  for (let i = 0; i <= todayIdx; i++) {
-    if (!days[i]?.isRest) {
-      n++;
-      if (i === todayIdx) return n;
-    }
-  }
-  return null;
-}
-
-function mealCountFromProfile(p: OnboardingAnswers): number {
-  if (p.mealsPerDay) return p.mealsPerDay;
-  return p.mealStructure === "snack_forward" ? 4 : 3;
-}
 
 function resolveTodayFlowUi(args: {
   isDayDone: boolean;
@@ -93,21 +86,6 @@ function resolveTodayFlowUi(args: {
   return "not_started";
 }
 
-function progressPercentFor(flow: TodayFlowUiState): number {
-  switch (flow) {
-    case "not_started":
-      return 14;
-    case "in_progress":
-      return 58;
-    case "skipped":
-      return 36;
-    case "completed":
-      return 100;
-    default:
-      return 12;
-  }
-}
-
 export function TodayView() {
   const router = useRouter();
   const pathname = usePathname();
@@ -124,6 +102,26 @@ export function TodayView() {
   const [notTodayOpen, setNotTodayOpen] = useState(false);
   const [workoutFeedbackOn, setWorkoutFeedbackOn] = useState(false);
   const lastWorkoutFbDay = useRef<string | null>(null);
+  const [justFinishedWorkoutSession, setJustFinishedWorkoutSession] =
+    useState(false);
+  const workoutFlagConsumedRef = useRef(false);
+  const [coachDataTick, setCoachDataTick] = useState(0);
+
+  useLayoutEffect(() => {
+    if (workoutFlagConsumedRef.current) return;
+    workoutFlagConsumedRef.current = true;
+    setJustFinishedWorkoutSession(consumeJustCompletedWorkoutFlag());
+  }, []);
+
+  useEffect(() => {
+    const bump = () => setCoachDataTick((x) => x + 1);
+    const u1 = subscribeCoachEvent(FOOD_LOG_CHANGED, bump);
+    const u2 = subscribeCoachEvent(TODAY_STATE_CHANGED, bump);
+    return () => {
+      u1();
+      u2();
+    };
+  }, []);
 
   const dayKeyToday = useMemo(() => dayKeyFromDate(now), [now]);
 
@@ -183,13 +181,6 @@ export function TodayView() {
     });
   }, [normalizedProfile, now, locale, activeException, minimumDayActive]);
 
-  const sessionIdx = useMemo(() => {
-    if (!plan) return null;
-    return trainingSessionIndexThisWeek(plan, now);
-  }, [plan, now]);
-
-  const dayNum = sessionIdx ?? 1;
-
   const todayIdx = useMemo(() => getMondayBasedIndex(now), [now]);
   const isRestDay = useMemo(() => {
     if (!plan) return true;
@@ -200,16 +191,87 @@ export function TodayView() {
 
   const hasWorkoutLoggedToday = useMemo(() => {
     void workoutLogTick;
-    return loadWorkoutSessions().some((s) => s.dayKey === dayKeyToday);
-  }, [dayKeyToday, workoutLogTick]);
+    void coachDataTick;
+    const dk = normalizeDayKey(dayKeyToday);
+    return loadWorkoutSessions().some(
+      (s) => normalizeDayKey(s.dayKey) === dk,
+    );
+  }, [dayKeyToday, workoutLogTick, coachDataTick]);
 
-  const foodPreviewLines = useMemo(() => {
-    if (!plan || !profile) return [];
-    const lines = buildFoodDayLines(plan, profile, t);
-    return lines.slice(0, 2);
-  }, [plan, profile, t]);
+  const hasSetLogsToday = useMemo(() => {
+    void coachDataTick;
+    void workoutLogTick;
+    return hasSetLogsForDay(dayKeyToday);
+  }, [dayKeyToday, coachDataTick, workoutLogTick]);
 
-  const mealN = profile ? mealCountFromProfile(profile) : 0;
+  const foodLogs = useMemo(() => {
+    void workoutLogTick;
+    void flowTick;
+    void coachDataTick;
+    return loadFoodLog(now);
+  }, [now, workoutLogTick, flowTick, coachDataTick]);
+
+  const todayDisplayBase = useMemo(() => {
+    if (!profile) return null;
+    const pkg = getProgramPackage(profile.selectedPackageId);
+    const kind = foodOnly
+      ? ("food_only" as const)
+      : isRestDay
+        ? ("rest" as const)
+        : ("training" as const);
+    return resolveTodayDisplayMock({
+      locale: locale as Locale,
+      packageId: normalizeProgramPackageId(profile.selectedPackageId),
+      planBias: pkg.planBias,
+      mealCount: pkg.mealCount,
+      mealStyle: pkg.mealStyle,
+      todayIdx,
+      kind,
+      goal: profile.goal,
+    });
+  }, [profile, foodOnly, isRestDay, todayIdx, locale]);
+
+  const todayBriefRows = useMemo(() => {
+    if (!profile) return [];
+    void workoutLogTick;
+    void coachDataTick;
+    const sessions = loadWorkoutSessions();
+    const weekValue = foodOnly
+      ? t("todayView.briefWeekFoodOnly")
+      : t("todayView.briefWeekValue", {
+          done: completedTrainingDaysThisWeek(sessions, now),
+          plan: plannedTrainingDaysThisWeek(profile, now),
+        });
+    const foodValue =
+      foodLogs.length > 0
+        ? t("todayView.briefFoodLogs", { n: foodLogs.length })
+        : (todayDisplayBase?.situationFoodWhenNoLogs ??
+          t("todayView.briefFoodLogs", { n: 0 }));
+    return [
+      { label: t("todayView.briefWeek"), value: weekValue },
+      {
+        label: t("todayView.briefFood"),
+        value: foodValue,
+      },
+    ];
+  }, [
+    profile,
+    now,
+    foodOnly,
+    t,
+    workoutLogTick,
+    foodLogs,
+    todayDisplayBase,
+    coachDataTick,
+  ]);
+
+  const programBlockInfo = useMemo(() => {
+    if (!profile) return { title: "", focus: "" };
+    const pkg = getProgramPackage(profile.selectedPackageId);
+    const title = locale === "en" ? pkg.nameEn : pkg.nameFi;
+    const focus = todayDisplayBase?.programSituationFocus ?? "";
+    return { title, focus };
+  }, [profile, locale, todayDisplayBase]);
 
   const showPaywallV1 = useMemo(
     () => shouldShowTodayPaywallOverlay(paywallOverlayDismissed),
@@ -235,21 +297,6 @@ export function TodayView() {
     router.push("/settings");
   }, [router]);
 
-  const statusLines = useMemo(() => {
-    if (!plan) return [];
-    const out: string[] = [];
-    if (plan.shiftToday) {
-      out.push(t(plan.shiftToday.badgeKey));
-    }
-    if (plan.systemLine) {
-      out.push(plan.systemLine);
-    }
-    if (minimumDayActive) {
-      out.push(t("todayView.minimumDayHint"));
-    }
-    return out.slice(0, 1);
-  }, [plan, minimumDayActive, t]);
-
   const flowRecord = useMemo(
     () => loadTodayFlowRecord(dayKeyToday),
     [dayKeyToday, flowTick],
@@ -259,7 +306,7 @@ export function TodayView() {
     () =>
       resolveTodayFlowUi({
         isDayDone: isCompleted,
-        hasWorkoutLog: hasWorkoutLoggedToday,
+        hasWorkoutLog: hasWorkoutLoggedToday || hasSetLogsToday,
         isRest: isRestDay,
         foodOnly,
         dayKey: dayKeyToday,
@@ -267,6 +314,7 @@ export function TodayView() {
     [
       isCompleted,
       hasWorkoutLoggedToday,
+      hasSetLogsToday,
       isRestDay,
       foodOnly,
       dayKeyToday,
@@ -298,7 +346,7 @@ export function TodayView() {
     return null;
   }, [activeStorageFeedback, workoutFeedbackOn, t]);
 
-  const progressAriaLabel = useMemo(() => {
+  const flowStatusLine = useMemo(() => {
     switch (resolvedFlow) {
       case "not_started":
         return t("todayView.progressAriaNotStarted");
@@ -365,163 +413,175 @@ export function TodayView() {
     );
   }
 
-  const dayEntry = plan.weeklyPlan.days[todayIdx];
-  const restHeroLine = isRestDay
-    ? dayEntry?.workoutLine?.trim() || t("todayView.focusBodyRest")
-    : "";
-
-  const workoutSummaryLine = !isRestDay
-    ? (dayEntry?.workoutLine || plan.todayWorkout).trim() || plan.todayWorkout
-    : "";
-
-  const showWorkoutSummaryParagraph = !isRestDay;
-
-  const workoutStatusLabel = isRestDay
-    ? t("todayView.workoutStatusRest")
-    : hasWorkoutLoggedToday
-      ? t("todayView.workoutStatusDone")
-      : t("todayView.workoutStatusPending");
-
-  let hubHeroBody = foodOnly
-    ? foodMainLineForToday(plan.todayFoodTask)
-    : isRestDay
-      ? restHeroLine
-      : t("todayView.heroWorkout", { day: dayNum });
-
-  let focusTitle = t("todayView.focusTitle");
+  let heroTitle: string;
+  let heroGuidance: string;
+  let planWorkoutLabel: string;
+  let planFoodLabel: string;
 
   if (resolvedFlow === "skipped" && flowRecord?.skipKind === "light") {
-    hubHeroBody = t("todayView.heroSkippedLight");
-    focusTitle = t("todayView.focusTitleLightDay");
+    heroTitle = t("todayView.focusTitleLightDay");
+    heroGuidance = t("todayView.heroSkippedLight");
+    planWorkoutLabel =
+      locale === "fi" ? "Kevyt päivä" : "Light day";
+    planFoodLabel = todayDisplayBase?.planFoodLabel ?? "";
   } else if (resolvedFlow === "skipped" && flowRecord?.skipKind === "tomorrow") {
-    hubHeroBody = t("todayView.heroSkippedTomorrow");
-    focusTitle = t("todayView.focusTitleDefer");
+    heroTitle = t("todayView.focusTitleDefer");
+    heroGuidance = t("todayView.heroSkippedTomorrow");
+    planWorkoutLabel =
+      locale === "fi" ? "Siirto huomiselle" : "Moved to tomorrow";
+    planFoodLabel = todayDisplayBase?.planFoodLabel ?? "";
+  } else if (todayDisplayBase) {
+    heroTitle = todayDisplayBase.heroTitle;
+    heroGuidance = todayDisplayBase.heroGuidance;
+    planWorkoutLabel = todayDisplayBase.planWorkoutLabel;
+    planFoodLabel = todayDisplayBase.planFoodLabel;
+  } else {
+    heroTitle = "";
+    heroGuidance = "";
+    planWorkoutLabel = "";
+    planFoodLabel = "";
+  }
+
+  const skipWorkoutPlanRelabel =
+    resolvedFlow === "skipped" &&
+    (flowRecord?.skipKind === "light" || flowRecord?.skipKind === "tomorrow");
+
+  if (!skipWorkoutPlanRelabel) {
+    planWorkoutLabel = formatWorkoutPlanLabel({
+      locale: locale as Locale,
+      mockPlanLine: planWorkoutLabel,
+      hasSessionLogToday: hasWorkoutLoggedToday,
+      hasSetLogsToday: hasSetLogsToday,
+    });
+  }
+
+  if (!planFoodLabel.trim()) {
+    planFoodLabel = foodPlanFallbackLabel(locale as Locale);
   }
 
   const primaryCta = (() => {
-    if (isCompleted) {
-      return { href: "/plan" as const, label: t("todayView.ctaTomorrow") };
-    }
     if (resolvedFlow === "skipped") {
-      return { href: "/food/day" as const, label: t("todayView.focusCtaFood") };
-    }
-    const cont = t("todayView.ctaContinue");
-    if (resolvedFlow === "in_progress") {
-      if (foodOnly) return { href: "/food" as const, label: cont };
-      if (isRestDay) return { href: "/food/day" as const, label: cont };
-      return { href: "/workout" as const, label: cont };
+      return { href: "/food/day" as const, label: t("todayView.ctaGoFood") };
     }
     if (foodOnly) {
-      return { href: "/food" as const, label: t("todayView.focusCtaFood") };
+      if (resolvedFlow === "in_progress") {
+        return { href: "/food" as const, label: t("todayView.ctaContinueFood") };
+      }
+      return { href: "/food" as const, label: t("todayView.ctaGoFood") };
     }
     if (isRestDay) {
-      return { href: "/food/day" as const, label: t("todayView.focusCtaFood") };
+      if (resolvedFlow === "in_progress") {
+        return { href: "/food" as const, label: t("todayView.ctaContinueFood") };
+      }
+      return { href: "/food" as const, label: t("todayView.ctaGoFood") };
+    }
+    if (hasWorkoutLoggedToday || hasSetLogsToday) {
+      return { href: "/food" as const, label: t("todayView.ctaGoFood") };
+    }
+    if (resolvedFlow === "in_progress") {
+      return { href: "/workout" as const, label: t("todayView.ctaContinueWorkout") };
     }
     return { href: "/workout" as const, label: t("todayView.cta") };
   })();
 
-  const hubBlockClass =
-    "mt-2.5 rounded-[var(--radius-md)] border border-white/[0.05] bg-white/[0.015] px-3 py-2.5 text-[13px] text-muted/90";
-
-  const showWorkoutSecondary =
-    !foodOnly && resolvedFlow !== "skipped";
-
-  const secondaryBlocks: ReactNode[] = [];
-  if (showWorkoutSecondary) {
-    secondaryBlocks.push(
-      <TodayWorkoutHub
-        key="w"
-        hubBlockClass={hubBlockClass}
-        sectionTitle={t("todayView.hubSectionWorkout")}
-        workoutStatusLabel={workoutStatusLabel}
-        showSummaryLine={showWorkoutSummaryParagraph}
-        summaryLine={workoutSummaryLine}
-      />,
-    );
-  }
-  secondaryBlocks.push(
-    <TodayFoodHub
-      key="f"
-      hubBlockClass={hubBlockClass}
-      sectionTitle={t("todayView.hubSectionFood")}
-      mealsLine={t("todayView.mealsLine", { n: mealN })}
-      previewLines={foodPreviewLines}
-    />,
-  );
-  if (statusLines.length > 0) {
-    secondaryBlocks.push(
-      <TodayStatusHub
-        key="s"
-        hubBlockClass={hubBlockClass}
-        sectionTitle={t("todayView.hubSectionStatus")}
-        lines={statusLines}
-      />,
-    );
-  }
-  const visibleSecondary = secondaryBlocks.slice(0, 3);
-
   const showNotToday =
     !isCompleted && resolvedFlow !== "skipped";
 
+  const showCompletedDayGate =
+    isCompleted && !justFinishedWorkoutSession;
+
   return (
     <>
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden bg-[var(--background)] pt-2 sm:pt-3">
+      <main className="coach-today-depth flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden pt-1.5 sm:pt-2">
         <Container
           size="phone"
-          className="flex min-h-0 min-w-0 flex-1 flex-col px-4 pb-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+5.5rem))] pt-1 sm:px-5"
+          className="relative z-[1] flex min-h-0 min-w-0 flex-1 flex-col px-4 pb-[max(1.35rem,calc(env(safe-area-inset-bottom,0px)+4.35rem))] pt-0.5 sm:px-5"
         >
-          {!isCompleted ? (
+          {!showCompletedDayGate ? (
             <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              {justFinishedWorkoutSession && isCompleted ? (
+                <p
+                  className="mb-3 px-0.5 text-center text-[12px] font-medium leading-snug text-muted-2/80"
+                  role="status"
+                >
+                  {t("todayView.workoutJustDoneLine")}
+                </p>
+              ) : null}
               <TodayFocusCard
-                focusEyebrow={t("todayView.focusEyebrow")}
-                focusTitle={focusTitle}
-                heroBody={hubHeroBody}
-                progressPercent={progressPercentFor(resolvedFlow)}
+                heroTitle={heroTitle}
+                heroGuidance={heroGuidance}
+                planWorkoutLabel={planWorkoutLabel}
+                planFoodLabel={planFoodLabel}
                 primaryCta={primaryCta}
                 onPrimaryNavigate={onPrimaryNavigate}
-                showNotToday={showNotToday}
-                notTodayOpen={notTodayOpen}
-                onToggleNotToday={() => setNotTodayOpen((o) => !o)}
-                onPickLightDay={onPickLightDay}
-                onPickTomorrow={onPickTomorrow}
                 feedbackLine={feedbackLine}
-                notTodayLabel={t("todayView.notToday")}
-                optionLightLabel={t("todayView.optionLightDay")}
-                optionTomorrowLabel={t("todayView.optionTomorrow")}
-                progressAriaLabel={progressAriaLabel}
+                flowStatusLine={flowStatusLine}
+                statusRowLabel={t("todayView.briefStatus")}
+                situationHeading={t("todayView.situationHeading")}
+                briefRows={todayBriefRows}
+                programEyebrow={
+                  foodOnly
+                    ? t("todayView.programBlockEyebrowFood")
+                    : t("todayView.programBlockEyebrow")
+                }
+                programTitle={programBlockInfo.title}
+                programFocus={programBlockInfo.focus}
+                afterCta={
+                  showNotToday ? (
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => setNotTodayOpen((o) => !o)}
+                        className="text-[11px] font-medium leading-snug text-muted-2/58 underline decoration-white/[0.12] underline-offset-[5px] transition hover:text-muted-2/75 hover:decoration-white/[0.22] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:text-[12px]"
+                        aria-expanded={notTodayOpen}
+                      >
+                        {t("todayView.notToday")}
+                      </button>
+                      {notTodayOpen ? (
+                        <div className="mt-2.5 flex flex-col gap-1">
+                          <button
+                            type="button"
+                            onClick={onPickLightDay}
+                            className="bg-transparent px-2 py-1.5 text-[11px] font-normal leading-snug text-muted-2/62 transition hover:text-muted-2/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          >
+                            {t("todayView.optionLightDay")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={onPickTomorrow}
+                            className="bg-transparent px-2 py-1.5 text-[11px] font-normal leading-snug text-muted-2/62 transition hover:text-muted-2/78 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          >
+                            {t("todayView.optionTomorrow")}
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : undefined
+                }
               />
-
-              <section
-                className="mt-6 border-t border-white/[0.04] pt-5 opacity-[0.82]"
-                aria-labelledby="today-secondary-heading"
-              >
-                <h2
-                  id="today-secondary-heading"
-                  className="mb-2.5 text-center text-[10px] font-medium uppercase tracking-[0.16em] text-muted-2/75"
-                >
-                  {t("todayView.secondarySectionHeading")}
-                </h2>
-                <div className="flex min-h-0 min-w-0 flex-col gap-2.5">
-                  {visibleSecondary}
-                </div>
-              </section>
             </div>
           ) : (
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-8 pb-2 pt-8 text-center">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 px-0.5 pt-0.5 text-left sm:pt-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2">
+                {t("todayView.doneEyebrow")}
+              </p>
+              <h1 className="text-[1.3rem] font-semibold leading-tight tracking-[-0.035em] text-foreground sm:text-[1.38rem]">
+                {t("todayView.heroDoneTitle")}
+              </h1>
               <p
-                className="line-clamp-3 shrink-0 text-balance text-[clamp(1.05rem,4vw,1.35rem)] font-medium leading-snug tracking-[-0.02em] text-muted"
-                role="status"
+                className="text-[15px] font-medium leading-snug text-foreground/88"
+                id="today-done-guidance"
+              >
+                {t("todayView.heroDoneGuidance")}
+              </p>
+              <Link
+                href="/plan"
+                scroll={false}
+                aria-describedby="today-done-guidance"
+                className="mt-1 flex min-h-[56px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent px-5 text-[18px] font-semibold tracking-[-0.02em] text-white shadow-[0_4px_20px_-8px_rgba(0,0,0,0.45)] ring-1 ring-white/10 transition hover:bg-[var(--accent-hover)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {t("todayView.dayDoneSimple")}
-              </p>
-              <div className="flex w-full min-w-0 flex-col">
-                <Link
-                  href="/plan"
-                  className="flex min-h-[58px] w-full touch-manipulation items-center justify-center rounded-[var(--radius-lg)] bg-accent px-5 text-[18px] font-semibold tracking-[-0.02em] text-white shadow-[var(--shadow-primary-cta)] ring-1 ring-white/10 transition hover:bg-[var(--accent-hover)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                >
-                  {t("todayView.ctaTomorrow")}
-                </Link>
-              </div>
+              </Link>
             </div>
           )}
         </Container>
@@ -534,6 +594,7 @@ export function TodayView() {
           aria-labelledby="paywall-v1-title"
         >
           <PaywallV1Panel
+            engagementOverlay
             onContinue={onPaywallContinue}
             onBack={onPaywallBack}
           />

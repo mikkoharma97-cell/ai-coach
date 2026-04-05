@@ -1,10 +1,17 @@
 import type { FoodLogItem, MealSlot, SavedMeal } from "@/types/coach";
+import { emitCoachEvent, FOOD_LOG_CHANGED, TODAY_STATE_CHANGED } from "./coachEvents";
+import { getDayKey } from "./dayKey";
 
 const SAVED_KEY = "ai-coach-saved-meals-v1";
 const LOG_PREFIX = "ai-coach-food-log-v1:";
 
-function dayKey(d: Date): string {
+function legacyUnpaddedDayKey(d: Date): string {
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function emitFoodCoachEvents(): void {
+  emitCoachEvent(FOOD_LOG_CHANGED);
+  emitCoachEvent(TODAY_STATE_CHANGED, { kind: "food" });
 }
 
 function newId(): string {
@@ -50,22 +57,47 @@ export function removeSavedMeal(id: string): void {
 
 export function loadFoodLog(date: Date): FoodLogItem[] {
   if (typeof window === "undefined") return [];
+  const canonical = getDayKey(date);
+  const legacy = legacyUnpaddedDayKey(date);
   try {
-    const raw = localStorage.getItem(LOG_PREFIX + dayKey(date));
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as FoodLogItem[];
-    return Array.isArray(parsed) ? parsed : [];
+    const rawNew = localStorage.getItem(LOG_PREFIX + canonical);
+    if (rawNew) {
+      const parsed = JSON.parse(rawNew) as FoodLogItem[];
+      if (Array.isArray(parsed)) return parsed;
+    }
+    if (legacy !== canonical) {
+      const rawLeg = localStorage.getItem(LOG_PREFIX + legacy);
+      if (rawLeg) {
+        const parsed = JSON.parse(rawLeg) as FoodLogItem[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          persistLog(date, parsed);
+          return parsed;
+        }
+      }
+    }
   } catch {
     return [];
   }
+  return [];
 }
 
 function persistLog(date: Date, items: FoodLogItem[]): void {
   if (typeof window === "undefined") return;
   try {
-    const k = LOG_PREFIX + dayKey(date);
-    if (items.length === 0) localStorage.removeItem(k);
-    else localStorage.setItem(k, JSON.stringify(items));
+    const canonical = getDayKey(date);
+    const legacy = legacyUnpaddedDayKey(date);
+    const kNew = LOG_PREFIX + canonical;
+    if (items.length === 0) {
+      localStorage.removeItem(kNew);
+      if (legacy !== canonical) {
+        localStorage.removeItem(LOG_PREFIX + legacy);
+      }
+    } else {
+      localStorage.setItem(kNew, JSON.stringify(items));
+      if (legacy !== canonical) {
+        localStorage.removeItem(LOG_PREFIX + legacy);
+      }
+    }
   } catch {
     /* ignore */
   }
@@ -78,12 +110,14 @@ export function appendFoodLog(
   const log = loadFoodLog(date);
   const row: FoodLogItem = { ...item, id: newId() };
   persistLog(date, [...log, row]);
+  emitFoodCoachEvents();
   return row;
 }
 
 export function removeFoodLogItem(date: Date, id: string): void {
   const log = loadFoodLog(date).filter((x) => x.id !== id);
   persistLog(date, log);
+  emitFoodCoachEvents();
 }
 
 export function addQuickFromSaved(

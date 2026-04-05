@@ -6,6 +6,7 @@ import { translate, type Locale, type MessageKey } from "@/lib/i18n";
 import {
   appendFeedbackEntry,
   getDeviceKind,
+  mirrorFeedbackToDevLogFile,
   readClientLocale,
   type FeedbackEntryV2,
   type FeedbackTypeV2,
@@ -115,6 +116,7 @@ export function FeedbackWidget() {
     }
 
     appendFeedbackEntry(entry);
+    mirrorFeedbackToDevLogFile(entry, locale);
     console.log("[feedback]", entry);
     setSent(true);
     setMessage("");

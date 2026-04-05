@@ -2,6 +2,8 @@ import { LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import { emptyAnswers } from "@/lib/plan";
 import { PRO_WORKSPACE_KEY } from "@/lib/proWorkspace";
 import {
+  COACH_PAID_STORAGE_KEY,
+  COACH_PROFILE_STORAGE_KEY,
   ensureTrialStarted,
   SUBSCRIPTION_STORAGE_KEY,
 } from "@/lib/subscription";
@@ -47,6 +49,7 @@ export function saveProfile(answers: OnboardingAnswers): void {
   try {
     localStorage.setItem(PROFILE_KEY_V3, JSON.stringify(answers));
     localStorage.removeItem(PROFILE_KEY_V2);
+    localStorage.setItem(COACH_PROFILE_STORAGE_KEY, "1");
     ensureTrialStarted();
   } catch {
     /* ignore */
@@ -59,6 +62,7 @@ export function clearCorruptCoachData(): void {
   try {
     localStorage.removeItem(PROFILE_KEY_V3);
     localStorage.removeItem(PROFILE_KEY_V2);
+    localStorage.removeItem(COACH_PROFILE_STORAGE_KEY);
   } catch {
     /* ignore */
   }
@@ -78,6 +82,11 @@ export function loadProfile(): OnboardingAnswers | null {
         return null;
       }
       try {
+        try {
+          localStorage.setItem(COACH_PROFILE_STORAGE_KEY, "1");
+        } catch {
+          /* ignore */
+        }
         return {
           ...emptyAnswers(),
           ...parsed,
@@ -139,6 +148,7 @@ export function clearProfile(): void {
   try {
     localStorage.removeItem(PROFILE_KEY_V3);
     localStorage.removeItem(PROFILE_KEY_V2);
+    localStorage.removeItem(COACH_PROFILE_STORAGE_KEY);
   } catch {
     /* ignore */
   }
@@ -151,9 +161,11 @@ export function clearAllCoachLocalData(): void {
   clearWorkShiftStorage();
   clearWorkoutSessions();
   try {
+    localStorage.removeItem(COACH_PAID_STORAGE_KEY);
     localStorage.removeItem(PRO_WORKSPACE_KEY);
     localStorage.removeItem(SUBSCRIPTION_STORAGE_KEY);
     localStorage.removeItem(PAYWALL_V1_ACK_KEY);
+    localStorage.removeItem("ai-coach-today-flow-v1");
     localStorage.removeItem(SAVED_MEALS_KEY);
     savePlannedEvents([]);
     clearExceptionStorage();

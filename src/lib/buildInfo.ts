@@ -1,5 +1,44 @@
 import { APP_VERSION as COACH_APP_VERSION } from "@/config/version";
-import { BUILD_TIME_ISO } from "./buildInfo.generated";
+import {
+  APP_VERSION as GENERATED_APP_VERSION,
+  BUILD_ID as GENERATED_BUILD_ID,
+  BUILD_TIME_ISO,
+} from "./buildInfo.generated";
+
+/**
+ * Yksi totuus dev/preview -merkille — SSR/client sama (ei runtime-randomia renderissä).
+ * Env voi yliajaa CI/deploy -ketjussa.
+ */
+export const BUILD_INFO = {
+  version:
+    process.env.NEXT_PUBLIC_APP_VERSION?.trim() ||
+    (GENERATED_APP_VERSION && GENERATED_APP_VERSION.length > 0
+      ? GENERATED_APP_VERSION
+      : "dev"),
+  buildTime:
+    process.env.NEXT_PUBLIC_BUILD_TIME?.trim() ||
+    (BUILD_TIME_ISO && BUILD_TIME_ISO !== "not-yet-built"
+      ? BUILD_TIME_ISO
+      : "dev"),
+  buildId:
+    process.env.NEXT_PUBLIC_BUILD_ID?.trim() ||
+    (GENERATED_BUILD_ID && GENERATED_BUILD_ID.length > 0
+      ? GENERATED_BUILD_ID
+      : "local"),
+} as const;
+
+/**
+ * Build-markerin SSR/hydration-yhteensopiva aika: UTC `HH:MM` ISO-merkkijonosta.
+ * Ei `toLocaleTimeString` / paikallista aikaa — ne eroavat Node vs selain.
+ */
+export function formatBuildTimeUtcClock(iso: string): string {
+  if (!iso || iso === "dev") return "--:--";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "--:--";
+  const h = d.getUTCHours().toString().padStart(2, "0");
+  const m = d.getUTCMinutes().toString().padStart(2, "0");
+  return `${h}:${m}`;
+}
 
 export type PublicBuildInfo = {
   /** Näkyvä versio (env tai package / generoitu) */
@@ -114,6 +153,12 @@ export function showPreviewBuildMarker(): boolean {
     process.env.NODE_ENV === "development" ||
     process.env.NEXT_PUBLIC_PREVIEW_BUILD === "1"
   );
+}
+
+/** Kelluva build-marker (dev/preview) — piilota tuotannossa `NEXT_PUBLIC_SHOW_BUILD_MARKER=0`. */
+export function buildMarkerVisible(): boolean {
+  if (process.env.NEXT_PUBLIC_SHOW_BUILD_MARKER === "0") return false;
+  return showPreviewBuildMarker();
 }
 
 /** Build-aika ISO (generoitu buildin yhteydessä). */

@@ -90,6 +90,20 @@ html {
   --z-overlay-sheet: 261;
 }
 
+/* Dev build marker — fade-in (BuildMarker V2) */
+@keyframes coach-build-marker-v2-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.coach-build-marker-v2-enter {
+  animation: coach-build-marker-v2-enter 0.42s ease-out;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -122,6 +136,28 @@ html {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-attachment: fixed;
+}
+
+/* Today /app — hillitty syvyys (ei erillistä grafiikkaa) */
+.coach-today-depth {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--background);
+}
+
+.coach-today-depth::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse 125% 80% at 50% -12%,
+      rgba(61, 107, 255, 0.085),
+      transparent 56%
+    ),
+    radial-gradient(ellipse 95% 55% at 50% 102%, rgba(8, 10, 16, 0.55), transparent 52%);
 }
 
 html {
@@ -249,6 +285,15 @@ body {
   }
 }
 
+/* Marketing /home hero: stable root section (see HeroSection). */
+.landing-hero-shell {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+  background-color: var(--background);
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
 /* Optional: extremely subtle grain (does not compete with text) */
 .app-grain {
   position: fixed;
@@ -339,6 +384,28 @@ body {
 
 .coach-onboarding-sweep {
   animation: coach-onboarding-sweep 1.35s ease-in-out infinite;
+}
+
+/* Coach route segment: (coach)/template.tsx — main scroll only, not header/nav */
+@keyframes coach-route-enter {
+  from {
+    opacity: 0.92;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.coach-route-template {
+  animation: coach-route-enter 165ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach-route-template {
+    animation: none;
+  }
 }
 
 /* —— Coach surfaces — Today-adjacent, system-driven —— */
@@ -501,6 +568,44 @@ body {
 
   .coach-status-dot {
     @apply size-2 shrink-0 rounded-full bg-accent shadow-[0_0_0_3px_rgba(76,111,255,0.28)];
+  }
+
+  /** Treeni — yksi liike kerrallaan (WorkoutSessionView “show” / “log”) */
+  .workout-exercise-surface {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.07) 0%,
+      rgba(255, 255, 255, 0.02) 42%,
+      transparent 78%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      0 18px 48px -28px rgb(0 0 0 / 0.65);
+  }
+
+  .workout-exercise-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5.5rem;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+      ellipse 95% 120% at 50% -15%,
+      rgba(76, 111, 255, 0.35),
+      transparent 72%
+    );
+    opacity: 0.85;
+  }
+
+  .workout-exercise-surface-inner {
+    position: relative;
+    z-index: 1;
   }
 
   /** Cards — glass on dark */

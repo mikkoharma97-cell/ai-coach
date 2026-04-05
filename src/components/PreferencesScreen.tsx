@@ -103,12 +103,18 @@ function splitList(s: string): string[] {
 
 export function PreferencesScreen() {
   const { t, setLocale, locale } = useTranslation();
-  const [profile] = useState(() => loadProfile());
+  const [profile, setProfile] = useState<OnboardingAnswers | null | undefined>(
+    undefined,
+  );
   const [form, setForm] = useState<OnboardingAnswers | null>(null);
   const [saved, setSaved] = useState(false);
   const [reminderPrefs, setReminderPrefs] =
     useState<ReminderPrefs>(DEFAULT_REMINDER_PREFS);
   const [autopilotOn, setAutopilotOn] = useState(() => loadAutopilotEnabled());
+
+  useEffect(() => {
+    setProfile(loadProfile());
+  }, []);
 
   useEffect(() => {
     if (!profile) return;
@@ -193,6 +199,14 @@ export function PreferencesScreen() {
     setLocale(ui);
     setSaved(true);
   };
+
+  if (profile === undefined) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-[15px] text-muted-2">
+        {t("common.loading")}
+      </div>
+    );
+  }
 
   if (!profile) {
     return <CoachProfileMissingFallback />;
@@ -327,6 +341,24 @@ export function PreferencesScreen() {
                 onChange={(e) => onAutopilotToggle(e.target.checked)}
               />
             </label>
+          </PreferenceSection>
+
+          <PreferenceSection
+            id="pref-language"
+            title={t("preferences.sectionLanguage")}
+          >
+            <PreferenceField label={t("settings.language")}>
+              <select
+                className={sel}
+                value={form.uiLocale ?? "fi"}
+                onChange={(e) =>
+                  patch({ uiLocale: e.target.value as UiLocale })
+                }
+              >
+                <option value="fi">Suomi</option>
+                <option value="en">English</option>
+              </select>
+            </PreferenceField>
           </PreferenceSection>
 
           <details className="group rounded-[var(--radius-xl)] border border-border/50 bg-white/[0.02] px-4 py-3">
@@ -721,21 +753,6 @@ export function PreferencesScreen() {
                     <option value="snap_back">{t("onboarding.eventSnap")}</option>
                     <option value="reset">{t("onboarding.eventReset")}</option>
                     <option value="loose">{t("onboarding.eventLoose")}</option>
-                  </select>
-                </PreferenceField>
-              </PreferenceSection>
-
-              <PreferenceSection title={t("preferences.sectionLanguage")}>
-                <PreferenceField label={t("settings.language")}>
-                  <select
-                    className={sel}
-                    value={form.uiLocale ?? "fi"}
-                    onChange={(e) =>
-                      patch({ uiLocale: e.target.value as UiLocale })
-                    }
-                  >
-                    <option value="fi">Suomi</option>
-                    <option value="en">English</option>
                   </select>
                 </PreferenceField>
               </PreferenceSection>

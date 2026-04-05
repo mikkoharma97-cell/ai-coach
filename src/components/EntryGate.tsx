@@ -3,17 +3,18 @@
 import { loadProfile } from "@/lib/storage";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 /**
  * Juuripolku `/`: profiili tallessa → `/app`, muuten `/home`.
+ * @see docs/adr/001-client-navigation.md (`router.replace`)
  */
 export function EntryGate() {
   const router = useRouter();
   const { t } = useTranslation();
   const [stuck, setStuck] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     try {
       const p = loadProfile();
       if (p) {

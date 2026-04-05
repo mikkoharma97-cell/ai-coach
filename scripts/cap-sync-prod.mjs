@@ -14,6 +14,8 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const root = join(__dirname, "..");
 const rawUrl = process.env.CAPACITOR_SERVER_URL?.trim() ?? "";
 
+console.log("MODE: PROD (TESTFLIGHT READY)");
+
 function fail(message) {
   console.error(`[cap-sync-prod] ${message}`);
   process.exit(1);
@@ -35,6 +37,10 @@ function isPrivateHost(hostname) {
 
 if (!rawUrl) {
   fail("CAPACITOR_SERVER_URL is required (example: https://your-app.vercel.app).");
+}
+
+if (rawUrl.includes("192.168")) {
+  fail("PROD build yrittää käyttää LAN URL:ia");
 }
 
 let parsed;
@@ -69,7 +75,7 @@ function run(cmd, args) {
 console.log("[cap-sync-prod] CAPACITOR_SERVER_URL =", parsed.toString());
 run("npm", ["run", "build"]);
 run("npm", ["run", "cap:prepare"]);
-run("npx", ["cap", "sync", "ios"]);
+run(process.execPath, [join(root, "scripts/run-cap-sync-ios.mjs")]);
 
 try {
   const cfgPath = join(root, "ios", "App", "App", "capacitor.config.json");

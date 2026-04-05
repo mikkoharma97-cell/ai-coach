@@ -8,11 +8,11 @@ export const APP_SHORT_NAME = "Coach";
 
 /** Oletuskuvaus — EN (manifest, root layout, kansainvälinen SEO). */
 export const APP_DESCRIPTION =
-  "Today tells you what to do: workout, food, activity — in order. No feed, no guesswork.";
+  "Daily coaching in one app: training, food, and progress — one rhythm, one next task.";
 
 /** Lyhyt rivi — FI referenssi store-teksteille / sisäiseen käyttöön. */
 export const APP_DESCRIPTION_FI =
-  "Tänään lista kertoo: treeni, ruoka, rytmi — järjestyksessä. Ei arvailua.";
+  "Päivittäinen valmennus: treeni, ruoka ja seuranta samassa järjestelmässä — seuraava tehtävä valmiina.";
 
 /** PWA manifest */
 export const APP_START_URL = "/app" as const;

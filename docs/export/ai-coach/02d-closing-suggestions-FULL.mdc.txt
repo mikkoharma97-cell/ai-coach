@@ -1,0 +1,19 @@
+---
+description: Lopetus — koodiparannukset, lisäysideat ja käyttäjän rooli (muisti)
+alwaysApply: true
+---
+
+# Lopetus: koodi, lisäykset, käyttäjän rooli
+
+Kun vastaus koskee **toteutettua työtä** tai **selkeitä kysymyksiä ohjelmistosta** (ei pelkkää “hei”-viestiä), **loppuun** lyhyt osio (esim. **Seuraavat ideat** / **Mahdolliset jatkot**). Rakenne — **kolme kantaa** (yhteensä 2–7 tiivistä bulletia, ei esseetä):
+
+1. **Parannukset koodista** — mitä juuri käsitellyssä koodissa voisi vielä terävöittää (rakenne, rajapinnat, toistuvuus, virheet), ilman että laajennat toteutusta tässä vastauksessa.
+2. **Ehdotukset lisäykseen** — konkreettinen seuraava askel tuotteessa / UX:ssä / datassa, jos konteksti antaa aihetta.
+3. **Näkemys käyttäjän roolista** — yksi lyhyt kappale tai 1–2 bulletia: kuka käyttäjä on tässä näkymässä, mitä hän yrittää saada aikaan, miten tämä muutos tukee sitä (tässä repossa: daily guidance -linja; muuten projektin konteksti).
+
+**Muut säännöt**
+
+- Pidä **tiiviinä**; ei uutta scopea toteutuksena saman vastauksen sisällä, vain ehdotuksia.
+- Jos käyttäjä sanoo ettei halua ehdotuksia, ohita tämä sääntö kyseisessä keskustelussa.
+
+**Prioriteetti:** tämä sääntö **ylittää** yleisen “ei proaktiivisia parannusehdotuksia” -oletuksen **vain** tässä lopetusosiossa, kun työ on relevantti — ei pitkiä auditointeja ilman pyyntöä.

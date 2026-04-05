@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
-import { appendBuildQuery } from "@/lib/buildInfo";
-
 /**
  * Marketing hero — yksi tumma fokuskortti (ei app-näkymän kopio).
  */
@@ -59,11 +57,14 @@ export function HeroFocusCard() {
               </p>
             </div>
           </div>
+          <p className="mt-5 text-center text-[12px] font-medium leading-snug text-zinc-500">
+            {t("landing.heroCardCaption")}
+          </p>
           <Link
-            href={appendBuildQuery("/start")}
-            className="mt-6 flex w-full min-h-[48px] items-center justify-center rounded-[var(--radius-lg)] bg-gradient-to-b from-[rgb(59,130,246)] to-[rgb(41,92,255)] py-3 text-center text-[14px] font-semibold text-white shadow-[0_12px_40px_-12px_rgba(41,92,255,0.55)] ring-1 ring-white/10 transition hover:brightness-110 active:scale-[0.99] sm:mt-7 sm:py-3.5"
+            href="/packages"
+            className="mt-3 block text-center text-[13px] font-semibold text-cyan-400/90 underline-offset-[3px] transition hover:text-cyan-300 hover:underline"
           >
-            {t("landing.heroCardCtaDecor")}
+            {t("landing.heroCardLinkPackages")}
           </Link>
         </div>
       </div>

@@ -94,6 +94,12 @@ export function FeedbackDebugClient() {
           ) : null}
         </div>
 
+        {isDev ? (
+          <p className="text-[12px] leading-snug text-muted-2">
+            {t("feedback.devFileHint")}
+          </p>
+        ) : null}
+
         {items.length === 0 ? (
           <p className="text-[15px] text-muted">{t("feedback.pageEmpty")}</p>
         ) : (

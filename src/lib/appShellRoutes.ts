@@ -18,6 +18,7 @@ const APP_SHELL_PATHS = new Set([
   "/packages",
   "/profile",
   "/plan",
+  "/program",
   "/pro",
   "/scan",
 ]);

@@ -7,6 +7,16 @@
  * Paywallin yksi totuus (hasAccess, syy, billingMode): `getPaywallTruth()` → `src/lib/paywallPolicy.ts`.
  */
 
+/** Yksi totuus käyttäjätilasta (profiili + mock-maksu). */
+export type UserSubscriptionState =
+  | "NO_PROFILE"
+  | "ACTIVE_PAID"
+  | "ACTIVE_FREE";
+
+/** Profiilimerkki paywall-tilalle (erillinen `ai-coach-profile-v3` -JSONista). */
+export const COACH_PROFILE_STORAGE_KEY = "coach_profile";
+export const COACH_PAID_STORAGE_KEY = "coach_paid";
+
 /** `mock` = localStorage-demo. `production` = varattu oikealle billingille (env-lippu + toteutus). */
 export type CoachSubscriptionMode = "mock" | "production";
 
@@ -20,6 +30,11 @@ export function getCoachSubscriptionMode(): CoachSubscriptionMode {
   return "mock";
 }
 
+/**
+ * Legacy trial JSON (ai-coach-subscription-v1):
+ * - käyttää `trialStartedAt` + `subscribed` mock-kenttiä
+ * - EI ole nykyinen paywall-gaten päätotuus
+ */
 export const SUBSCRIPTION_STORAGE_KEY = "ai-coach-subscription-v1";
 const KEY = SUBSCRIPTION_STORAGE_KEY;
 const TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -27,6 +42,19 @@ const TRIAL_MS = 7 * 24 * 60 * 60 * 1000;
 export type SubscriptionState = {
   trialStartedAt: string | null;
   subscribed: boolean;
+};
+
+export type SubscriptionAccessDecision = {
+  state: UserSubscriptionState;
+  hasProfile: boolean;
+  hasPaidAccess: boolean;
+  inTrial: boolean;
+  trialExpired: boolean;
+  trialStartedAt: string | null;
+  trialEndsAt: number | null;
+  hasAccess: boolean;
+  shouldShowPaywall: boolean;
+  billingMode: CoachSubscriptionMode;
 };
 
 function read(): SubscriptionState {
@@ -68,25 +96,47 @@ export function ensureTrialStarted(): void {
 
 /** Mock-tilassa: tallentaa booleanin. Production-tilassa: korvaa oikealla entitlement-päivityksellä. */
 export function setSubscribed(value: boolean): void {
+  if (typeof window === "undefined") return;
+  // Active write path: keep legacy snapshot in sync, but `coach_paid` is the gate key.
+  if (value) {
+    localStorage.setItem(COACH_PAID_STORAGE_KEY, "1");
+  } else {
+    localStorage.removeItem(COACH_PAID_STORAGE_KEY);
+  }
   const s = read();
   write({ ...s, subscribed: value });
 }
 
+/**
+ * Yksi totuus: profiili (`coach_profile`) + mock-maksu (`coach_paid`).
+ * `coach_profile` asetetaan `saveProfile` / `loadProfile` -polulla.
+ * Tämä on aktiivinen gate-malli (`NO_PROFILE` / `ACTIVE_FREE` / `ACTIVE_PAID`).
+ */
+export function getUserSubscriptionState(): UserSubscriptionState {
+  if (typeof window === "undefined") return "NO_PROFILE";
+  const hasProfile = Boolean(localStorage.getItem(COACH_PROFILE_STORAGE_KEY));
+  const isPaid = localStorage.getItem(COACH_PAID_STORAGE_KEY) === "1";
+  if (!hasProfile) return "NO_PROFILE";
+  if (isPaid) return "ACTIVE_PAID";
+  return "ACTIVE_FREE";
+}
+
+/** Testi: merkitse maksu voimassa ilman oikeaa kuittia. */
+export function activateFakeSubscription(): void {
+  setSubscribed(true);
+}
+
+export function resetSubscription(): void {
+  setSubscribed(false);
+}
+
 export function hasSubscriptionAccess(): boolean {
-  if (typeof window === "undefined") return true;
-  const s = read();
-  if (s.subscribed) return true;
-  if (!s.trialStartedAt) return true;
-  const start = new Date(s.trialStartedAt).getTime();
-  return Date.now() < start + TRIAL_MS;
+  return getSubscriptionAccessDecision().hasAccess;
 }
 
 /** Trial window ended, not subscribed. */
 export function isTrialExpired(): boolean {
-  if (typeof window === "undefined") return false;
-  const s = read();
-  if (s.subscribed || !s.trialStartedAt) return false;
-  return Date.now() >= new Date(s.trialStartedAt).getTime() + TRIAL_MS;
+  return getSubscriptionAccessDecision().trialExpired;
 }
 
 export function hasTrialStarted(): boolean {
@@ -166,3 +216,58 @@ export function trialDaysLeft(): number {
 }
 
 export const TRIAL_DAYS = 7;
+
+/**
+ * Single source for access decisions used by gate/paywall/today.
+ * Reads profile marker, paid marker and legacy trial snapshot in one place.
+ */
+export function getSubscriptionAccessDecision(): SubscriptionAccessDecision {
+  if (typeof window === "undefined") {
+    return {
+      state: "NO_PROFILE",
+      hasProfile: false,
+      hasPaidAccess: false,
+      inTrial: false,
+      trialExpired: false,
+      trialStartedAt: null,
+      trialEndsAt: null,
+      hasAccess: false,
+      shouldShowPaywall: false,
+      billingMode: getCoachSubscriptionMode(),
+    };
+  }
+
+  const hasProfile = Boolean(localStorage.getItem(COACH_PROFILE_STORAGE_KEY));
+  const hasPaidAccess = localStorage.getItem(COACH_PAID_STORAGE_KEY) === "1";
+  const s = read();
+
+  const trialStartedAt = s.trialStartedAt;
+  const trialEndsAt = trialStartedAt
+    ? new Date(trialStartedAt).getTime() + TRIAL_MS
+    : null;
+  const trialExpired =
+    trialEndsAt != null ? Date.now() >= trialEndsAt : false;
+  const inTrial = hasProfile && !hasPaidAccess && !trialExpired;
+
+  const state: UserSubscriptionState = !hasProfile
+    ? "NO_PROFILE"
+    : hasPaidAccess
+      ? "ACTIVE_PAID"
+      : "ACTIVE_FREE";
+
+  const hasAccess = hasProfile && (hasPaidAccess || inTrial);
+  const shouldShowPaywall = hasProfile && !hasPaidAccess && trialExpired;
+
+  return {
+    state,
+    hasProfile,
+    hasPaidAccess,
+    inTrial,
+    trialExpired,
+    trialStartedAt,
+    trialEndsAt,
+    hasAccess,
+    shouldShowPaywall,
+    billingMode: getCoachSubscriptionMode(),
+  };
+}

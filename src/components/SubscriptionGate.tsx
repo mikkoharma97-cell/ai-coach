@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 /**
  * After trial, coach routes require subscription (unlock on paywall).
  * Settings stays reachable to change language, open paywall, or clear data.
+ * @see docs/adr/001-client-navigation.md (`router.replace`)
  */
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -32,13 +33,15 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
           router.replace("/start");
           flowLog("gate.redirectNoProfile", path);
           clearTimeout(failsafe);
-          setReady(true);
           return () => {};
         }
       } else {
         ensureTrialStarted();
         if (!coachRouteAllowsNoProfile(path) && shouldRedirectToPaywall()) {
           router.replace("/paywall");
+          flowLog("gate.redirectPaywall", path);
+          clearTimeout(failsafe);
+          return () => {};
         }
       }
       setReady(true);

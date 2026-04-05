@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Today — Direction A: Daily Briefing (mockup)</title>
+  <style>
+    :root {
+      --bg: #05060a;
+      --fg: #f3f6ff;
+      --muted: #9aa3b2;
+      --muted2: #7a879e;
+      --accent: #3d6bff;
+      --accent-hover: #5a84ff;
+      --card: rgba(255, 255, 255, 0.035);
+      --border: rgba(255, 255, 255, 0.07);
+      --radius-lg: 1rem;
+      --safe-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0a0c12;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+    }
+    .frame {
+      max-width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 12px 16px calc(var(--safe-bottom) + 72px);
+    }
+    .date-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .date-row span:first-child {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted2);
+    }
+    .date-row span:last-child {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .brief-head {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin: 0 0 4px;
+    }
+    .brief-sub {
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--muted);
+      margin: 0 0 20px;
+    }
+    .focus-card {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 2px 16px -8px rgba(0, 0, 0, 0.28);
+      padding: 18px 16px 20px;
+    }
+    .eyebrow {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted2);
+      margin: 0 0 6px;
+    }
+    .focus-title {
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+    .hero {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--muted);
+      margin: 0 0 20px;
+    }
+    .cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      width: 100%;
+      border-radius: var(--radius-lg);
+      background: var(--accent);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    .cta:active { opacity: 0.95; }
+    .next-hint {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(176, 184, 200, 0.85);
+    }
+    .section-label {
+      margin: 22px 0 10px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-align: center;
+      color: rgba(122, 135, 158, 0.55);
+    }
+    .day-summary {
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .day-summary strong { color: var(--fg); font-weight: 600; }
+    .gym-card {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(61, 107, 255, 0.08), transparent);
+    }
+    .gym-card h3 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .gym-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .bar-track {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 71%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+    .gym-foot {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted2);
+    }
+    .mock-note {
+      margin-top: 24px;
+      padding: 10px;
+      font-size: 10px;
+      color: rgba(138, 150, 170, 0.6);
+      text-align: center;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="frame" aria-label="Staattinen mockup: Daily Briefing">
+    <div class="date-row">
+      <span>Tänään</span>
+      <span>su 5.4.</span>
+    </div>
+    <p class="brief-head">Päivän briefing</p>
+    <p class="brief-sub">Yksi päätehtävä, lyhyt yhteenveto ja viikon salitilanne — ilman ylimääräisiä valintoja.</p>
+
+    <div class="focus-card">
+      <p class="eyebrow">Fokus</p>
+      <h1 class="focus-title">Voimapainotteinen treeni</h1>
+      <p class="hero">Treeni 2/4 tällä viikolla. Tee pääliikkeet ensin, sitten täydennä tarvittaessa.</p>
+      <a class="cta" href="#">Aloita treeni</a>
+      <p class="next-hint">Seuraavaksi: merkitse sarjat valmiiksi, sitten ruokapäivä.</p>
+    </div>
+
+    <p class="section-label">Päivän yhteenveto</p>
+    <div class="day-summary">
+      <strong>Ruoka:</strong> kolme pääateriaa + välipala.<br />
+      <strong>Tila:</strong> ei lepopäivä — sali etusijalla ennen illan aikataulua.
+    </div>
+
+    <div class="gym-card">
+      <h3>Viime viikon sali</h3>
+      <div class="gym-row">
+        <span>Tavoite vs. tehty</span>
+        <span style="color: var(--fg); font-weight: 600;">4 / 4</span>
+      </div>
+      <div class="bar-track" role="presentation"><div class="bar-fill"></div></div>
+      <p class="gym-foot">Edellinen täysi viikko: kaikki neljä sessiota kirjattu. Tämä viikko: 2/4.</p>
+    </div>
+
+    <p class="mock-note">Staattinen mockup — ei tuotantoreittiä. iPhone-first ~390px.</p>
+  </div>
+</body>
+</html>

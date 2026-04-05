@@ -35,8 +35,8 @@ export function LandingComparisonStrip() {
       <p className="mt-2 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
         {t("landing.compareEyebrow")}
       </p>
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4">
+      <div className="mt-5 grid grid-cols-1 gap-2.5 sm:mt-6 sm:grid-cols-3 sm:gap-4">
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-3 sm:px-4 sm:py-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
             {t("landing.compareColAppTitle")}
           </p>
@@ -51,7 +51,7 @@ export function LandingComparisonStrip() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-4">
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-3 sm:px-4 sm:py-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
             {t("landing.compareColPtTitle")}
           </p>
@@ -66,7 +66,7 @@ export function LandingComparisonStrip() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-accent/30 bg-accent/[0.07] px-4 py-4">
+        <div className="rounded-2xl border border-accent/30 bg-accent/[0.07] px-3 py-3 sm:px-4 sm:py-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent/90">
             {t("landing.compareColThisTitle")}
           </p>
@@ -88,10 +88,10 @@ export function LandingComparisonStrip() {
       <p className="mx-auto mt-3 max-w-lg whitespace-pre-line text-center text-[12px] font-medium leading-relaxed text-zinc-500">
         {t("landing.compareTrust")}
       </p>
-      <div className="mt-6 flex justify-center">
+      <div className="mt-5 flex justify-center">
         <Link
           href={appendBuildQuery("/compare")}
-          className="inline-flex min-h-[48px] items-center justify-center rounded-[14px] border border-white/12 bg-white/[0.06] px-6 text-[14px] font-semibold text-zinc-100 transition hover:border-accent/35 hover:bg-white/[0.09]"
+          className="text-[13px] font-semibold text-zinc-400 underline-offset-[3px] transition hover:text-zinc-200 hover:underline"
         >
           {t("landing.compareCta")}
         </Link>

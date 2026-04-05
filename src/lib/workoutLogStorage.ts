@@ -7,6 +7,10 @@ import type {
   WorkoutSessionLog,
   WorkoutSessionMode,
 } from "@/types/adaptiveCoaching";
+import { emitCoachEvent, WORKOUT_LOG_CHANGED } from "@/lib/coachEvents";
+import { getDayKey } from "@/lib/dayKey";
+
+export { WORKOUT_LOG_CHANGED };
 
 /** Yhteensopiva WorkoutView-rivien kanssa (completed setissä) */
 export type SerializableExercise = {
@@ -23,17 +27,11 @@ export type SerializableExercise = {
 const KEY = "ai-coach-workout-sessions-v1";
 const MAX_SESSIONS = 40;
 
-export const WORKOUT_LOG_CHANGED = "coach-workout-log-changed";
-
 function newId(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function dayKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
 
 function parseNum(s: string | undefined): number | null {
@@ -93,7 +91,7 @@ export function serializeWorkoutSession(
   return {
     id: newId(),
     completedAt: referenceDate.toISOString(),
-    dayKey: dayKey(referenceDate),
+    dayKey: getDayKey(referenceDate),
     exercises: outEx,
     ...(meta
       ? {
@@ -125,7 +123,7 @@ export function saveWorkoutSession(log: WorkoutSessionLog): void {
     const prev = loadWorkoutSessions();
     const next = [log, ...prev].slice(0, MAX_SESSIONS);
     localStorage.setItem(KEY, JSON.stringify(next));
-    window.dispatchEvent(new CustomEvent(WORKOUT_LOG_CHANGED));
+    emitCoachEvent(WORKOUT_LOG_CHANGED);
   } catch {
     /* ignore */
   }

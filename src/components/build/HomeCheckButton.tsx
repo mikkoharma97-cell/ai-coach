@@ -40,7 +40,7 @@ export function HomeCheckButton() {
   if (!showFloatingHomeRefresh()) return null;
 
   const bottomClass = shell
-    ? "bottom-[calc(5.75rem+env(safe-area-inset-bottom,0px))]"
+    ? "bottom-[calc(var(--bottom-stack)+4px)]"
     : "bottom-[max(3.5rem,env(safe-area-inset-bottom,0px)+2.75rem)]";
 
   const btnClass =

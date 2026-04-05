@@ -41,6 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# dev-only palauteloki (synnyttää API: docs/feedback-log.md)
+docs/feedback-log.json
+
 # IDE / paikallinen Cursor-tila (ei repoon) — poikkeus: jaetut säännöt + agenttimuisti
 .cursor/*
 !.cursor/rules/

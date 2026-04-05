@@ -14,7 +14,7 @@ export function BuildRefreshToast() {
 
   return (
     <div
-      className="pointer-events-auto fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] left-1/2 z-[95] w-[min(100%,20rem)] -translate-x-1/2 px-4 sm:bottom-[calc(6rem+env(safe-area-inset-bottom,0px))]"
+      className="pointer-events-auto fixed bottom-[calc(var(--bottom-stack)+12px)] left-1/2 z-[95] w-[min(100%,20rem)] -translate-x-1/2 px-4"
       role="status"
     >
       <div className="flex items-center justify-between gap-3 rounded-[var(--radius-lg)] border border-accent/40 bg-[rgba(5,6,10,0.96)] px-4 py-3 shadow-[var(--shadow-float)] backdrop-blur-md">
