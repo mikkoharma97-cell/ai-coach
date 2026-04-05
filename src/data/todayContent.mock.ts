@@ -2,7 +2,7 @@
  * Today display layer — V1 fake copy with stable shapes for later real-data swap.
  * Replace `resolveTodayDisplayMock` internals when backend / user content plugs in.
  */
-import { formatFoodPlanLabel } from "@/lib/coachDisplayLabels";
+import { resolveFoodDayMock } from "@/data/foodContent.mock";
 import type { ProgramPackage } from "@/lib/programPackages";
 import type { Goal, ProgramPackageId } from "@/types/coach";
 import type { Locale } from "@/lib/i18n";
@@ -305,11 +305,13 @@ function restSnapshot(
   goal: Goal,
 ): TodayDisplaySnapshot {
   const fi = locale === "fi";
-  const food = formatFoodPlanLabel({
+  const food = resolveFoodDayMock({
     mealCount,
     style: mealStyle,
+    goal,
     locale,
-  });
+    planBias: bias,
+  }).foodPlanLabel;
   return {
     heroTitle: fi ? "Palautuminen ja rytmi" : "Recovery & rhythm",
     heroGuidance: fi
@@ -332,11 +334,13 @@ function foodOnlySnapshot(
   goal: Goal,
 ): TodayDisplaySnapshot {
   const fi = locale === "fi";
-  const food = formatFoodPlanLabel({
+  const food = resolveFoodDayMock({
     mealCount,
     style: mealStyle,
+    goal,
     locale,
-  });
+    planBias: bias,
+  }).foodPlanLabel;
   return {
     heroTitle: fi ? "Ruokarytmi — päivän linja" : "Meal rhythm — today’s line",
     heroGuidance: fi
@@ -380,11 +384,14 @@ export function resolveTodayDisplayMock(args: {
   }
 
   const v = trainingVariant(locale, planBias, packageId, todayIdx);
-  const food = formatFoodPlanLabel({
+  const food = resolveFoodDayMock({
     mealCount,
     style: mealStyle,
+    goal,
     locale,
-  });
+    packageId,
+    planBias,
+  }).foodPlanLabel;
   const fi = locale === "fi";
 
   return {

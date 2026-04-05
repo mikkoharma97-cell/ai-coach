@@ -1,13 +1,13 @@
 /**
- * Päivän ruokarakenne — V1 mock (myöhemmin vaihdettavissa oikeaan dataan).
+ * Päivän ruokarakenne — yksi totuus Today + Food -näkymille (mock V2).
  * Ei resepti-engineä; selkeät ateriat ja nimikkeet.
  */
 import {
   formatFoodPlanLabel,
   formatFoodStyleLabel,
 } from "@/lib/coachDisplayLabels";
-import type { Goal } from "@/types/coach";
 import type { ProgramPackage } from "@/lib/programPackages";
+import type { Goal } from "@/types/coach";
 import type { FoodDayPlan, FoodDayStyle } from "@/types/foodPlan";
 import type { Locale } from "@/lib/i18n";
 
@@ -32,6 +32,28 @@ function slotNamesForCount(count: number): SlotNames {
     fi: ["Aamiainen", "Välipala", "Lounas", "Toinen välipala", "Päivällinen"],
     en: ["Breakfast", "Snack", "Lunch", "Snack", "Dinner"],
   };
+}
+
+/** Kevyt aikavyöhyke otsikon alle — ei kelloa, vain suunta. */
+function timingLabelsForSlot(
+  locale: Locale,
+  mealCount: number,
+  mealIndex: number,
+): string | undefined {
+  const fi = locale === "fi";
+  if (mealCount <= 3) {
+    const fi3 = ["Aamu", "Keskipäivä", "Ilta"];
+    const en3 = ["Morning", "Midday", "Evening"];
+    return fi ? fi3[mealIndex] : en3[mealIndex];
+  }
+  if (mealCount === 4) {
+    const fi4 = ["Aamu", "Keskipäivä", "Iltapäivä", "Ilta"];
+    const en4 = ["Morning", "Midday", "Afternoon", "Evening"];
+    return fi ? fi4[mealIndex] : en4[mealIndex];
+  }
+  const fi5 = ["Aamu", "Aamu", "Keskipäivä", "Iltapäivä", "Ilta"];
+  const en5 = ["Morning", "Late morning", "Midday", "Afternoon", "Evening"];
+  return fi ? fi5[mealIndex] : en5[mealIndex];
 }
 
 function mealId(name: string, index: number): string {
@@ -151,39 +173,133 @@ function pickItems(
   return pickSlot(mealCount, mealIndex);
 }
 
+/** Mikä ateria-slotti on “seuraava” kellonajan perusteella (paikallinen aika). */
+export function nextMealSlotIndex(now: Date, mealCount: number): number {
+  const capped = Math.min(Math.max(mealCount, 3), 5);
+  const h = now.getHours();
+  if (capped <= 3) {
+    if (h < 10) return 0;
+    if (h < 15) return 1;
+    return 2;
+  }
+  if (capped === 4) {
+    if (h < 9) return 0;
+    if (h < 12) return 1;
+    if (h < 16) return 2;
+    return 3;
+  }
+  if (h < 8) return 0;
+  if (h < 11) return 1;
+  if (h < 14) return 2;
+  if (h < 17) return 3;
+  return 4;
+}
+
+function guidanceForFoodDay(args: {
+  locale: Locale;
+  goal: Goal;
+  style: FoodDayStyle;
+  planBias: ProgramPackage["planBias"];
+}): string {
+  const { locale, goal, style, planBias } = args;
+  const fi = locale === "fi";
+
+  if (style === "high_protein") {
+    return fi
+      ? "Proteiini jokaisella aterialla. Treenipäivää tukeva rytmi."
+      : "Protein at every meal — rhythm that supports training.";
+  }
+  if (style === "warm") {
+    return fi
+      ? "Energiaa aamuun — päivän rytmi lähtee kevyesti käyntiin."
+      : "Front-load energy — the day starts light and steady.";
+  }
+  if (style === "performance") {
+    return fi
+      ? "Tarkka jako — tankkaus ja ajoitus tukevat suoritusta."
+      : "Tight structure — fueling and timing support performance.";
+  }
+  if (style === "easy") {
+    if (planBias === "cut" || goal === "lose_weight") {
+      return fi
+        ? "Kevyempi päivä, mutta rytmi pysyy. Energia tasaisena."
+        : "Lighter day, same rhythm — keep energy even.";
+    }
+    return fi
+      ? "Tänään pidetään energiansaanti tasaisena."
+      : "Keep energy steady across the day.";
+  }
+  return fi
+    ? "Rytmi linjassa valmennuksen kanssa."
+    : "Rhythm aligned with your coaching plan.";
+}
+
 /**
- * Palauttaa tämän päivän ruokarakenteen — sama muoto Today + Food -näkymille.
+ * Palauttaa tämän päivän ruokarakenteen — sama muoto Today + Food.
+ * Today `planFoodLabel` = `foodPlanLabel` tästä (yksi resolver).
  */
 export function resolveFoodDayMock(args: {
   mealCount: number;
   style: FoodDayStyle;
   goal: Goal;
   locale: Locale;
-  /** Valinnainen — myöhempi paketti-/personalointi */
+  /** Valinnainen — myöhempi personalointi */
   packageId?: string;
+  planBias?: ProgramPackage["planBias"];
+  /** Päivämäärä seuraavan aterian valintaan (oletus: nyt) */
+  now?: Date;
 }): FoodDayPlan {
-  const { mealCount, style, goal, locale, packageId } = args;
+  const {
+    mealCount,
+    style,
+    goal,
+    locale,
+    packageId,
+    planBias = "steady",
+    now = new Date(),
+  } = args;
   void packageId;
   const count = Math.min(Math.max(mealCount, 3), 5);
   const names = slotNamesForCount(count);
   const labels = locale === "fi" ? names.fi : names.en;
   const dayLabel = locale === "fi" ? "Tänään" : "Today";
 
-  const meals = labels.map((name, mealIndex) => ({
-    id: mealId(name, mealIndex),
-    name,
-    items: pickItems(locale, goal, mealIndex, style, count),
-  }));
+  const foodPlanLabel = formatFoodPlanLabel({
+    mealCount: count,
+    style,
+    locale,
+  });
+
+  const nextIdx = nextMealSlotIndex(now, count);
+  const nextBadge =
+    locale === "fi" ? "Seuraava ateria" : "Next meal";
+
+  const meals = labels.map((name, mealIndex) => {
+    const id = mealId(name, mealIndex);
+    const isNext = mealIndex === nextIdx;
+    return {
+      id,
+      name,
+      timingLabel: timingLabelsForSlot(locale, count, mealIndex),
+      items: pickItems(locale, goal, mealIndex, style, count),
+      emphasis: isNext ? nextBadge : undefined,
+    };
+  });
+
+  const nextMealId = meals[nextIdx]?.id ?? meals[0]!.id;
 
   return {
     dayLabel,
     mealCount: count,
     styleLabel: formatFoodStyleLabel(style, locale),
-    planLabel: formatFoodPlanLabel({
-      mealCount: count,
-      style,
+    foodPlanLabel,
+    guidanceLine: guidanceForFoodDay({
       locale,
+      goal,
+      style,
+      planBias,
     }),
     meals,
+    nextMealId,
   };
 }
