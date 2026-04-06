@@ -3,6 +3,7 @@
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { Container } from "@/components/ui/Container";
 import { useClientProfile } from "@/hooks/useClientProfile";
+import { useCoachDayModel } from "@/hooks/useCoachDayModel";
 import { useTranslation } from "@/hooks/useTranslation";
 import { buildTodayWorkoutForUi, normalizeProfileForEngine } from "@/lib/coach";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
@@ -52,6 +53,10 @@ export function WorkoutSessionView() {
   const [logVersion, setLogVersion] = useState(0);
   const [flowIx, setFlowIx] = useState(0);
   const [flowPhase, setFlowPhase] = useState<FlowPhase>("show");
+
+  const { coachDayModel } = useCoachDayModel({
+    justFinishedWorkoutSession: false,
+  });
 
   const normalized = useMemo(
     () => (profile ? normalizeProfileForEngine(profile) : null),
@@ -196,10 +201,10 @@ export function WorkoutSessionView() {
                   {t("workout.restEyebrow")}
                 </p>
                 <h1 className="mt-2 text-balance text-[1.4rem] font-semibold leading-tight tracking-[-0.03em] text-foreground sm:text-[1.45rem]">
-                  {t("workout.restTitle")}
+                  {coachDayModel?.heroTitle ?? t("workout.restTitle")}
                 </h1>
                 <p className="mt-3 text-[15px] leading-relaxed text-muted">
-                  {t("workout.restHint")}
+                  {coachDayModel?.heroGuidance ?? t("workout.restHint")}
                 </p>
                 <button
                   type="button"
@@ -311,6 +316,14 @@ export function WorkoutSessionView() {
                 return (
                   <div className="workout-exercise-surface mt-1 flex min-h-0 flex-col px-4 pb-5 pt-4 sm:px-5 sm:pb-6 sm:pt-5">
                     <div className="workout-exercise-surface-inner flex min-h-0 flex-col">
+                      {coachDayModel?.workoutContextLine ? (
+                        <p
+                          className="mb-2 text-[13px] leading-snug text-muted-2"
+                          role="status"
+                        >
+                          {coachDayModel.workoutContextLine}
+                        </p>
+                      ) : null}
                       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
                           {t("workoutSession.flowProgress", {
@@ -324,7 +337,6 @@ export function WorkoutSessionView() {
                           </p>
                         ) : null}
                       </div>
-
                       {flowPhase === "show" ? (
                         <>
                           <h1 className="mt-3 text-balance text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground sm:text-[1.6rem]">

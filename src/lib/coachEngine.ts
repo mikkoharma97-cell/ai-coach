@@ -1,6 +1,6 @@
 /**
- * Coach Engine V1A — yksi päivämalli + resolver (mock-lähteet).
- * UI voi kytkeä myöhemmin; resolver on ajettavissa erikseen.
+ * Coach Engine V1C — yksi päivämalli + resolver (mock-lähteet).
+ * Workout/Food/Today jakavat saman moodin; workoutContextLine treeninäkymän päiväkontekstille.
  */
 import {
   foodPlanFallbackLabel,
@@ -37,12 +37,16 @@ export type CoachDayModel = {
   foodPlanLabel: string;
   programFocusLabel: string;
   nextAction: CoachNextAction;
-  /** Valmis CTA-teksti (käännös tehty resolverissa) */
-  nextActionLabel: string;
-  /** Lyhyt tilaviesti (esim. treeni juuri tehty) tai null */
+  /** Pää-CTA — null = ei nappia (completed tms.) */
+  primaryCta: { href: string; label: string } | null;
+  /** Lyhyt tilaviesti (esim. päivä valmis) tai null */
   inlineStatus: string | null;
-  /** Pää-CTA:n reitti — `none` / tyhjä → getCoachNextActionRoute palauttaa null */
-  ctaHref: string | null;
+  /** Tilanne-rivi kun ruokalogeja ei ole (mock resolverista) */
+  situationFoodWhenNoLogs: string;
+  /** “Tila”-sarakkeen arvo — sama totuus kuin mode (+ alitila) */
+  statusValue: string;
+  /** Yksi rivi Workout-näkymälle — linjassa moodin kanssa */
+  workoutContextLine: string;
 };
 
 export type CoachEngineInput = {
@@ -94,13 +98,66 @@ function deriveMode(input: CoachEngineInput): CoachDayMode {
   return "training";
 }
 
+/** Tilanne nyt -rivi: moodi ensin, training/rest/food_only tarkentaa resolvedFlowlla */
+function deriveStatusValue(
+  input: CoachEngineInput,
+  mode: CoachDayMode,
+  t: (key: MessageKey) => string,
+): string {
+  const { resolvedFlow } = input;
+  switch (mode) {
+    case "completed":
+      return t("todayView.progressAriaCompleted");
+    case "light":
+      return t("todayView.situationStatusLight");
+    case "recovery":
+      return t("todayView.situationStatusRecovery");
+    case "food_only":
+      return resolvedFlow === "in_progress"
+        ? t("todayView.progressAriaInProgress")
+        : t("todayView.situationStatusFoodDay");
+    case "rest":
+      return resolvedFlow === "in_progress"
+        ? t("todayView.progressAriaInProgress")
+        : t("todayView.situationStatusRestDay");
+    case "training":
+    default:
+      return resolvedFlow === "in_progress"
+        ? t("todayView.progressAriaInProgress")
+        : t("todayView.progressAriaNotStarted");
+  }
+}
+
+function deriveWorkoutContextLine(
+  mode: CoachDayMode,
+  workoutPlanLabel: string,
+  foodPlanLabel: string,
+  heroTitle: string,
+  statusValue: string,
+): string {
+  switch (mode) {
+    case "completed":
+      return statusValue;
+    case "rest":
+      return heroTitle;
+    case "food_only":
+      return foodPlanLabel;
+    case "training":
+    case "light":
+    case "recovery":
+      return workoutPlanLabel;
+    default:
+      return workoutPlanLabel;
+  }
+}
+
 export function getCoachNextActionRoute(model: CoachDayModel): string | null {
-  const h = model.ctaHref?.trim();
+  const h = model.primaryCta?.href?.trim();
   return h ? h : null;
 }
 
 export function getCoachNextActionLabel(model: CoachDayModel): string {
-  return model.nextActionLabel;
+  return model.primaryCta?.label ?? "";
 }
 
 function primaryCtaFromState(input: CoachEngineInput): {
@@ -240,6 +297,21 @@ export function resolveCoachDayModel(input: CoachEngineInput): CoachDayModel {
         ? t("todayView.dayCompletedHint")
         : null;
 
+  const primaryCta: { href: string; label: string } | null =
+    isCompleted || !cta.href?.trim()
+      ? null
+      : { href: cta.href, label: t(cta.labelKey) };
+
+  const statusValue = deriveStatusValue(input, mode, t);
+
+  const workoutContextLine = deriveWorkoutContextLine(
+    mode,
+    planWorkoutLabel,
+    planFoodLabel,
+    heroTitle,
+    statusValue,
+  );
+
   return {
     mode,
     heroTitle,
@@ -248,8 +320,10 @@ export function resolveCoachDayModel(input: CoachEngineInput): CoachDayModel {
     foodPlanLabel: planFoodLabel,
     programFocusLabel: todayDisplay.programSituationFocus,
     nextAction: cta.next,
-    nextActionLabel: isCompleted ? "" : t(cta.labelKey),
+    primaryCta,
     inlineStatus,
-    ctaHref: cta.href,
+    situationFoodWhenNoLogs: todayDisplay.situationFoodWhenNoLogs,
+    statusValue,
+    workoutContextLine,
   };
 }

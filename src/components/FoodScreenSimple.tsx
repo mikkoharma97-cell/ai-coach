@@ -3,72 +3,22 @@
 import { CoachProfileMissingFallback } from "@/components/CoachProfileMissingFallback";
 import { Container } from "@/components/ui/Container";
 import { useClientProfile } from "@/hooks/useClientProfile";
+import { useCoachDayModel } from "@/hooks/useCoachDayModel";
 import { useTranslation } from "@/hooks/useTranslation";
-import {
-  buildCoachDailyPlanForSession,
-  normalizeProfileForEngine,
-} from "@/lib/coach";
-import { dayKeyFromDate } from "@/lib/dateKey";
 import { dateLocaleForUi } from "@/lib/i18n";
-import { loadFoodLog } from "@/lib/foodStorage";
-import {
-  EXCEPTION_STATE_CHANGED,
-  loadActiveExceptionForDay,
-} from "@/lib/exceptionStorage";
-import {
-  MINIMUM_DAY_CHANGED,
-  loadMinimumDayForDay,
-} from "@/lib/minimumDayStorage";
 import { resolveFoodDayMock } from "@/data/foodContent.mock";
 import { getProgramPackage } from "@/lib/programPackages";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 export function FoodScreenSimple() {
   const { t, locale } = useTranslation();
   const profile = useClientProfile();
   const [now] = useState(() => new Date());
-  const [exTick, setExTick] = useState(0);
-  const [minimumTick, setMinimumTick] = useState(0);
 
-  useEffect(() => {
-    const b = () => setExTick((x) => x + 1);
-    window.addEventListener(EXCEPTION_STATE_CHANGED, b);
-    return () => window.removeEventListener(EXCEPTION_STATE_CHANGED, b);
-  }, []);
-
-  useEffect(() => {
-    const b = () => setMinimumTick((x) => x + 1);
-    window.addEventListener(MINIMUM_DAY_CHANGED, b);
-    return () => window.removeEventListener(MINIMUM_DAY_CHANGED, b);
-  }, []);
-
-  const dayKeyFood = useMemo(() => dayKeyFromDate(now), [now]);
-
-  const activeException = useMemo(
-    () => loadActiveExceptionForDay(dayKeyFood),
-    [dayKeyFood, exTick],
-  );
-  const minimumDayActive = useMemo(
-    () => loadMinimumDayForDay(dayKeyFood),
-    [dayKeyFood, minimumTick],
-  );
-
-  const normalizedProfile = useMemo(
-    () => (profile ? normalizeProfileForEngine(profile) : null),
-    [profile],
-  );
-
-  const plan = useMemo(() => {
-    if (!normalizedProfile) return null;
-    return buildCoachDailyPlanForSession({
-      profile: normalizedProfile,
-      now,
-      locale,
-      activeException,
-      minimumDayActive,
-    });
-  }, [normalizedProfile, now, locale, activeException, minimumDayActive]);
+  const { coachDayModel, plan, foodLogs } = useCoachDayModel({
+    justFinishedWorkoutSession: false,
+  });
 
   const foodDay = useMemo(() => {
     if (!profile) return null;
@@ -84,9 +34,11 @@ export function FoodScreenSimple() {
     });
   }, [profile, locale, now]);
 
-  const log = loadFoodLog(now);
   const target = plan?.todayCalories ?? 0;
-  const consumed = log.reduce((s, x) => s + x.kcal, 0);
+  const consumed = foodLogs.reduce((s, x) => s + x.kcal, 0);
+
+  const foodHeadline =
+    coachDayModel?.foodPlanLabel ?? foodDay?.foodPlanLabel ?? "";
 
   if (profile === undefined) {
     return (
@@ -130,7 +82,7 @@ export function FoodScreenSimple() {
         <p className="mt-2 text-[12px] font-medium text-muted-2">{foodDay.dayLabel}</p>
 
         <h1 className="mt-1 text-balance text-[1.45rem] font-semibold leading-[1.15] tracking-[-0.035em] text-foreground">
-          {foodDay.foodPlanLabel}
+          {foodHeadline}
         </h1>
 
         <p className="mt-2 text-[13px] leading-snug text-muted-2/95">
