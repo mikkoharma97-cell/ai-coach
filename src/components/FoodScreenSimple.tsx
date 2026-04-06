@@ -116,19 +116,27 @@ export function FoodScreenSimple() {
 
         {targetCal > 0 ? (
           <div className="mt-4 rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.03] px-4 py-4">
-            <p className="text-[20px] font-semibold tabular-nums tracking-[-0.03em] text-foreground">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2/80">
+              {t("food.toolKcalLabel")}
+            </p>
+            <p className="mt-1 text-[20px] font-semibold tabular-nums tracking-[-0.03em] text-foreground">
               {t("food.toolKcalHeader", {
                 consumed: consumed.toLocaleString(dateLocaleForUi(locale)),
                 target: targetCal.toLocaleString(dateLocaleForUi(locale)),
               })}
             </p>
             {targetP > 0 ? (
-              <p className="mt-2 text-[14px] font-medium tabular-nums text-muted-2">
-                {t("food.toolProteinCompare", {
-                  current: String(estProteinG),
-                  target: String(targetP),
-                })}
-              </p>
+              <>
+                <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-2/80">
+                  {t("food.toolProteinLabel")}
+                </p>
+                <p className="mt-1 text-[14px] font-medium tabular-nums text-muted-2">
+                  {t("food.toolProteinCompare", {
+                    current: String(estProteinG),
+                    target: String(targetP),
+                  })}
+                </p>
+              </>
             ) : null}
           </div>
         ) : null}

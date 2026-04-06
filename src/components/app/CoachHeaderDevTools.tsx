@@ -79,15 +79,13 @@ export function CoachHeaderDevTools() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex min-h-[36px] min-w-[36px] shrink-0 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.03] text-[13px] font-semibold leading-none text-muted-2/70 transition hover:border-accent/30 hover:bg-white/[0.06] hover:text-foreground/90 active:scale-[0.97]"
+        className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-white/[0.06] bg-transparent text-[10px] leading-none text-muted-2/45 transition hover:border-white/[0.12] hover:text-muted-2/75 active:scale-[0.97]"
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-label={t("devTools.aria")}
         title={t("devTools.aria")}
       >
-        <span aria-hidden className="translate-y-px">
-          ·
-        </span>
+        <span aria-hidden className="block size-1.5 rounded-full bg-muted-2/50" />
       </button>
 
       {open ? (
@@ -101,25 +99,25 @@ export function CoachHeaderDevTools() {
           <div
             role="dialog"
             aria-modal="true"
-            className="fixed right-3 top-[calc(env(safe-area-inset-top,0px)+3.25rem)] z-[var(--z-overlay-sheet)] w-[min(calc(100vw-1.5rem),17.5rem)] rounded-[var(--radius-lg)] border border-white/[0.1] bg-[rgba(8,10,16,0.97)] p-3 shadow-[var(--shadow-float)] backdrop-blur-[16px]"
+            className="fixed right-2.5 top-[calc(env(safe-area-inset-top,0px)+3rem)] z-[var(--z-overlay-sheet)] max-h-[min(52vh,22rem)] w-[min(calc(100vw-1.25rem),15.5rem)] overflow-y-auto rounded-[var(--radius-md)] border border-white/[0.09] bg-[rgba(6,8,12,0.96)] p-2.5 shadow-[var(--shadow-float)] backdrop-blur-[12px]"
           >
-            <p className="font-mono text-[10px] font-medium leading-snug tracking-wide text-muted-2">
+            <p className="font-mono text-[9px] font-medium leading-snug tracking-wide text-muted-2/90">
               {buildBlock}
             </p>
-            <p className="mt-1 font-mono text-[9px] text-muted-2/75">
+            <p className="mt-0.5 font-mono text-[8px] text-muted-2/65">
               {BUILD_INFO.buildTime}
             </p>
-            <div className="mt-3 flex flex-col gap-2">
+            <div className="mt-2 flex flex-col gap-1.5">
               <button
                 type="button"
                 onClick={onHardRefresh}
-                className="flex min-h-[44px] w-full items-center justify-center rounded-[var(--radius-md)] border border-white/[0.1] bg-white/[0.05] text-[13px] font-semibold text-foreground transition hover:border-accent/35 hover:bg-white/[0.08] active:scale-[0.99]"
+                className="flex min-h-[38px] w-full items-center justify-center rounded-[var(--radius-sm)] border border-white/[0.08] bg-white/[0.04] text-[12.5px] font-semibold text-foreground/95 transition hover:border-white/[0.14] hover:bg-white/[0.07] active:scale-[0.99]"
               >
                 {t("devTools.refresh")}
               </button>
               <Link
                 href="/home"
-                className="flex min-h-[44px] w-full items-center justify-center rounded-[var(--radius-md)] border border-white/[0.1] bg-white/[0.05] text-[13px] font-semibold text-foreground transition hover:border-accent/35 hover:bg-white/[0.08] active:scale-[0.99]"
+                className="flex min-h-[38px] w-full items-center justify-center rounded-[var(--radius-sm)] border border-white/[0.08] bg-white/[0.04] text-[12.5px] font-semibold text-foreground/95 transition hover:border-white/[0.14] hover:bg-white/[0.07] active:scale-[0.99]"
                 onClick={() => setOpen(false)}
               >
                 {t("devTools.home")}
@@ -127,7 +125,7 @@ export function CoachHeaderDevTools() {
               <button
                 type="button"
                 onClick={onOpenFeedback}
-                className="flex min-h-[44px] w-full items-center justify-center rounded-[var(--radius-md)] border border-accent/25 bg-accent/10 text-[13px] font-semibold text-foreground transition hover:bg-accent/18 active:scale-[0.99]"
+                className="flex min-h-[38px] w-full items-center justify-center rounded-[var(--radius-sm)] border border-white/[0.08] bg-white/[0.03] text-[12.5px] font-semibold text-muted transition hover:border-accent/25 hover:bg-accent/[0.08] hover:text-foreground active:scale-[0.99]"
               >
                 {t("devTools.feedback")}
               </button>

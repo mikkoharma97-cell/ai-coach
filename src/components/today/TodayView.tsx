@@ -295,8 +295,6 @@ export function TodayView() {
               primaryCta={model.primaryCta}
               dayComplete={isCompleted && !model.primaryCta}
               onPrimaryNavigate={onPrimaryNavigate}
-              quickActions={!isCompleted}
-              foodOnlyMode={foodOnly}
               anchor={{
                 label: anchorLabel,
                 done: anchorDone,
