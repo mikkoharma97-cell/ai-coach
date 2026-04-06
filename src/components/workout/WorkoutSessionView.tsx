@@ -203,7 +203,7 @@ export function WorkoutSessionView() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-2">
                   {t("workout.restEyebrow")}
                 </p>
-                <h1 className="mt-2 text-balance text-[1.4rem] font-semibold leading-tight tracking-[-0.03em] text-foreground sm:text-[1.45rem]">
+                <h1 className="mt-2 text-balance text-[1.4rem] font-semibold leading-tight tracking-[-0.035em] text-foreground sm:text-[1.45rem]">
                   {coachDayModel?.heroTitle ?? t("workout.restTitle")}
                 </h1>
                 <p className="mt-3 text-[15px] leading-relaxed text-muted">

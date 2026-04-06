@@ -55,8 +55,17 @@ function envPrefix(): string {
  * Yksi staattinen rivi — vain buildId + prefix, ei aikaa.
  * Käytössä heti mountin jälkeen kunnes freshness on laskettu (tai fresh-tilassa yksinkertaisena).
  */
+function shortBuildId(id: string): string {
+  if (!id?.trim()) return "—";
+  const s = id.trim();
+  return s.length > 10 ? `${s.slice(0, 10)}…` : s;
+}
+
+/** Yksi rivi heti mountin jälkeen — sama rakenne kuin fresh-tilassa (ei satunnaista sisältöä). */
 function buildMarkerBaselineLine(): string {
-  return `${envPrefix()} · ${BUILD_INFO.buildId}`;
+  const id = shortBuildId(BUILD_INFO.buildId);
+  const t = formatLocalClock(BUILD_INFO.buildTime);
+  return `${envPrefix()} · BUILD OK · ${t} · ${id}`;
 }
 
 export function GlobalBuildMarker() {
@@ -116,44 +125,47 @@ export function GlobalBuildMarker() {
   const { line, toneClass, glowClass } = useMemo(() => {
     const base = buildMarkerBaselineLine();
     const defaultTone =
-      "border-white/[0.12] bg-[rgba(6,8,14,0.82)] text-muted-2 shadow-[0_6px_24px_rgba(0,0,0,0.35)]";
+      "border-white/[0.1] bg-[rgba(6,8,14,0.78)] text-muted-2 shadow-[0_4px_18px_rgba(0,0,0,0.28)]";
+
+    const updatedPrefix = newBuildGlow ? "UPDATED · " : "";
 
     if (!mounted || freshness === null) {
       return {
-        line: base,
+        line: `${updatedPrefix}${base}`,
         toneClass: defaultTone,
-        glowClass: newBuildGlow
-          ? "shadow-[0_0_18px_rgba(90,132,255,0.38)]"
-          : "",
+        glowClass: newBuildGlow ? "ring-1 ring-accent/35" : "",
       };
     }
 
     const { minutesOld, st } = freshness;
-    const id = BUILD_INFO.buildId;
+    const id = shortBuildId(BUILD_INFO.buildId);
+    const clock = formatLocalClock(BUILD_INFO.buildTime);
 
     let nextTone = defaultTone;
     if (st === "stale") {
       nextTone =
-        "border-amber-500/25 bg-amber-950/35 text-amber-100/90 shadow-[0_6px_28px_rgba(180,120,0,0.12)]";
+        "border-amber-500/22 bg-amber-950/32 text-amber-100/88 shadow-[0_4px_20px_rgba(180,120,0,0.1)]";
     } else if (st === "very-stale") {
       nextTone =
-        "border-red-500/22 bg-red-950/32 text-red-200/88 shadow-[0_6px_28px_rgba(180,40,40,0.12)]";
+        "border-red-500/20 bg-red-950/28 text-red-200/85 shadow-[0_4px_20px_rgba(180,40,40,0.1)]";
     }
 
-    const glowClass = newBuildGlow
-      ? "shadow-[0_0_18px_rgba(90,132,255,0.38)]"
-      : "";
+    const glowClass = newBuildGlow ? "ring-1 ring-accent/35" : "";
 
     let lineInner = "";
     if (st === "fresh") {
-      lineInner = `${envPrefix()} · ${formatLocalClock(BUILD_INFO.buildTime)} · ${id}`;
+      lineInner = `${envPrefix()} · BUILD OK · ${clock} · ${id}`;
     } else if (st === "stale") {
       lineInner = `STALE · ${formatStaleAge(minutesOld)} · ${id}`;
     } else {
       lineInner = `OLD · ${formatStaleAge(minutesOld)} · ${id}`;
     }
 
-    return { line: lineInner, toneClass: nextTone, glowClass };
+    return {
+      line: `${updatedPrefix}${lineInner}`,
+      toneClass: nextTone,
+      glowClass,
+    };
   }, [mounted, freshness, newBuildGlow]);
 
   if (!buildMarkerVisible() || !shell) return null;
@@ -166,11 +178,17 @@ export function GlobalBuildMarker() {
 
   const devClick = process.env.NODE_ENV === "development";
 
+  const markerTitle = [
+    `v${BUILD_INFO.version}`,
+    BUILD_INFO.buildId,
+    BUILD_INFO.buildTime,
+  ].join(" · ");
+
   return (
     <div
       className="pointer-events-none fixed inset-x-0 z-[85] flex justify-center px-3 coach-build-marker-v2-enter"
       style={{
-        bottom: "calc(var(--bottom-stack) + 8px)",
+        bottom: "calc(var(--bottom-stack) + 10px)",
       }}
     >
       <button
@@ -179,17 +197,17 @@ export function GlobalBuildMarker() {
         onClick={() => {
           if (devClick) window.location.reload();
         }}
-        className={`pointer-events-auto max-w-[min(100%,22rem)] truncate rounded-[10px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.06em] backdrop-blur-md transition duration-300 ${toneClass} ${glowClass} ${
+        className={`pointer-events-auto max-w-[min(20rem,calc(100vw-7.5rem))] truncate rounded-full border px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] backdrop-blur-md transition duration-300 ${toneClass} ${glowClass} ${
           devClick
             ? "cursor-pointer hover:border-accent/35 hover:text-foreground active:scale-[0.99]"
             : "cursor-default"
         }`}
         style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
-        title={devClick ? "Reload (hard refresh)" : undefined}
+        title={devClick ? `Reload · ${markerTitle}` : markerTitle}
         aria-label={
           devClick
             ? "Build marker: reload page"
-            : "Build identifier and freshness"
+            : `Build: ${markerTitle}`
         }
       >
         <span className="whitespace-nowrap">{line}</span>
