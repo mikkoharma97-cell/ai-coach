@@ -10,10 +10,17 @@ import {
   normalizeProfileForEngine,
 } from "@/lib/coach";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
+import { WorkoutDayOverview } from "@/components/workout/WorkoutDayOverview";
 import { ExerciseHistoryStrip } from "@/components/workout/ExerciseHistoryStrip";
 import { getExerciseHistoryForStrip } from "@/lib/workoutHistory";
 import { workoutHistoryEmptyCue } from "@/lib/coachDisplayLabels";
 import { getTodayDayKey } from "@/lib/dayKey";
+import {
+  computeSessionFinishCoachFeel,
+  getPreviousSessionCompactLine,
+  getPreviousSessionNumbers,
+  progressionHintKind,
+} from "@/lib/workoutCoachFeel";
 import type { Locale } from "@/lib/i18n";
 import { saveSetLog } from "@/lib/workoutStore";
 import {
@@ -56,6 +63,8 @@ export function WorkoutSessionView() {
   const [logVersion, setLogVersion] = useState(0);
   const [flowIx, setFlowIx] = useState(0);
   const [flowPhase, setFlowPhase] = useState<FlowPhase>("show");
+  /** Overview → session: näytä koko päivän rakenne ennen yhden liikkeen flow’ta. */
+  const [sessionStarted, setSessionStarted] = useState(false);
 
   const { coachDayModel } = useCoachDayModel({
     justFinishedWorkoutSession: false,
@@ -87,6 +96,18 @@ export function WorkoutSessionView() {
     [blocks, rowKey],
   );
 
+  const finishCoachMessage = useMemo(() => {
+    if (flowPhase !== "finish" || blocks.length === 0) return null;
+    const kind = computeSessionFinishCoachFeel(
+      blocks,
+      getTodayDayKey(),
+      locale as Locale,
+    );
+    if (kind === "weight_up") return t("workoutSession.finishCoachWeightUp");
+    if (kind === "hold") return t("workoutSession.finishCoachHold");
+    return t("workoutSession.finishCoachDefault");
+  }, [flowPhase, blocks, locale, t, logVersion, blocksSig]);
+
   const exerciseHistory = useMemo(() => {
     const ex = blocks[flowIx];
     if (!ex) return null;
@@ -103,6 +124,7 @@ export function WorkoutSessionView() {
     setFlowIx(0);
     setFlowPhase("show");
     setSetDrafts({});
+    setSessionStarted(false);
   }, [isRest, blocks.length, blocksSig]);
 
   const onMarkDone = useCallback(() => {
@@ -190,6 +212,22 @@ export function WorkoutSessionView() {
     );
   }
 
+  if (!isRest && blocks.length > 0 && !sessionStarted) {
+    const kicker = generated.todayKicker?.trim() ?? "";
+    return (
+      <WorkoutDayOverview
+        workoutTitle={generated.workout}
+        focusLine={kicker.length > 0 ? kicker : null}
+        durationLabel={generated.durationLabel}
+        contextLine={coachDayModel?.workoutContextLine ?? null}
+        blocks={blocks}
+        todayDayKey={getTodayDayKey()}
+        locale={locale as Locale}
+        onStartSession={() => setSessionStarted(true)}
+      />
+    );
+  }
+
   return (
     <main className="coach-page">
       <Container
@@ -236,11 +274,11 @@ export function WorkoutSessionView() {
             flowPhase === "finish" ? (
               <div className="workout-exercise-surface mt-2 flex flex-col px-4 pb-6 pt-5 sm:px-5 sm:pb-7 sm:pt-6">
                 <div className="workout-exercise-surface-inner">
-                  <h2 className="text-balance text-[1.35rem] font-semibold leading-tight tracking-[-0.03em] text-foreground">
-                    {t("workoutSession.finishHeadline")}
-                  </h2>
-                  <p className="mt-2 text-[15px] leading-relaxed text-muted">
-                    {t("workoutSession.finishLead")}
+                  <p
+                    className="text-balance text-[1.35rem] font-semibold leading-snug tracking-[-0.03em] text-foreground"
+                    role="status"
+                  >
+                    {finishCoachMessage ?? t("workoutSession.finishHeadline")}
                   </p>
                   <button
                     type="button"
@@ -250,6 +288,12 @@ export function WorkoutSessionView() {
                   >
                     {submitting ? t("common.loading") : t("workoutSession.markDone")}
                   </button>
+                  <Link
+                    href="/app"
+                    className="mt-4 block text-center text-[13px] font-medium text-muted-2 underline decoration-white/[0.12] underline-offset-4 transition hover:text-foreground"
+                  >
+                    {t("workoutSession.backToDay")}
+                  </Link>
                 </div>
               </div>
             ) : (
@@ -265,6 +309,26 @@ export function WorkoutSessionView() {
                 const restHint = restLine(ex, locale);
                 const showLines = coachingLinesForShow(ex, locale);
                 const lastSessionLine = exerciseHistory?.lastCompactLine ?? null;
+                const prevSessionLine = getPreviousSessionCompactLine(
+                  ex,
+                  getTodayDayKey(),
+                  locale as Locale,
+                );
+                const prevNums = getPreviousSessionNumbers(
+                  ex,
+                  getTodayDayKey(),
+                );
+                const progKind = progressionHintKind(prevNums, draft.kg);
+                const progressionLine =
+                  progKind === "no_history"
+                    ? t("workoutSession.progressionHintNoHistory")
+                    : progKind === "bump"
+                      ? t("workoutSession.progressionHintBump")
+                      : progKind === "up"
+                        ? t("workoutSession.progressionHintUp")
+                        : progKind === "lighter"
+                          ? t("workoutSession.progressionHintLighter")
+                          : t("workoutSession.progressionHintHold");
 
                 const onBeginSets = () => {
                   setSetDrafts((prev) => ({
@@ -345,6 +409,13 @@ export function WorkoutSessionView() {
                           <h1 className="mt-3 text-balance text-[1.5rem] font-semibold leading-[1.12] tracking-[-0.035em] text-foreground sm:text-[1.6rem]">
                             {ex.name}
                           </h1>
+                          {prevSessionLine ? (
+                            <p className="mt-2 text-[13px] leading-snug text-muted-2">
+                              {t("workoutSession.prevSessionShow", {
+                                line: prevSessionLine,
+                              })}
+                            </p>
+                          ) : null}
                           <ul
                             className="mt-3 space-y-2.5"
                             aria-label={t("workoutSession.cueTitle")}
@@ -383,35 +454,40 @@ export function WorkoutSessionView() {
                           <p className="mt-3 text-[15px] font-semibold leading-snug text-foreground/95">
                             {ex.name}
                           </p>
-                          {lastSessionLine ? (
-                            <ExerciseHistoryStrip
-                              variant="compact"
-                              title={t("workoutSession.exerciseHistoryLastPrefix")}
-                              rows={[]}
-                              compactLine={lastSessionLine}
-                            />
-                          ) : null}
-                          <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                          <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">
                             {t("workoutSession.setProgressShort", {
                               current: draft.setIndex + 1,
                               total: totalSets,
                             })}
                           </p>
+                          <div className="mt-2 rounded-[var(--radius-md)] border border-white/[0.07] bg-white/[0.02] px-3 py-2.5">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-2/85">
+                              {t("workoutSession.lastSessionLabel")}
+                            </p>
+                            <p className="mt-1 text-[14px] font-medium tabular-nums text-foreground/90">
+                              {prevSessionLine ??
+                                lastSessionLine ??
+                                "—"}
+                            </p>
+                          </div>
                           <div className="mt-2 flex flex-wrap items-baseline gap-2">
-                            <span className="text-[1.75rem] font-semibold tabular-nums tracking-[-0.03em] text-foreground sm:text-[2rem]">
+                            <span className="text-[1.35rem] font-semibold tabular-nums tracking-[-0.03em] text-foreground/95 sm:text-[1.5rem]">
                               {repsTargetLine(ex, locale)}
                             </span>
-                            <span className="text-[13px] font-medium text-muted-2">
+                            <span className="text-[12px] font-medium text-muted-2">
                               {t("workoutSession.targetReps")}
                             </span>
                           </div>
                           {restHint ? (
-                            <p className="mt-2 text-[13px] leading-snug text-muted-2">
+                            <p className="mt-2 text-[12px] leading-snug text-muted-2">
                               {restHint}
                             </p>
                           ) : null}
 
-                          <div className="mt-6 grid grid-cols-2 gap-3">
+                          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-2">
+                            {t("workoutSession.currentSetLabel")}
+                          </p>
+                          <div className="mt-2 grid grid-cols-2 gap-3">
                             <label className="flex flex-col gap-1.5">
                               <span className="text-[12px] font-semibold text-muted-2">
                                 {t("workoutSession.weightPrompt")}
@@ -459,11 +535,14 @@ export function WorkoutSessionView() {
                               />
                             </label>
                           </div>
+                          <p className="mt-3 text-[12.5px] leading-snug text-muted-2/95">
+                            {progressionLine}
+                          </p>
 
                           <button
                             type="button"
                             onClick={onSaveSet}
-                            className={`${PRIMARY_CTA} mt-8`}
+                            className={`${PRIMARY_CTA} mt-6`}
                           >
                             {t("workoutSession.ctaSaveSet")}
                           </button>

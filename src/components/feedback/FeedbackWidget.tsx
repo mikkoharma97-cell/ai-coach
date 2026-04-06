@@ -25,14 +25,9 @@ export function FeedbackWidget() {
   const pathname = usePathname();
   const baseId = useId();
 
-  /**
-   * Navin yläpuolelle (`--bottom-stack`) + pieni väli — ei peitä tabeja.
-   */
-  const fabBottomClass =
-    "bottom-[calc(var(--bottom-stack)+12px)] md:bottom-8";
-
-  const fabScaleClass =
-    "max-[480px]:origin-bottom-right max-[480px]:scale-[0.95]";
+  /** Ilmoitus headerin alle — ei kelluvaa FAB:ia (avaus: Lisää → Parannukset tai dev-tools). */
+  const toastTopClass =
+    "top-[calc(env(safe-area-inset-top,0px)+3.5rem)]";
   const [locale, setLocale] = useState<Locale>("fi");
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -74,6 +69,12 @@ export function FeedbackWidget() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  useEffect(() => {
+    const onDevOpen = () => setOpen(true);
+    window.addEventListener("coach-open-feedback", onDevOpen);
+    return () => window.removeEventListener("coach-open-feedback", onDevOpen);
+  }, []);
 
   if (pathname === "/feedback") {
     return null;
@@ -128,26 +129,11 @@ export function FeedbackWidget() {
     <>
       {sent ? (
         <div
-          className={`pointer-events-none fixed left-1/2 z-[96] max-w-[min(100%,20rem)] -translate-x-1/2 rounded-2xl border border-white/12 bg-[rgba(8,10,16,0.92)] px-4 py-2.5 text-center text-[13px] font-medium text-foreground shadow-lg backdrop-blur-xl ${fabBottomClass}`}
+          className={`pointer-events-none fixed left-1/2 z-[96] max-w-[min(100%,20rem)] -translate-x-1/2 rounded-2xl border border-white/12 bg-[rgba(8,10,16,0.92)] px-4 py-2.5 text-center text-[13px] font-medium text-foreground shadow-lg backdrop-blur-xl ${toastTopClass}`}
           role="status"
         >
           {t("feedback.successToast")}
         </div>
-      ) : null}
-
-      {!open ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className={`fixed right-4 z-[90] flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-[rgba(8,10,16,0.78)] px-3.5 py-2 text-[12px] font-semibold tracking-[-0.02em] text-foreground shadow-[0_8px_32px_rgba(0,0,0,0.45)] backdrop-blur-[18px] transition hover:border-accent/35 hover:bg-[rgba(12,14,22,0.88)] active:scale-[0.98] md:right-6 md:px-4 md:text-[13px] md:scale-100 ${fabBottomClass} ${fabScaleClass}`}
-          aria-haspopup="dialog"
-          aria-expanded={false}
-        >
-          <span aria-hidden className="text-[14px] leading-none">
-            ✍️
-          </span>
-          {t("feedback.button")}
-        </button>
       ) : null}
 
       {open ? (

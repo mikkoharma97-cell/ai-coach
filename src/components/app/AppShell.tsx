@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * App-kuori — bottom nav: Tänään · Treeni · Ruoka · Kehitys · Lisää (täysi valmennus).
- * Food Only -tilassa nelikko — treenivälilehti piilotettu.
+ * App-kuori — bottom nav: Tänään · Treeni · Ruoka · Kehitys. Lisää vain headerissa.
+ * Food Only: kolme välilehteä (ei treeniä).
  */
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -17,6 +17,7 @@ import type { ReactNode } from "react";
 import { useEffect, useMemo } from "react";
 import type { MessageKey } from "@/lib/i18n";
 import type { AnalyticsEventName } from "@/lib/analytics";
+import { CoachHeaderDevTools } from "@/components/app/CoachHeaderDevTools";
 
 const PATH_ANALYTICS: Partial<Record<string, AnalyticsEventName>> = {
   "/app": "open_app",
@@ -97,7 +98,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       { href: "/workout", key: "nav.workout" as const },
       { href: "/food", key: "nav.food" as const },
       { href: "/progress", key: "nav.progress" as const },
-      { href: "/more", key: "nav.more" as const },
     ];
     if (foodOnly) return full.filter((r) => r.href !== "/workout");
     return full;
@@ -109,8 +109,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [path]);
 
   const navGrid = foodOnly
-    ? "grid-cols-4 min-[480px]:max-w-md"
-    : "grid-cols-5 min-[480px]:max-w-lg";
+    ? "grid-cols-3 min-[480px]:max-w-md"
+    : "grid-cols-4 min-[480px]:max-w-lg";
 
   /** 5-tab rivi: kapea näyttö + pitkät labelit (FI/EN) — sallitaan 2 riviä, tasainen fontti. */
   const navFullClass = foodOnly
@@ -158,6 +158,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             {t(titleKey)}
           </span>
           <div className="justify-self-end flex items-center gap-1">
+            <CoachHeaderDevTools />
+            <Link
+              href="/more"
+              className="inline-flex min-h-[40px] min-w-[40px] shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.04] px-2 text-[11px] font-semibold text-muted-2 transition hover:border-accent/35 hover:text-foreground active:scale-[0.98]"
+              aria-label={t("nav.more")}
+            >
+              ···
+            </Link>
             {!isNativeApp ? (
               <button
                 type="button"
@@ -210,12 +218,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       </header>
       <div className="coach-header-presence" aria-hidden />
 
-      <div className="app-main-scroll flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] pb-[calc(var(--bottom-stack)+20px)]">
+      <div className="app-main-scroll flex min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] pb-[calc(var(--bottom-stack)+14px)]">
         {children}
       </div>
 
       <nav
-        className="relative z-[var(--z-nav)] shrink-0 border-t border-white/[0.06] bg-[rgba(5,6,10,0.88)] pb-[calc(12px+env(safe-area-inset-bottom,0px))] pt-1.5 shadow-[0_-8px_32px_rgb(0_0_0/0.4)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.82)] transition duration-[250ms] ease-in-out"
+        className="relative z-[var(--z-nav)] shrink-0 border-t border-white/[0.06] bg-[rgba(5,6,10,0.9)] pb-[calc(10px+env(safe-area-inset-bottom,0px))] pt-1 shadow-[0_-8px_28px_rgb(0_0_0/0.38)] backdrop-blur-[18px] supports-[backdrop-filter]:bg-[rgba(5,6,10,0.84)] transition duration-[250ms] ease-in-out"
         aria-label="Primary"
       >
         <div
@@ -228,7 +236,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={r.href}
                 href={r.href}
                 aria-current={on ? "page" : undefined}
-                className={`touch-manipulation flex min-h-[52px] min-w-0 flex-col items-center justify-center rounded-[14px] px-0.5 py-2 font-semibold leading-[1.15] tracking-[-0.02em] transition duration-200 ease-out will-change-transform min-[480px]:min-h-[52px] sm:px-1 motion-reduce:transition-none min-[480px]:hover:scale-[1.04] active:scale-[0.96] ${navFullClass} ${
+                className={`touch-manipulation flex min-h-[48px] min-w-0 flex-col items-center justify-center rounded-[12px] px-0.5 py-1.5 font-semibold leading-[1.12] tracking-[-0.02em] transition duration-200 ease-out will-change-transform min-[480px]:min-h-[50px] sm:px-1 motion-reduce:transition-none min-[480px]:hover:scale-[1.03] active:scale-[0.97] ${navFullClass} ${
                   on
                     ? "bg-accent-soft/90 text-primary"
                     : "text-muted-2 hover:bg-white/[0.06] hover:text-foreground active:bg-white/[0.08]"

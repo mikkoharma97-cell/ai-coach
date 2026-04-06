@@ -72,7 +72,7 @@ html {
   --coach-surface-muted: rgba(255, 255, 255, 0.035);
   /** Bottom nav + safe area — scroll-padding, FAB, build-merkki (yksi lähde) */
   /* Nav: kaksiriviset tab-labelit + pt/pb — 72px oli liian matala mobiilissa */
-  --bottom-nav-height: 88px;
+  --bottom-nav-height: 80px;
   --bottom-safe-area: env(safe-area-inset-bottom, 0px);
   --bottom-stack: calc(
     var(--bottom-nav-height) + var(--bottom-safe-area)

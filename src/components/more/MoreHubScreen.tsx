@@ -15,14 +15,18 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 
 type HubLink = { href: string; label: string };
 
-function LinkList({ items }: { items: HubLink[] }) {
+function LinkList({ items, variant = "default" }: { items: HubLink[]; variant?: "default" | "subtle" }) {
+  const ring =
+    variant === "subtle"
+      ? "border-white/[0.05] bg-white/[0.015]"
+      : "border-white/[0.07] bg-white/[0.02]";
   return (
-    <ul className="mt-3 space-y-0 divide-y divide-white/[0.06] rounded-[var(--radius-lg)] border border-white/[0.08] bg-white/[0.02]">
+    <ul className={`mt-2 space-y-0 divide-y divide-white/[0.05] rounded-[var(--radius-lg)] border ${ring}`}>
       {items.map((item) => (
         <li key={item.href}>
           <Link
             href={item.href}
-            className="flex min-h-[48px] items-center px-4 py-3 text-[15px] font-medium text-foreground transition hover:bg-white/[0.04]"
+            className="flex min-h-[46px] items-center px-3.5 py-2.5 text-[14.5px] font-medium text-foreground transition hover:bg-white/[0.035] active:bg-white/[0.05]"
           >
             {item.label}
           </Link>
@@ -45,32 +49,12 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="mt-10" aria-labelledby={id}>
+    <section className="mt-7" aria-labelledby={id}>
       <h2 id={id} className={groupHeadingClass}>
         {title}
       </h2>
       {children}
     </section>
-  );
-}
-
-/** Sisäryhmät ilman sisäkkäisiä `<section>`-elementtejä (h3 + div). */
-function HubSubsection({
-  id,
-  title,
-  children,
-}: {
-  id: string;
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="mt-10" aria-labelledby={id}>
-      <h3 id={id} className={groupHeadingClass}>
-        {title}
-      </h3>
-      {children}
-    </div>
   );
 }
 
@@ -104,6 +88,7 @@ export function MoreHubScreen() {
       { href: "/settings", label: t("nav.settings") as string },
       { href: "/preferences#pref-language", label: t("settings.language") as string },
       { href: "/paywall", label: t("settings.subscription") as string },
+      { href: "/feedback", label: t("feedback.button") as string },
     ],
     [t],
   );
@@ -116,24 +101,13 @@ export function MoreHubScreen() {
     [t],
   );
 
-  const trackingLinks = useMemo(
+  const extraLinks = useMemo(
     (): HubLink[] => [
+      { href: "/pro", label: t("nav.pro") as string },
       { href: "/review", label: t("more.linkReview") as string },
-      { href: "/progress", label: t("nav.progress") as string },
-    ],
-    [t],
-  );
-
-  const toolsLinks = useMemo(
-    (): HubLink[] => [
       { href: "/adjustments", label: t("nav.adjustments") as string },
       { href: "/food-library", label: t("foodLibrary.pageTitle") as string },
     ],
-    [t],
-  );
-
-  const proLinks = useMemo(
-    (): HubLink[] => [{ href: "/pro", label: t("nav.pro") as string }],
     [t],
   );
 
@@ -143,7 +117,7 @@ export function MoreHubScreen() {
   }, [showDebugLink, t]);
 
   const debugResetButtonClass =
-    "mt-3 w-full rounded-[var(--radius-lg)] border border-white/[0.12] bg-white/[0.04] px-4 py-3 text-left text-[14px] font-semibold text-foreground transition hover:bg-white/[0.07]";
+    "mt-2 w-full rounded-[var(--radius-lg)] border border-white/[0.1] bg-white/[0.03] px-3 py-2.5 text-left text-[13px] font-semibold text-foreground transition hover:bg-white/[0.06]";
 
   const setUsageMode = useCallback(
     (next: AppUsageMode) => {
@@ -163,85 +137,73 @@ export function MoreHubScreen() {
     <main className="coach-page">
       <Container size="phone" className="px-5 pb-28 pt-1.5 sm:pt-2">
         <h1 className="coach-page-headline">{t("more.title")}</h1>
-        <p className="coach-page-body-soft mt-2 max-w-md">{t("more.intro")}</p>
+        <p className="coach-page-body-soft mt-1.5 max-w-md text-[14px] leading-relaxed">
+          {t("more.intro")}
+        </p>
 
         <Section id="more-primary" title={t("more.sectionPrimary") as string}>
           <LinkList items={primaryLinks} />
         </Section>
 
-        <section className="mt-10" aria-labelledby="more-secondary-heading">
-          <h2 id="more-secondary-heading" className={groupHeadingClass}>
-            {t("more.sectionSecondary") as string}
-          </h2>
+        <Section id="more-coaching" title={t("more.sectionCoaching") as string}>
+          <LinkList items={coachingLinks} variant="subtle" />
+        </Section>
 
-          <HubSubsection id="more-coaching" title={t("more.sectionCoaching") as string}>
-            <LinkList items={coachingLinks} />
-          </HubSubsection>
+        <Section id="more-extra" title={t("more.sectionTools") as string}>
+          <LinkList items={extraLinks} variant="subtle" />
+        </Section>
 
-          <HubSubsection id="more-pro" title={t("nav.pro") as string}>
-            <LinkList items={proLinks} />
-          </HubSubsection>
-
-          {showDebugLink ? (
-            <HubSubsection id="more-debug" title={t("more.sectionDebug") as string}>
-              <p className="mt-3 rounded-[10px] border border-white/[0.1] bg-white/[0.03] px-3 py-2 font-mono text-[10px] text-muted">
-                profile: {debugProfile} · subscription: {debugSubscription}
-              </p>
-              {debugLinks.length > 0 ? <LinkList items={debugLinks} /> : null}
-              <button
-                type="button"
-                onClick={() => {
-                  clearAllCoachLocalData();
-                  router.replace("/start");
-                }}
-                className={debugResetButtonClass}
-              >
-                Reset app
-              </button>
-            </HubSubsection>
-          ) : null}
-
-          <HubSubsection id="more-mode" title={t("more.sectionMode") as string}>
-            <p className="mt-2 text-[12px] leading-snug text-muted">
-              {t("appMode.hintFoodOnly")}
+        {showDebugLink ? (
+          <Section id="more-debug" title={t("more.sectionDebug") as string}>
+            <p className="mt-2 rounded-[10px] border border-white/[0.08] bg-white/[0.02] px-3 py-2 font-mono text-[10px] text-muted">
+              profile: {debugProfile} · subscription: {debugSubscription}
             </p>
-            <div className="mt-4 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => setUsageMode("full_coach")}
-                className={`rounded-[var(--radius-lg)] border px-4 py-3 text-left text-[14px] font-semibold transition ${
-                  mode === "full_coach" || mode === "maintenance"
-                    ? "border-accent/50 bg-accent/[0.12] text-foreground"
-                    : "border-white/[0.08] bg-white/[0.02] text-muted hover:border-white/15"
-                }`}
-                disabled={!profileLoaded}
-              >
-                {t("appMode.fullCoach")}
-              </button>
-              <button
-                type="button"
-                onClick={() => setUsageMode("food_only")}
-                className={`rounded-[var(--radius-lg)] border px-4 py-3 text-left text-[14px] font-semibold transition ${
-                  mode === "food_only"
-                    ? "border-accent/50 bg-accent/[0.12] text-foreground"
-                    : "border-white/[0.08] bg-white/[0.02] text-muted hover:border-white/15"
-                }`}
-                disabled={!profileLoaded}
-              >
-                {t("appMode.foodOnly")}
-              </button>
-              <p className="text-[11px] text-muted-2">{t("appMode.maintenanceLater")}</p>
-            </div>
-          </HubSubsection>
+            {debugLinks.length > 0 ? <LinkList items={debugLinks} variant="subtle" /> : null}
+            <button
+              type="button"
+              onClick={() => {
+                clearAllCoachLocalData();
+                router.replace("/start");
+              }}
+              className={debugResetButtonClass}
+            >
+              Reset app
+            </button>
+          </Section>
+        ) : null}
 
-          <HubSubsection id="more-tracking" title={t("more.sectionTracking") as string}>
-            <LinkList items={trackingLinks} />
-          </HubSubsection>
-
-          <HubSubsection id="more-tools" title={t("more.sectionTools") as string}>
-            <LinkList items={toolsLinks} />
-          </HubSubsection>
-        </section>
+        <Section id="more-mode" title={t("more.sectionMode") as string}>
+          <p className="mt-1.5 text-[12px] leading-snug text-muted">
+            {t("appMode.hintFoodOnly")}
+          </p>
+          <div className="mt-3 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setUsageMode("full_coach")}
+              className={`rounded-[var(--radius-lg)] border px-3 py-2.5 text-left text-[14px] font-semibold transition ${
+                mode === "full_coach" || mode === "maintenance"
+                  ? "border-accent/45 bg-accent/[0.1] text-foreground"
+                  : "border-white/[0.07] bg-white/[0.02] text-muted hover:border-white/12"
+              }`}
+              disabled={!profileLoaded}
+            >
+              {t("appMode.fullCoach")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setUsageMode("food_only")}
+              className={`rounded-[var(--radius-lg)] border px-3 py-2.5 text-left text-[14px] font-semibold transition ${
+                mode === "food_only"
+                  ? "border-accent/45 bg-accent/[0.1] text-foreground"
+                  : "border-white/[0.07] bg-white/[0.02] text-muted hover:border-white/12"
+              }`}
+              disabled={!profileLoaded}
+            >
+              {t("appMode.foodOnly")}
+            </button>
+            <p className="text-[11px] text-muted-2">{t("appMode.maintenanceLater")}</p>
+          </div>
+        </Section>
       </Container>
     </main>
   );

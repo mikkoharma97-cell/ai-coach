@@ -1,6 +1,6 @@
 "use client";
 
-/** Kelluva merkki: `GlobalBuildMarker` (`layout.tsx`). */
+/** `GlobalBuildMarker` on no-op — build-tiedot: `CoachHeaderDevTools` (AppShell). */
 export { buildMarkerVisible } from "@/lib/buildInfo";
 export { GlobalBuildMarker } from "./BuildMarker";
 

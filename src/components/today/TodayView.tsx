@@ -14,11 +14,10 @@ import { trackEvent } from "@/lib/analytics";
 import { saveActiveException } from "@/lib/exceptionStorage";
 import { saveMinimumDayForDay } from "@/lib/minimumDayStorage";
 import {
-  completedTrainingDaysThisWeek,
-  plannedTrainingDaysThisWeek,
-} from "@/lib/todayBrief";
-import { getProgramPackage } from "@/lib/programPackages";
-import { loadWorkoutSessions } from "@/lib/workoutLogStorage";
+  anchorKindForDay,
+  isAnchorDone,
+  setAnchorDone,
+} from "@/lib/dayAnchorStorage";
 import { consumeJustCompletedWorkoutFlag } from "@/lib/workoutFlowFlags";
 import {
   markTodaySkipped,
@@ -38,10 +37,9 @@ import {
 export function TodayView() {
   const router = useRouter();
   const pathname = usePathname();
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const paywallOpenTracked = useRef(false);
   const profile = useClientProfile();
-  const [now] = useState(() => new Date());
   const [paywallGate, setPaywallGate] = useState(0);
   const [paywallOverlayDismissed, setPaywallOverlayDismissed] =
     useState(false);
@@ -51,6 +49,7 @@ export function TodayView() {
   const [justFinishedWorkoutSession, setJustFinishedWorkoutSession] =
     useState(false);
   const workoutFlagConsumedRef = useRef(false);
+  const [anchorDone, setAnchorDoneState] = useState(false);
 
   useLayoutEffect(() => {
     if (workoutFlagConsumedRef.current) return;
@@ -67,40 +66,118 @@ export function TodayView() {
     isRestDay,
     foodOnly,
     hasWorkoutLoggedToday,
+    hasSetLogsToday,
     foodLogs,
     plan,
   } = useCoachDayModel({ justFinishedWorkoutSession });
 
-  const todayBriefRows = useMemo(() => {
-    if (!profile) return [];
-    const sessions = loadWorkoutSessions();
-    const weekValue = foodOnly
-      ? t("todayView.briefWeekFoodOnly")
-      : t("todayView.briefWeekValue", {
-          done: completedTrainingDaysThisWeek(sessions, now),
-          plan: plannedTrainingDaysThisWeek(profile, now),
-        });
-    const foodValue =
-      foodLogs.length > 0
-        ? t("todayView.briefFoodLogs", { n: foodLogs.length })
-        : (coachDayModel?.situationFoodWhenNoLogs ??
-          t("todayView.briefFoodLogs", { n: 0 }));
-    return [
-      { label: t("todayView.briefWeek"), value: weekValue },
-      {
-        label: t("todayView.briefFood"),
-        value: foodValue,
-      },
-    ];
-  }, [profile, now, foodOnly, t, foodLogs, coachDayModel]);
+  useEffect(() => {
+    setAnchorDoneState(isAnchorDone(dayKeyToday));
+  }, [dayKeyToday, flowTick]);
 
-  const programBlockInfo = useMemo(() => {
-    if (!profile) return { title: "", focus: "" };
-    const pkg = getProgramPackage(profile.selectedPackageId);
-    const title = locale === "en" ? pkg.nameEn : pkg.nameFi;
-    const focus = coachDayModel?.programFocusLabel ?? "";
-    return { title, focus };
-  }, [profile, locale, coachDayModel]);
+  const dayFlowLabel = useMemo(() => {
+    if (isCompleted) return t("todayView.dayFlowDone");
+    const active =
+      hasWorkoutLoggedToday ||
+      hasSetLogsToday ||
+      foodLogs.length > 0 ||
+      resolvedFlow === "in_progress";
+    if (active) return t("todayView.dayFlowActive");
+    return t("todayView.dayFlowStart");
+  }, [
+    isCompleted,
+    hasWorkoutLoggedToday,
+    hasSetLogsToday,
+    foodLogs.length,
+    resolvedFlow,
+    t,
+  ]);
+
+  const statusWorkout = useMemo(() => {
+    if (foodOnly) return t("todayView.statusWorkoutNa");
+    if (isRestDay) return t("todayView.workoutStatusRest");
+    if (hasWorkoutLoggedToday || hasSetLogsToday) {
+      return t("todayView.workoutStatusDone");
+    }
+    if (resolvedFlow === "in_progress") {
+      return t("todayView.workoutStatusPending");
+    }
+    return t("todayView.statusWorkoutWaiting");
+  }, [
+    foodOnly,
+    isRestDay,
+    hasWorkoutLoggedToday,
+    hasSetLogsToday,
+    resolvedFlow,
+    t,
+  ]);
+
+  const statusFood = useMemo(() => {
+    if (foodLogs.length > 0) return t("todayView.statusFoodOk");
+    return t("todayView.statusFoodMissing");
+  }, [foodLogs.length, t]);
+
+  const activeStorageFeedback = useMemo(
+    () => readActiveFeedback(dayKeyToday),
+    [dayKeyToday, flowTick, coachDayModel],
+  );
+
+  const coachLine = useMemo(() => {
+    if (activeStorageFeedback) {
+      return activeStorageFeedback.kind === "good_continue"
+        ? t("todayView.feedbackGoodContinue")
+        : t("todayView.feedbackDoneDay");
+    }
+    if (workoutFeedbackOn) return t("todayView.feedbackGoodContinue");
+
+    if (plan && foodLogs.length > 0) {
+      const targetCal = plan.todayCalories;
+      const targetP = plan.foodProteinTargetG ?? plan.todayMacros.proteinG;
+      const consumed = foodLogs.reduce((s, x) => s + x.kcal, 0);
+      if (targetCal > 0 && targetP > 0 && consumed >= targetCal * 0.2) {
+        const estP = Math.round((consumed / targetCal) * targetP);
+        if (estP < targetP * 0.72) {
+          return t("todayView.coachFoodProteinLow");
+        }
+      }
+    }
+
+    if (isCompleted) return t("todayView.coachOneLineCompleted");
+    if (isRestDay) return t("todayView.coachOneLineRest");
+    if (foodOnly) {
+      return foodLogs.length > 0
+        ? t("todayView.coachHintFoodYes")
+        : t("todayView.coachHintFoodNo");
+    }
+    if (hasWorkoutLoggedToday || hasSetLogsToday) {
+      return t("todayView.coachOneLineDone");
+    }
+    return t("todayView.coachOneLineWait");
+  }, [
+    activeStorageFeedback,
+    workoutFeedbackOn,
+    plan,
+    foodLogs,
+    isCompleted,
+    isRestDay,
+    foodOnly,
+    hasWorkoutLoggedToday,
+    hasSetLogsToday,
+    t,
+  ]);
+
+  const anchorLabel = useMemo(() => {
+    const k = anchorKindForDay(dayKeyToday);
+    if (k === 0) return t("todayView.anchorWater");
+    if (k === 1) return t("todayView.anchorSteps");
+    return t("todayView.anchorProtein");
+  }, [dayKeyToday, t]);
+
+  const onAnchorToggle = useCallback(() => {
+    const next = !isAnchorDone(dayKeyToday);
+    setAnchorDone(dayKeyToday, next);
+    setAnchorDoneState(next);
+  }, [dayKeyToday]);
 
   const showPaywallV1 = useMemo(
     () => shouldShowTodayPaywallOverlay(paywallOverlayDismissed),
@@ -134,29 +211,6 @@ export function TodayView() {
     const id = window.setTimeout(() => setWorkoutFeedbackOn(false), 8000);
     return () => window.clearTimeout(id);
   }, [hasWorkoutLoggedToday, dayKeyToday, isRestDay, foodOnly]);
-
-  const activeStorageFeedback = useMemo(
-    () => readActiveFeedback(dayKeyToday),
-    [dayKeyToday, flowTick, coachDayModel],
-  );
-
-  const feedbackLine = useMemo(() => {
-    if (activeStorageFeedback) {
-      return activeStorageFeedback.kind === "good_continue"
-        ? t("todayView.feedbackGoodContinue")
-        : t("todayView.feedbackDoneDay");
-    }
-    if (workoutFeedbackOn) return t("todayView.feedbackGoodContinue");
-    if (justFinishedWorkoutSession && isCompleted) return null;
-    return coachDayModel?.inlineStatus ?? null;
-  }, [
-    activeStorageFeedback,
-    workoutFeedbackOn,
-    justFinishedWorkoutSession,
-    isCompleted,
-    coachDayModel,
-    t,
-  ]);
 
   const onPrimaryNavigate = useCallback(() => {
     setPrimaryCtaTapped(dayKeyToday);
@@ -232,33 +286,22 @@ export function TodayView() {
           data-coach-mode={model.mode}
         >
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            {justFinishedWorkoutSession && isCompleted ? (
-              <p
-                className="mb-3 px-0.5 text-center text-[12px] font-medium leading-snug text-muted-2/80"
-                role="status"
-              >
-                {t("todayView.workoutJustDoneLine")}
-              </p>
-            ) : null}
             <TodayFocusCard
               heroTitle={model.heroTitle}
-              heroGuidance={model.heroGuidance}
-              planWorkoutLabel={model.workoutPlanLabel}
-              planFoodLabel={model.foodPlanLabel}
+              dayFlowLabel={dayFlowLabel}
+              statusWorkout={statusWorkout}
+              statusFood={statusFood}
+              coachLine={coachLine}
               primaryCta={model.primaryCta}
+              dayComplete={isCompleted && !model.primaryCta}
               onPrimaryNavigate={onPrimaryNavigate}
-              feedbackLine={feedbackLine}
-              flowStatusLine={model.statusValue}
-              statusRowLabel={t("todayView.briefStatus")}
-              situationHeading={t("todayView.situationHeading")}
-              briefRows={todayBriefRows}
-              programEyebrow={
-                model.mode === "food_only"
-                  ? t("todayView.programBlockEyebrowFood")
-                  : t("todayView.programBlockEyebrow")
-              }
-              programTitle={programBlockInfo.title}
-              programFocus={programBlockInfo.focus}
+              quickActions={!isCompleted}
+              foodOnlyMode={foodOnly}
+              anchor={{
+                label: anchorLabel,
+                done: anchorDone,
+                onToggle: onAnchorToggle,
+              }}
               afterCta={
                 showNotToday ? (
                   <div className="text-center">

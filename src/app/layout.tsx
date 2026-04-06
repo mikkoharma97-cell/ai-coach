@@ -6,8 +6,7 @@ import {
 } from "@/config/appInfo";
 import { ForceRefreshGuard } from "@/components/build/ForceRefreshGuard";
 import { CacheBypassEffect } from "@/components/build/CacheBypassEffect";
-import { GlobalBuildMarker } from "@/components/build/BuildMarkerLine";
-import { HomeCheckButton } from "@/components/build/HomeCheckButton";
+import { DevBuildResetGuard } from "@/components/dev/DevBuildResetGuard";
 import { CoachReminderNotifications } from "@/components/CoachReminderNotifications";
 import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
@@ -77,8 +76,7 @@ export default function RootLayout({
     >
       <body className="app-page-canvas min-h-dvh overflow-x-hidden text-foreground">
         <div className="app-grain" aria-hidden />
-        <HomeCheckButton />
-        <GlobalBuildMarker />
+        <DevBuildResetGuard />
         <ForceRefreshGuard />
         {children}
         <FeedbackWidget />

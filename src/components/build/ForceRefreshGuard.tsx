@@ -53,7 +53,7 @@ export function ForceRefreshGuard() {
       ) : null}
       {toast ? (
         <div
-          className="pointer-events-auto fixed bottom-[calc(var(--bottom-stack)+16px)] left-1/2 z-[102] w-[min(100%,20rem)] -translate-x-1/2 px-4"
+          className="pointer-events-auto fixed left-1/2 top-[calc(env(safe-area-inset-top,0px)+3.5rem)] z-[102] w-[min(100%,20rem)] -translate-x-1/2 px-4"
           role="status"
         >
           <div className="rounded-[var(--radius-lg)] border border-accent/35 bg-[rgba(5,6,10,0.96)] px-4 py-3 text-center text-[12px] font-medium leading-snug text-foreground shadow-[var(--shadow-float)] backdrop-blur-md">
