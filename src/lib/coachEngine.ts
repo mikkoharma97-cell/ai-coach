@@ -6,6 +6,12 @@ import {
   foodPlanFallbackLabel,
   formatWorkoutPlanLabel,
 } from "@/lib/coachDisplayLabels";
+import {
+  coachFoodSituationLine,
+  getCoachProgramContent,
+  getFoodDayContent,
+  getWorkoutDayContent,
+} from "@/lib/coachContentResolver";
 import { resolveFoodDayMock } from "@/data/foodContent.mock";
 import { resolveTodayDisplayMock } from "@/data/todayContent.mock";
 import { getProgramPackage, normalizeProgramPackageId } from "@/lib/programPackages";
@@ -255,10 +261,16 @@ export function resolveCoachDayModel(input: CoachEngineInput): CoachDayModel {
     now: input.now,
   });
 
+  const realProg = getCoachProgramContent(profile.selectedPackageId);
+  const realWorkout = getWorkoutDayContent(profile.selectedPackageId, todayIdx);
+  const realFood = getFoodDayContent(profile.selectedPackageId, todayIdx);
+
   let heroTitle = todayDisplay.heroTitle;
   let heroGuidance = todayDisplay.heroGuidance;
   let planWorkoutLabel = todayDisplay.planWorkoutLabel;
   let planFoodLabel = foodDay.foodPlanLabel;
+  let programFocusLabel = todayDisplay.programSituationFocus;
+  let situationFoodWhenNoLogs = todayDisplay.situationFoodWhenNoLogs;
 
   const skipWorkoutRelabel =
     resolvedFlow === "skipped" &&
@@ -272,6 +284,23 @@ export function resolveCoachDayModel(input: CoachEngineInput): CoachDayModel {
     heroTitle = t("todayView.focusTitleDefer");
     heroGuidance = t("todayView.heroSkippedTomorrow");
     planWorkoutLabel = locale === "fi" ? "Siirto huomiselle" : "Moved to tomorrow";
+  }
+
+  if (!skipWorkoutRelabel && realProg) {
+    programFocusLabel = realProg.programFocusLabel;
+  }
+
+  if (!skipWorkoutRelabel && realWorkout) {
+    heroTitle = realWorkout.title;
+    heroGuidance = realWorkout.guidance;
+    planWorkoutLabel = realWorkout.focus.trim()
+      ? realWorkout.focus
+      : realWorkout.title;
+  }
+
+  if (realFood) {
+    planFoodLabel = realFood.foodPlanLabel;
+    situationFoodWhenNoLogs = coachFoodSituationLine(realFood);
   }
 
   if (!skipWorkoutRelabel) {
@@ -318,11 +347,11 @@ export function resolveCoachDayModel(input: CoachEngineInput): CoachDayModel {
     heroGuidance,
     workoutPlanLabel: planWorkoutLabel,
     foodPlanLabel: planFoodLabel,
-    programFocusLabel: todayDisplay.programSituationFocus,
+    programFocusLabel,
     nextAction: cta.next,
     primaryCta,
     inlineStatus,
-    situationFoodWhenNoLogs: todayDisplay.situationFoodWhenNoLogs,
+    situationFoodWhenNoLogs,
     statusValue,
     workoutContextLine,
   };

@@ -3,6 +3,10 @@
  * Polku: engine → UI.
  */
 import { shouldSuppressWorkoutLink } from "@/lib/coach/exceptionEngine";
+import {
+  buildGeneratedWorkoutDayFromCoachContent,
+  getWorkoutDayContent,
+} from "@/lib/coachContentResolver";
 import { getMondayBasedIndex } from "@/lib/plan";
 import { normalizeProgramPackageId } from "@/lib/programPackages";
 import { effectiveTrainingLevel } from "@/lib/profileTraining";
@@ -51,6 +55,35 @@ export function buildTodayWorkoutForUi(input: {
     coachMode: input.profile.mode ?? "guided",
     programBlueprintId: input.profile.programBlueprintId,
     sourceProfile: input.profile,
+  });
+  return {
+    ...raw,
+    exercises: applyExerciseOverridesToProExercises(
+      raw.exercises,
+      input.profile.exerciseIdOverrides,
+      input.locale,
+    ),
+  };
+}
+
+/** Valmennussisältö ensisijainen; puuttuva päivä → generaattori + override-sarjat. */
+export function buildTodayWorkoutForUiWithContent(input: {
+  profile: OnboardingAnswers;
+  now: Date;
+  locale: Locale;
+}): GeneratedWorkoutDay | null {
+  const todayIdx = getMondayBasedIndex(input.now);
+  const dayContent = getWorkoutDayContent(
+    input.profile.selectedPackageId,
+    todayIdx,
+  );
+  if (!dayContent) {
+    return buildTodayWorkoutForUi(input);
+  }
+  const raw = buildGeneratedWorkoutDayFromCoachContent({
+    profile: input.profile,
+    day: dayContent,
+    locale: input.locale,
   });
   return {
     ...raw,

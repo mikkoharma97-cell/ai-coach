@@ -89,6 +89,7 @@ export {
 } from "@/lib/coach/aiDecisionEngine";
 export {
   buildTodayWorkoutForUi,
+  buildTodayWorkoutForUiWithContent,
   resolveProWorkoutStructureEligible,
   resolveTodayPrimaryAnchor,
   resolveTodayQuickDoneHref,

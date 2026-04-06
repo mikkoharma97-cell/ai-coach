@@ -7,6 +7,11 @@ import { useCoachDayModel } from "@/hooks/useCoachDayModel";
 import { useTranslation } from "@/hooks/useTranslation";
 import { dateLocaleForUi } from "@/lib/i18n";
 import { resolveFoodDayMock } from "@/data/foodContent.mock";
+import {
+  coachFoodDayToFoodDayPlan,
+  getFoodDayContent,
+} from "@/lib/coachContentResolver";
+import { getMondayBasedIndex } from "@/lib/plan";
 import { getProgramPackage } from "@/lib/programPackages";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -23,6 +28,18 @@ export function FoodScreenSimple() {
   const foodDay = useMemo(() => {
     if (!profile) return null;
     const pkg = getProgramPackage(profile.selectedPackageId);
+    const todayIdx = getMondayBasedIndex(now);
+    const real = getFoodDayContent(profile.selectedPackageId, todayIdx);
+    if (real) {
+      return coachFoodDayToFoodDayPlan(real, {
+        locale,
+        mealCount: pkg.mealCount,
+        goal: profile.goal,
+        style: pkg.mealStyle,
+        planBias: pkg.planBias,
+        now,
+      });
+    }
     return resolveFoodDayMock({
       mealCount: pkg.mealCount,
       style: pkg.mealStyle,

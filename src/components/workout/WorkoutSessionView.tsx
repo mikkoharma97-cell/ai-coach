@@ -5,7 +5,10 @@ import { Container } from "@/components/ui/Container";
 import { useClientProfile } from "@/hooks/useClientProfile";
 import { useCoachDayModel } from "@/hooks/useCoachDayModel";
 import { useTranslation } from "@/hooks/useTranslation";
-import { buildTodayWorkoutForUi, normalizeProfileForEngine } from "@/lib/coach";
+import {
+  buildTodayWorkoutForUiWithContent,
+  normalizeProfileForEngine,
+} from "@/lib/coach";
 import { isFoodOnlyMode } from "@/lib/appUsageMode";
 import { ExerciseHistoryStrip } from "@/components/workout/ExerciseHistoryStrip";
 import { getExerciseHistoryForStrip } from "@/lib/workoutHistory";
@@ -65,7 +68,7 @@ export function WorkoutSessionView() {
 
   const generated = useMemo((): GeneratedWorkoutDay | null => {
     if (!normalized) return null;
-    return buildTodayWorkoutForUi({
+    return buildTodayWorkoutForUiWithContent({
       profile: normalized,
       now,
       locale,
