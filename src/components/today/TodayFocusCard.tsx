@@ -17,8 +17,8 @@ export type TodayFocusCardProps = {
   heroTitle: string;
   /** Yksi lyhyt ohjaava lause — ei laatikossa */
   heroGuidance: string;
-  /** Yksi primary CTA */
-  primaryCta: { href: string; label: string };
+  /** Primary CTA — jos puuttuu (esim. päivä jo valmis), ei nappia */
+  primaryCta?: { href: string; label: string } | null;
   onPrimaryNavigate: () => void;
   feedbackLine: string | null;
   /** Tekstimuotoinen päivän tila (ei %-mittari) */
@@ -85,25 +85,27 @@ export function TodayFocusCard({
         ) : null}
       </header>
 
-      <div className="mt-8 px-0.5">
-        <Link
-          href={primaryCta.href}
-          scroll={false}
-          aria-describedby="today-hero-guidance"
-          onClick={onPrimaryNavigate}
-          className="group relative flex min-h-[58px] w-full touch-manipulation items-center justify-center overflow-hidden rounded-[var(--radius-today)] bg-gradient-to-b from-[color-mix(in_oklab,var(--accent)_88%,white_12%)] via-[var(--accent)] to-[var(--accent-deep)] px-6 text-[17px] font-semibold tracking-[-0.026em] text-white shadow-[0_12px_44px_-14px_rgba(41,92,255,0.5),0_6px_22px_-12px_rgba(0,0,0,0.58)] ring-1 ring-inset ring-white/[0.18] transition-[filter,transform,box-shadow] hover:shadow-[0_14px_50px_-12px_rgba(41,92,255,0.55),0_8px_26px_-14px_rgba(0,0,0,0.52)] hover:brightness-[1.06] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-h-[60px] sm:text-[18px]"
-        >
-          <span
-            className="pointer-events-none absolute inset-x-0 top-0 h-[46%] bg-gradient-to-b from-white/[0.22] via-white/[0.06] to-transparent opacity-[0.88]"
-            aria-hidden
-          />
-          <span className="relative z-[1] drop-shadow-[0_1px_2px_rgba(0,0,0,0.42)]">
-            {primaryCta.label}
-          </span>
-        </Link>
-      </div>
+      {primaryCta ? (
+        <div className="mt-8 px-0.5">
+          <Link
+            href={primaryCta.href}
+            scroll={false}
+            aria-describedby="today-hero-guidance"
+            onClick={onPrimaryNavigate}
+            className="group relative flex min-h-[58px] w-full touch-manipulation items-center justify-center overflow-hidden rounded-[var(--radius-today)] bg-gradient-to-b from-[color-mix(in_oklab,var(--accent)_88%,white_12%)] via-[var(--accent)] to-[var(--accent-deep)] px-6 text-[17px] font-semibold tracking-[-0.026em] text-white shadow-[0_12px_44px_-14px_rgba(41,92,255,0.5),0_6px_22px_-12px_rgba(0,0,0,0.58)] ring-1 ring-inset ring-white/[0.18] transition-[filter,transform,box-shadow] hover:shadow-[0_14px_50px_-12px_rgba(41,92,255,0.55),0_8px_26px_-14px_rgba(0,0,0,0.52)] hover:brightness-[1.06] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-h-[60px] sm:text-[18px]"
+          >
+            <span
+              className="pointer-events-none absolute inset-x-0 top-0 h-[46%] bg-gradient-to-b from-white/[0.22] via-white/[0.06] to-transparent opacity-[0.88]"
+              aria-hidden
+            />
+            <span className="relative z-[1] drop-shadow-[0_1px_2px_rgba(0,0,0,0.42)]">
+              {primaryCta.label}
+            </span>
+          </Link>
+        </div>
+      ) : null}
 
-      <div className="mt-7 px-1">
+      <div className={`px-1 ${primaryCta ? "mt-7" : "mt-8"}`}>
         <div className={`mb-3 ${SECTION_EYEBROW}`}>{t("todayView.planBlockHeading")}</div>
 
         <div className="space-y-0">
